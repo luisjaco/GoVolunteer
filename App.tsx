@@ -50,7 +50,7 @@ export default function App() {
                     setRsvpCount((n) => n + 1);
                     setSnackVisible(true);
                   }}
-                  mode="conained"
+                  mode="contained"
                 >
                   RSVP
                 </Button>
