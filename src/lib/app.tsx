@@ -23,7 +23,7 @@ export default function App() {
 
   const openInMaps = () => {
     const address = encodeURIComponent('Bryant Park, New York, NY');
-    const url = 'http://maps.apple.com/?=${address}';
+    const url = `http://maps.apple.com/?=${address}`;
     Linking.openURL(url);
   }
 
