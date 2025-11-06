@@ -37,10 +37,34 @@ import {
   FAB,
   } from 'react-native-paper';
 
+/*
+  This is called a Component, it basically is a function used in React which has the function of 
+  creating an element (HTML)
+
+  Regular javascipt applies, and we can write HTML as one element by wrapping the HTML in 
+  parenthesis (). To put code/variables inside of the HTML, we use curly brackets {}
+*/
+
 // export default refers to the main thing this file provides
 // define a function named App
 // expo will look for this App component and render it
 export default function App() {
+  /*
+    All this React.useState stuff basically makes it so variables can change and the UI will display
+    the changes in real time.
+    
+    const [variable, setVariable] = React.useState(defaultValue);
+    setVariable(newValue);
+    
+    * Note that if you made a regular variable and have function (like an event handler) which 
+    changes it, the UI won't display the changes.
+
+    Things like .useState (and anything that starts with .use____) are called Hooks. Hooks are
+    functions from React which essentially allow you to alter the rendering of the UI.
+
+    Follow the naming convention!!!
+  */
+  
   // const creates a constant variable (cannot be reassigned)
   // React.useState returns [currentValue, functionToUpdateIt]
   // we set those values to the variables [screen, setScreen]
@@ -80,6 +104,14 @@ export default function App() {
     Linking.openURL(url);
   }
 
+  /*
+    All the rest of this stuff is basically HTML, remember that using {} allows you to put code or
+    logic inside of the HTML.
+
+    * Note that when you make a component, the return statement has to have only one parent HTML
+    element.
+  */
+   
   // return statement for the function App
   return (
     // PaperProvider makes the theme and other Paper settings available to all child components (Buttons, Cards, etc.)
@@ -130,6 +162,9 @@ export default function App() {
                     will fill the background of the button with the theme's primary color*/}
                 <Button
                   onPress={() => {
+                    /* this right here is a lambda function in place of an event handler (when you 
+                    press the button, this will trigger)
+                    */
                     setRsvpCount((n) => n + 1);
                     setSnackVisible(true);
                   }}
@@ -200,6 +235,8 @@ export default function App() {
   );
 }
 
+
+// CSS stuff to alter the page.
 // StyleSheet.create collects static styles for performance and clarity
 // container/content/center/fab are named style groups we can reuse on Views/Text/etc.
 const styles = StyleSheet.create({
