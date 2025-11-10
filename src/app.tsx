@@ -146,11 +146,11 @@ export default function App() {
               About
             </Button>
           </View>
-        {/* this is where the "else" branch of the conditional begins, if screen !== 'home'
-            then we render the about page*/}
         ) : (
-          // creating a new view with the style content from the styles const
           <View style={styles.content}>
+            {/** this is where the "else" branch of the conditional begins, if screen !== 'home'
+               then we render the about page*/}
+            {/** creating a new view with the style content from the styles const */}
             {/* variant = headlineSmall is a typography preset from React Native Paper's theme */}
             <Text variant="headlineSmall" style={styles.center}>About</Text>
             <Text style={styles.center}>
