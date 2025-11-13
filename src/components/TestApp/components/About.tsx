@@ -6,6 +6,7 @@ import styles from '../../../constants';
 import {Text, Button} from 'react-native-paper';
 import {View} from 'react-native';
 
+// prop
 type AboutProps = {
     setScreen: React.Dispatch<React.SetStateAction<'home' | 'about'>>
 };
