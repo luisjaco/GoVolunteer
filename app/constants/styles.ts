@@ -24,6 +24,18 @@ const styles = StyleSheet.create({
     right: 16,  // 16px from the right
     bottom: 24, // 24 px from the bottom
   },
+
+  links: {
+    marginTop: 10,
+    borderBottomWidth: 2,
+  },
+
+  // HOME FEED PAGE STYLES
+
+  eventCardText: {
+    fontSize: 14
+  },
+
 });
 
 export default styles;

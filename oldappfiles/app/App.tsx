@@ -13,7 +13,7 @@ export default function App() {
     | - SignUpOrganization (username, orgname, password, email, url, etc.)
 
     Matt
-    | HomeFeed (display what evens are posted)
+    | HomeFeed (display what events are posted)
     | - EventCard (basic info for the event)
     | - EventInfo (in-depth info page for the event, rsvp button)
 

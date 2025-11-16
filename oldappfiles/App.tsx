@@ -39,9 +39,9 @@ import {
   FAB,
   } from 'react-native-paper';
 
-import styles from '../../constants';
-import Home from './components/Home';
-import About from './components/About';
+import styles from '../app/constants/constants';
+import Home from '../app';
+import About from '../app/about';
 
 /*
   The following is called a Component, it basically is a function used in React which has the 
