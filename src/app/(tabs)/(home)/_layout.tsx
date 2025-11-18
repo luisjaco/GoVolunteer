@@ -8,8 +8,11 @@ export default function HomeLayout(){
             <StatusBar style='auto' />
             <Stack>
                 <Stack.Screen name='index' options={{
-                    headerShown: false
+                    title: "home feed"
                 }}/>
+                <Stack.Screen name="viewEventInfo" options={{
+                    title: "event details"
+                }} />
             </Stack>
         </React.Fragment>
     )
