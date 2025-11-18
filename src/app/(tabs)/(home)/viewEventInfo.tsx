@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
@@ -6,6 +6,7 @@ export default function () {
   const router = useRouter();
 
   return (
+    
     <View style={{ flex: 1 }}>
       {/* Header */}
       <View style={{ backgroundColor: "#00A63E", paddingBottom: 25 }}>
