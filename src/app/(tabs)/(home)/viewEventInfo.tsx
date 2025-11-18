@@ -1,12 +1,15 @@
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context"; 
+
+//SafeAreView = ensures that the page's content is rendered within the visible boundaries
+//-> ensures that the navbar doesn't cover up the event info content
 
 export default function () {
-  const router = useRouter();
+  const router = useRouter(); 
 
   return (
-    
     <View style={{ flex: 1 }}>
       {/* Header */}
       <View style={{ backgroundColor: "#00A63E", paddingBottom: 25 }}>
@@ -35,74 +38,72 @@ export default function () {
         </View>
       </View>
 
-      <View
-        style={{
-          marginHorizontal: 20,
-          marginTop: 10,
-          padding: 20,
-          paddingBottom: 10,
-          borderRadius: 10,
-          borderColor: "#B8B8B8",
-          borderWidth: 1,
-        }}
+      {/* Scrollable Content */}
+      <ScrollView 
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 30 }}
       >
-        {/* Name of events + tag */}
+        {/* First Card - Event Info */}
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
+            marginHorizontal: 20,
+            marginTop: 10,
+            padding: 20,
+            paddingBottom: 10,
+            borderRadius: 10,
+            borderColor: "#B8B8B8",
+            borderWidth: 1,
           }}
         >
-          {/* Name Of events */}
-          <View>
-            <Text
-              style={{
-                lineHeight: 20,
-                fontWeight: "600",
-                fontSize: 16
-              }}
-            >
-              Name of Event
-            </Text>
-          </View>
-
-          {/* Tag */}
+          {/* Name of events + tag */}
           <View
             style={{
-              backgroundColor: "rgba(0,166,62,.43)",
-              paddingVertical: 2,
-              paddingHorizontal: 35,
-              borderRadius: 20,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
-            <Text
+            {/* Name Of events */}
+            <View>
+              <Text
+                style={{
+                  lineHeight: 20,
+                  fontWeight: "600",
+                  fontSize: 16
+                }}
+              >
+                Name of Event
+              </Text>
+            </View>
+
+            {/* Tag */}
+            <View
               style={{
-                color: "#006B28",
-                fontWeight: "600",
+                backgroundColor: "rgba(0,166,62,.43)",
+                paddingVertical: 2,
+                paddingHorizontal: 35,
+                borderRadius: 20,
               }}
             >
-              Tag
+              <Text
+                style={{
+                  color: "#006B28",
+                  fontWeight: "600",
+                }}
+              >
+                Tag
+              </Text>
+            </View>
+          </View>
+
+          {/* Organization Name */}
+          <View>
+            <Text style={{ color: "#656565", fontWeight: "600", marginBottom: 30 }}>
+              Organization Name
             </Text>
           </View>
-        </View>
 
-        {/* Organization Name */}
-        <View>
-          <Text style={{ color: "#656565", fontWeight: "600", marginBottom: 30 }}>
-            Organization Name
-          </Text>
-        </View>
-
-        {/* Date and Time */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          {/* Date */}
+          {/* Date and Time */}
           <View
             style={{
               flexDirection: "row",
@@ -110,8 +111,63 @@ export default function () {
               alignItems: "center",
             }}
           >
+            {/* Date */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons
+                name="calendar-clear-outline"
+                size={20}
+                color="#00A63E"
+                style={{
+                  marginRight: 5,
+                }}
+              />
+
+              <View>
+                <Text style={{ color: "#656565", fontSize: 13, lineHeight: 25 }}>
+                  Date
+                </Text>
+              </View>
+            </View>
+
+            {/* Time */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginRight: 110,
+              }}
+            >
+              <Ionicons
+                name="time-outline"
+                size={20}
+                color="#00A63E"
+                style={{
+                  marginRight: 2,
+                }}
+              />
+
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                12:00-2PM
+              </Text>
+            </View>
+          </View>
+
+          {/* Location */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
             <Ionicons
-              name="calendar-clear-outline"
+              name="location-outline"
               size={20}
               color="#00A63E"
               style={{
@@ -120,309 +176,263 @@ export default function () {
             />
 
             <View>
-              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 25 }}>
-                Date
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                Location
               </Text>
             </View>
           </View>
 
-          {/* Time */}
+          {/* Volunteers */}
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "space-between",
               alignItems: "center",
-              marginRight: 110,
             }}
           >
             <Ionicons
-              name="time-outline"
+              name="person-outline"
               size={20}
               color="#00A63E"
               style={{
-                marginRight: 2,
+                marginRight: 5,
               }}
             />
 
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              12:00-2PM
-            </Text>
+            {/* Border */}
+            <View>
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                0/20 Volunteers
+              </Text>
+            </View>
           </View>
-        </View>
 
-        {/* Location */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="location-outline"
-            size={20}
-            color="#00A63E"
-            style={{
-              marginRight: 5,
-            }}
-          />
+          <View style={{ height: 1, backgroundColor: "#B8B8B8", marginTop: 25 }}></View>
 
-          <View>
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              Location
-            </Text>
-          </View>
-        </View>
-
-        {/* Volunteers */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="person-outline"
-            size={20}
-            color="#00A63E"
-            style={{
-              marginRight: 5,
-            }}
-          />
-
-          {/* Border */}
-          <View>
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              0/20 Volunteers
-            </Text>
-          </View>
-        </View>
-
-        <View style={{ height: 1, backgroundColor: "#B8B8B8", marginTop: 25 }}></View>
-
-        {/* About this event */}
-        <View>
-          <Text
-            style={{
-              lineHeight: 20,
-              fontWeight: "600",
-              marginTop: 15,
-            }}
-          >
-            About this Event
-          </Text>
-        </View>
-
-        {/* Description */}
-        <View>
-          <Text
-            style={{
-              color: "#656565",
-              marginTop: 8,
-              fontWeight: "400",
-              fontSize: 14,
-              marginBottom: 25,
-            }}
-          >
-            Description
-          </Text>
-        </View>
-
-        {/* Buttons */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: 15,
-            gap: 15,
-          }}
-        >
-          {/* RSVP Button */}
-          <Pressable
-            style={{
-              backgroundColor: "#00A63E",
-              paddingVertical: 12,
-              paddingHorizontal: 24,
-              borderRadius: 10,
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
-              RSVP
-            </Text>
-          </Pressable>
-
-          {/* Share Button */}
-          <Pressable>
-            <Ionicons
-              name="share-social-outline"
-              size={30}
-              style={{
-                borderWidth: 1.5,
-                borderColor: "#898989",
-                borderRadius: 10,
-                paddingVertical: 4,
-                paddingHorizontal: 4,
-                justifyContent: "center",
-                paddingRight: 5,
-              }}
-            />
-          </Pressable>
-        </View>
-      </View>
-
-      {/* Second card (Organization Info) */}
-      <View
-        style={{
-          marginHorizontal: 20,
-          marginTop: 10,
-          padding: 20,
-          paddingBottom: 10,
-          borderRadius: 10,
-          borderColor: "#B8B8B8",
-          borderWidth: 1,
-        }}
-      >
-        {/* Organization Info */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
+          {/* About this event */}
           <View>
             <Text
               style={{
                 lineHeight: 20,
                 fontWeight: "600",
-                fontSize: 13,
-                marginBottom: 30,
+                marginTop: 15,
               }}
             >
-              Organization Info
+              About this Event
             </Text>
           </View>
-        </View>
 
-        {/* Profile picture, Organization name, organization motto */}
-        <View style={{ flexDirection: "row", marginLeft: 10, marginBottom: 30 }}>
-          {/* Profile Picture */}
+          {/* Description */}
+          <View>
+            <Text
+              style={{
+                color: "#656565",
+                marginTop: 8,
+                fontWeight: "400",
+                fontSize: 14,
+                marginBottom: 25,
+              }}
+            >
+              Description
+            </Text>
+          </View>
+
+          {/* Buttons */}
           <View
             style={{
-              width: 30,
-              height: 30,
-              borderRadius: 35, // 70 / 2 = 35 -> circle
-              backgroundColor: "#00A63E",
-              justifyContent: "center", // ← centers children vertically
-              alignItems: "center", // ← centers children horizontally
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: 15,
+              gap: 15,
             }}
-          ></View>
-
-          {/* Organization name+motto */}
-          <View style={{ flexDirection: "column", marginLeft: 7 }}>
-            {/* Organization name */}
-            <Text
+          >
+            {/* RSVP Button */}
+            <Pressable
               style={{
-                lineHeight: 20,
-                fontWeight: "500",
-                fontSize: 13,
+                backgroundColor: "#00A63E",
+                paddingVertical: 12,
+                paddingHorizontal: 24,
+                borderRadius: 10,
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              John Doe Foundation
-            </Text>
+              <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
+                RSVP
+              </Text>
+            </Pressable>
 
-            {/* Organization motto */}
-            <Text
+            {/* Share Button */}
+            <Pressable>
+              <Ionicons
+                name="share-social-outline"
+                size={30}
+                style={{
+                  borderWidth: 1.5,
+                  borderColor: "#898989",
+                  borderRadius: 10,
+                  paddingVertical: 4,
+                  paddingHorizontal: 4,
+                  justifyContent: "center",
+                  paddingRight: 5,
+                }}
+              />
+            </Pressable>
+          </View>
+        </View>
+
+        {/* Second card (Organization Info) */}
+        <View
+          style={{
+            marginHorizontal: 20,
+            marginTop: 10,
+            padding: 20,
+            paddingBottom: 10,
+            borderRadius: 10,
+            borderColor: "#B8B8B8",
+            borderWidth: 1,
+          }}
+        >
+          {/* Organization Info */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <View>
+              <Text
+                style={{
+                  lineHeight: 20,
+                  fontWeight: "600",
+                  fontSize: 13,
+                  marginBottom: 30,
+                }}
+              >
+                Organization Info
+              </Text>
+            </View>
+          </View>
+
+          {/* Profile picture, Organization name, organization motto */}
+          <View style={{ flexDirection: "row", marginLeft: 10, marginBottom: 30 }}>
+            {/* Profile Picture */}
+            <View
               style={{
-                lineHeight: 15,
-                fontWeight: "500",
-                fontSize: 12,
-                color: "#656565",
+                width: 30,
+                height: 30,
+                borderRadius: 35, // 70 / 2 = 35 -> circle
+                backgroundColor: "#00A63E",
+                justifyContent: "center", // ← centers children vertically
+                alignItems: "center", // ← centers children horizontally
               }}
-            >
-              Dedicated to preserving the John Doe ecosystem
-            </Text>
-          </View>
-        </View>
+            ></View>
 
-        {/* Phone number */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="call-outline"
-            size={20}
-            color="#00A63E"
+            {/* Organization name+motto */}
+            <View style={{ flexDirection: "column", marginLeft: 7 }}>
+              {/* Organization name */}
+              <Text
+                style={{
+                  lineHeight: 20,
+                  fontWeight: "500",
+                  fontSize: 13,
+                }}
+              >
+                John Doe Foundation
+              </Text>
+
+              {/* Organization motto */}
+              <Text
+                style={{
+                  lineHeight: 15,
+                  fontWeight: "500",
+                  fontSize: 12,
+                  color: "#656565",
+                }}
+              >
+                Dedicated to preserving the John Doe ecosystem
+              </Text>
+            </View>
+          </View>
+
+          {/* Phone number */}
+          <View
             style={{
-              marginRight: 4,
+              flexDirection: "row",
+              alignItems: "center",
             }}
-          />
+          >
+            <Ionicons
+              name="call-outline"
+              size={20}
+              color="#00A63E"
+              style={{
+                marginRight: 4,
+              }}
+            />
 
-          <View>
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              (123)-456-7890
-            </Text>
+            <View>
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                (123)-456-7890
+              </Text>
+            </View>
           </View>
-        </View>
 
 
-        {/* Email */}
+          {/* Email */}
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="mail-outline"
-            size={20}
-            color="#00A63E"
+          <View
             style={{
-              marginRight: 5,
+              flexDirection: "row",
+              alignItems: "center",
             }}
-          />
+          >
+            <Ionicons
+              name="mail-outline"
+              size={20}
+              color="#00A63E"
+              style={{
+                marginRight: 5,
+              }}
+            />
 
-          <View>
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              john.doe@nyit.edu
-            </Text>
+            <View>
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                john.doe@nyit.edu
+              </Text>
+            </View>
           </View>
-        </View>
 
-        
-        {/* Website */}
+          
+          {/* Website */}
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="globe-outline"
-            size={20}
-            color="#00A63E"
+          <View
             style={{
-              marginRight: 5,
+              flexDirection: "row",
+              alignItems: "center",
             }}
-          />
+          >
+            <Ionicons
+              name="globe-outline"
+              size={20}
+              color="#00A63E"
+              style={{
+                marginRight: 5,
+              }}
+            />
 
-          <View>
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              john-doe.org
-            </Text>
+            <View>
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                john-doe.org
+              </Text>
+            </View>
           </View>
+         
+          
         </View>
-       
-        
-      </View>
+      </ScrollView>
     </View>
   );
 }
