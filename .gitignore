@@ -46,3 +46,6 @@ yarn-error.*
 
 # IDEA
 .idea/
+
+# vsCode
+.vscode/
