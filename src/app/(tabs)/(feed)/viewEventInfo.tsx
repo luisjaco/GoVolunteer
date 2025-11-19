@@ -1,4 +1,4 @@
-import { View, Text, Pressable} from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "@/src/constants/colors";
@@ -39,37 +39,43 @@ export default function EventInfo() {
         </View>
       </View>
 
-      <View
-        style={{
-          marginHorizontal: 20,
-          marginTop: 10,
-          padding: 20,
-          paddingBottom: 10,
-          borderRadius: 10,
-          borderColor: "#B8B8B8",
-          borderWidth: 1,
-        }}
+      {/* Scrollable Content */}
+      <ScrollView 
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 30 }}
       >
-        {/* Name of events + tag */}
+        {/* First Card - Event Info */}
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
+            marginHorizontal: 20,
+            marginTop: 10,
+            padding: 20,
+            paddingBottom: 10,
+            borderRadius: 10,
+            borderColor: "#B8B8B8",
+            borderWidth: 1,
           }}
         >
-          {/* Name Of events */}
-          <View>
-            <Text
-              style={{
-                lineHeight: 20,
-                fontWeight: "600",
-                fontSize: 16
-              }}
-            >
-              Name of Event
-            </Text>
-          </View>
+          {/* Name of events + tag */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            {/* Name Of events */}
+            <View>
+              <Text
+                style={{
+                  lineHeight: 20,
+                  fontWeight: "600",
+                  fontSize: 16
+                }}
+              >
+                Name of Event
+              </Text>
+            </View>
 
           {/* Tag */}
           <View
@@ -91,12 +97,12 @@ export default function EventInfo() {
           </View>
         </View>
 
-        {/* Organization Name */}
-        <View>
-          <Text style={{ color: "#656565", fontWeight: "600", marginBottom: 30 }}>
-            Organization Name
-          </Text>
-        </View>
+          {/* Organization Name */}
+          <View>
+            <Text style={{ color: "#656565", fontWeight: "600", marginBottom: 30 }}>
+              Organization Name
+            </Text>
+          </View>
 
         {/* Date and Time */}
         <View
@@ -123,12 +129,12 @@ export default function EventInfo() {
               }}
             />
 
-            <View>
-              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 25 }}>
-                Date
-              </Text>
+              <View>
+                <Text style={{ color: "#656565", fontSize: 13, lineHeight: 25 }}>
+                  Date
+                </Text>
+              </View>
             </View>
-          </View>
 
           {/* Time */}
           <View
@@ -148,11 +154,11 @@ export default function EventInfo() {
               }}
             />
 
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              12:00-2PM
-            </Text>
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                12:00-2PM
+              </Text>
+            </View>
           </View>
-        </View>
 
         {/* Location */}
         <View
@@ -170,12 +176,12 @@ export default function EventInfo() {
             }}
           />
 
-          <View>
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              Location
-            </Text>
+            <View>
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                Location
+              </Text>
+            </View>
           </View>
-        </View>
 
         {/* Volunteers */}
         <View
@@ -193,43 +199,43 @@ export default function EventInfo() {
             }}
           />
 
-          {/* Border */}
+            {/* Border */}
+            <View>
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                0/20 Volunteers
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ height: 1, backgroundColor: "#B8B8B8", marginTop: 25 }}></View>
+
+          {/* About this event */}
           <View>
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              0/20 Volunteers
+            <Text
+              style={{
+                lineHeight: 20,
+                fontWeight: "600",
+                marginTop: 15,
+              }}
+            >
+              About this Event
             </Text>
           </View>
-        </View>
 
-        <View style={{ height: 1, backgroundColor: "#B8B8B8", marginTop: 25 }}></View>
-
-        {/* About this event */}
-        <View>
-          <Text
-            style={{
-              lineHeight: 20,
-              fontWeight: "600",
-              marginTop: 15,
-            }}
-          >
-            About this Event
-          </Text>
-        </View>
-
-        {/* Description */}
-        <View>
-          <Text
-            style={{
-              color: "#656565",
-              marginTop: 8,
-              fontWeight: "400",
-              fontSize: 14,
-              marginBottom: 25,
-            }}
-          >
-            Description
-          </Text>
-        </View>
+          {/* Description */}
+          <View>
+            <Text
+              style={{
+                color: "#656565",
+                marginTop: 8,
+                fontWeight: "400",
+                fontSize: 14,
+                marginBottom: 25,
+              }}
+            >
+              Description
+            </Text>
+          </View>
 
         {/* Buttons */}
         <View
@@ -258,58 +264,58 @@ export default function EventInfo() {
             </Text>
           </Pressable>
 
-          {/* Share Button */}
-          <Pressable>
-            <Ionicons
-              name="share-social-outline"
-              size={30}
-              style={{
-                borderWidth: 1.5,
-                borderColor: "#898989",
-                borderRadius: 10,
-                paddingVertical: 4,
-                paddingHorizontal: 4,
-                justifyContent: "center",
-                paddingRight: 5,
-              }}
-            />
-          </Pressable>
-        </View>
-      </View>
-
-      {/* Second card (Organization Info) */}
-      <View
-        style={{
-          marginHorizontal: 20,
-          marginTop: 10,
-          padding: 20,
-          paddingBottom: 10,
-          borderRadius: 10,
-          borderColor: "#B8B8B8",
-          borderWidth: 1,
-        }}
-      >
-        {/* Organization Info */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <View>
-            <Text
-              style={{
-                lineHeight: 20,
-                fontWeight: "600",
-                fontSize: 13,
-                marginBottom: 30,
-              }}
-            >
-              Organization Info
-            </Text>
+            {/* Share Button */}
+            <Pressable>
+              <Ionicons
+                name="share-social-outline"
+                size={30}
+                style={{
+                  borderWidth: 1.5,
+                  borderColor: "#898989",
+                  borderRadius: 10,
+                  paddingVertical: 4,
+                  paddingHorizontal: 4,
+                  justifyContent: "center",
+                  paddingRight: 5,
+                }}
+              />
+            </Pressable>
           </View>
         </View>
+
+        {/* Second card (Organization Info) */}
+        <View
+          style={{
+            marginHorizontal: 20,
+            marginTop: 10,
+            padding: 20,
+            paddingBottom: 10,
+            borderRadius: 10,
+            borderColor: "#B8B8B8",
+            borderWidth: 1,
+          }}
+        >
+          {/* Organization Info */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <View>
+              <Text
+                style={{
+                  lineHeight: 20,
+                  fontWeight: "600",
+                  fontSize: 13,
+                  marginBottom: 30,
+                }}
+              >
+                Organization Info
+              </Text>
+            </View>
+          </View>
 
         {/* Profile picture, Organization name, organization motto */}
         <View style={{ flexDirection: "row", marginLeft: 10, marginBottom: 30 }}>
@@ -325,32 +331,32 @@ export default function EventInfo() {
             }}
           ></View>
 
-          {/* Organization name+motto */}
-          <View style={{ flexDirection: "column", marginLeft: 7 }}>
-            {/* Organization name */}
-            <Text
-              style={{
-                lineHeight: 20,
-                fontWeight: "500",
-                fontSize: 13,
-              }}
-            >
-              John Doe Foundation
-            </Text>
+            {/* Organization name+motto */}
+            <View style={{ flexDirection: "column", marginLeft: 7 }}>
+              {/* Organization name */}
+              <Text
+                style={{
+                  lineHeight: 20,
+                  fontWeight: "500",
+                  fontSize: 13,
+                }}
+              >
+                John Doe Foundation
+              </Text>
 
-            {/* Organization motto */}
-            <Text
-              style={{
-                lineHeight: 15,
-                fontWeight: "500",
-                fontSize: 12,
-                color: "#656565",
-              }}
-            >
-              Dedicated to preserving the John Doe ecosystem
-            </Text>
+              {/* Organization motto */}
+              <Text
+                style={{
+                  lineHeight: 15,
+                  fontWeight: "500",
+                  fontSize: 12,
+                  color: "#656565",
+                }}
+              >
+                Dedicated to preserving the John Doe ecosystem
+              </Text>
+            </View>
           </View>
-        </View>
 
         {/* Phone number */}
         <View
@@ -368,15 +374,15 @@ export default function EventInfo() {
             }}
           />
 
-          <View>
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              (123)-456-7890
-            </Text>
+            <View>
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                (123)-456-7890
+              </Text>
+            </View>
           </View>
-        </View>
 
 
-        {/* Email */}
+          {/* Email */}
 
         <View
           style={{
@@ -393,12 +399,12 @@ export default function EventInfo() {
             }}
           />
 
-          <View>
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              john.doe@nyit.edu
-            </Text>
+            <View>
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                john.doe@nyit.edu
+              </Text>
+            </View>
           </View>
-        </View>
 
 
         {/* Website */}
@@ -424,7 +430,7 @@ export default function EventInfo() {
             </Text>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaStatusBar>
   );
 }
