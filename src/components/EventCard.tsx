@@ -4,6 +4,7 @@
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router"
+import { BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "../constants/colors";
 
 export default function EventCard() {
   return (
@@ -26,7 +27,7 @@ export default function EventCard() {
           alignItems: "center",
           justifyContent: "space-between",
         }}
-      >
+>
         {/* Name Of events */}
         <View>
           <Text
@@ -38,11 +39,10 @@ export default function EventCard() {
             Name of Event
           </Text>
         </View>
-
         {/* Tag */}
         <View
           style={{
-            backgroundColor: "rgba(0,166,62,.43)",
+            backgroundColor: SECONDARY_COLOR,
             paddingVertical: 2,
             paddingHorizontal: 35,
             borderRadius: 20,
@@ -50,7 +50,7 @@ export default function EventCard() {
         >
           <Text
             style={{
-              color: "#006B28",
+              color: "white",
               fontWeight: "600", 
             }}
           >
@@ -58,14 +58,12 @@ export default function EventCard() {
           </Text>
         </View>
       </View>
-
       {/* Organization Name */}
       <View>
         <Text style={{ color: "#656565", fontWeight: "600" }}>
           Organization Name
         </Text>
       </View>
-
       {/* Description */}
       <View>
         <Text
@@ -80,7 +78,6 @@ export default function EventCard() {
           Description
         </Text>
       </View>
-
       {/* Date and Time */}
       <View
         style={{
@@ -100,7 +97,7 @@ export default function EventCard() {
           <Ionicons
             name="calendar-clear-outline"
             size={20}
-            color="#00A63E"
+            color={SECONDARY_COLOR}
             style={{
               marginRight: 5,
             }}
@@ -112,7 +109,6 @@ export default function EventCard() {
             </Text>
           </View>
         </View>
-
         {/* Time */}
         <View
           style={{
@@ -125,12 +121,11 @@ export default function EventCard() {
           <Ionicons
             name="time-outline"
             size={20}
-            color="#00A63E"
+            color={SECONDARY_COLOR}
             style={{
               marginRight: 2,
             }}
           />
-
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
             12:00-2PM
           </Text>
@@ -147,12 +142,11 @@ export default function EventCard() {
         <Ionicons
           name="location-outline"
           size={20}
-          color="#00A63E"
+          color={SECONDARY_COLOR}
           style={{
             marginRight: 5,
           }}
         />
-
         <View>
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
             Location
@@ -170,12 +164,11 @@ export default function EventCard() {
         <Ionicons
           name="person-outline"
           size={20}
-          color="#00A63E"
+          color={SECONDARY_COLOR}
           style={{
             marginRight: 5,
           }}
         />
-
         <View>
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
             0/20 Volunteers
@@ -196,7 +189,7 @@ export default function EventCard() {
         {/* RSVP Button */}
         <Pressable
           style={{
-            backgroundColor: "#00A63E",
+            backgroundColor: BUTTON_COLOR,
             paddingVertical: 12,
             paddingHorizontal: 24,
             borderRadius: 10,

@@ -2,11 +2,13 @@ import { Link } from 'expo-router';
 import React from 'react';
 import { View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeAreaStatusBar from '../components/SafeAreaStatusBar';
 
 export default function WelcomeScreen(){
 
     return (
-        <View>
+        <SafeAreaStatusBar>
             <Text>
                 This would be our home screen. Basically where the user will sign in and stuff, then
                 we add the tabs to the stack (as the top screen). Or maybe transfer the route (Luis)
@@ -38,12 +40,12 @@ export default function WelcomeScreen(){
             <Text>
                 Look at the comments in this screens file to see the roles and screens we decided.
             </Text>
-            <Link href='/(tabs)/(home)' push asChild>
+            <Link href='/(tabs)/(feed)' push asChild>
                 <Button>
                     Move to main tabs!
                 </Button>
             </Link>
-        </View>
+        </SafeAreaStatusBar>
     )
 }
 

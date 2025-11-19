@@ -5,10 +5,10 @@ import React from 'react';
 export default function RootLayout() {
   return (
     <React.Fragment>
-      <StatusBar style='auto' />
+      <StatusBar style='auto'/>
       <Stack>
         <Stack.Screen name='index' options={{
-          headerShown: true,
+          headerShown: false,
           title: 'GoVolunteer'
         }} />
         <Stack.Screen name='(tabs)' options={{

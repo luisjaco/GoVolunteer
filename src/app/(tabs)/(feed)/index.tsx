@@ -1,10 +1,13 @@
 import { Link, router } from 'expo-router';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
-import styles from "@constants/styles";
+import { styles } from "@constants/styles";
 import { PRIMARY_COLOR } from '@constants/colors';
 import { Ionicons } from "@expo/vector-icons";
 import { Router } from 'expo-router';
 import EventCard from "@/src/components/EventCard";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import SafeAreaStatusBar from '@/src/components/SafeAreaStatusBar';
 
 // Added components:
 
@@ -19,11 +22,11 @@ import EventCard from "@/src/components/EventCard";
   // Ionicons = a library that contains icons. https://ionic.io/ionicons
 
 
-export default function Home() {
+export default function Feed() {
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaStatusBar>
       {/*HEADER*/}
-      <View style={{ backgroundColor: PRIMARY_COLOR}}>
+      <View style={{ backgroundColor: PRIMARY_COLOR }}>
         {/*INNER CONTENT WRAPPER*/}
         <View style={{
           marginRight: 20,
@@ -49,7 +52,7 @@ export default function Home() {
             marginBottom: 25,
             borderRadius: 10
           }}>
-            <Ionicons 
+            <Ionicons
               name='search'
               size={25}
               color='black'
@@ -58,7 +61,7 @@ export default function Home() {
                 marginRight: 10
               }}
             />
-            <TextInput 
+            <TextInput
               placeholder='Search Events...'
               placeholderTextColor='gray'
               style={{
@@ -68,8 +71,8 @@ export default function Home() {
                 fontSize: 16
               }}
             />
-            <Pressable style={{ paddingRight: 20}}>
-              <Ionicons 
+            <Pressable style={{ paddingRight: 20 }}>
+              <Ionicons
                 name='filter-outline'
                 size={25}
                 color='black'
@@ -80,11 +83,11 @@ export default function Home() {
         </View>
       </View>
       {/* END HEADER */}
-      
+
       {/* MAIN CONTENT */}
       <ScrollView>
         <EventCard />
       </ScrollView>
-    </View>
+    </SafeAreaStatusBar>
   );
 }
