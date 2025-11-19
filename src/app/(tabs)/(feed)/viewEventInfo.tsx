@@ -40,7 +40,7 @@ export default function EventInfo() {
       </View>
 
       {/* Scrollable Content */}
-      <ScrollView 
+      <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 30 }}
       >
@@ -77,25 +77,25 @@ export default function EventInfo() {
               </Text>
             </View>
 
-          {/* Tag */}
-          <View
-            style={{
-              backgroundColor: SECONDARY_COLOR,
-              paddingVertical: 2,
-              paddingHorizontal: 35,
-              borderRadius: 20,
-            }}
-          >
-            <Text
+            {/* Tag */}
+            <View
               style={{
-                color: 'white',
-                fontWeight: "600",
+                backgroundColor: SECONDARY_COLOR,
+                paddingVertical: 2,
+                paddingHorizontal: 35,
+                borderRadius: 20,
               }}
             >
-              Tag
-            </Text>
+              <Text
+                style={{
+                  color: 'white',
+                  fontWeight: "600",
+                }}
+              >
+                Tag
+              </Text>
+            </View>
           </View>
-        </View>
 
           {/* Organization Name */}
           <View>
@@ -104,15 +104,7 @@ export default function EventInfo() {
             </Text>
           </View>
 
-        {/* Date and Time */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          {/* Date */}
+          {/* Date and Time */}
           <View
             style={{
               flexDirection: "row",
@@ -120,14 +112,22 @@ export default function EventInfo() {
               alignItems: "center",
             }}
           >
-            <Ionicons
-              name="calendar-clear-outline"
-              size={20}
-              color={SECONDARY_COLOR}
+            {/* Date */}
+            <View
               style={{
-                marginRight: 5,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
-            />
+            >
+              <Ionicons
+                name="calendar-clear-outline"
+                size={20}
+                color={SECONDARY_COLOR}
+                style={{
+                  marginRight: 5,
+                }}
+              />
 
               <View>
                 <Text style={{ color: "#656565", fontSize: 13, lineHeight: 25 }}>
@@ -136,23 +136,23 @@ export default function EventInfo() {
               </View>
             </View>
 
-          {/* Time */}
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginRight: 110,
-            }}
-          >
-            <Ionicons
-              name="time-outline"
-              size={20}
-              color={SECONDARY_COLOR}
+            {/* Time */}
+            <View
               style={{
-                marginRight: 2,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginRight: 110,
               }}
-            />
+            >
+              <Ionicons
+                name="time-outline"
+                size={20}
+                color={SECONDARY_COLOR}
+                style={{
+                  marginRight: 2,
+                }}
+              />
 
               <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
                 12:00-2PM
@@ -160,21 +160,21 @@ export default function EventInfo() {
             </View>
           </View>
 
-        {/* Location */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="location-outline"
-            size={20}
-            color={SECONDARY_COLOR}
+          {/* Location */}
+          <View
             style={{
-              marginRight: 5,
+              flexDirection: "row",
+              alignItems: "center",
             }}
-          />
+          >
+            <Ionicons
+              name="location-outline"
+              size={20}
+              color={SECONDARY_COLOR}
+              style={{
+                marginRight: 5,
+              }}
+            />
 
             <View>
               <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
@@ -183,21 +183,21 @@ export default function EventInfo() {
             </View>
           </View>
 
-        {/* Volunteers */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="person-outline"
-            size={20}
-            color={SECONDARY_COLOR}
+          {/* Volunteers */}
+          <View
             style={{
-              marginRight: 5,
+              flexDirection: "row",
+              alignItems: "center",
             }}
-          />
+          >
+            <Ionicons
+              name="person-outline"
+              size={20}
+              color={SECONDARY_COLOR}
+              style={{
+                marginRight: 5,
+              }}
+            />
 
             {/* Border */}
             <View>
@@ -237,32 +237,32 @@ export default function EventInfo() {
             </Text>
           </View>
 
-        {/* Buttons */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: 15,
-            gap: 15,
-          }}
-        >
-          {/* RSVP Button */}
-          <Pressable
+          {/* Buttons */}
+          <View
             style={{
-              backgroundColor: BUTTON_COLOR,
-              paddingVertical: 12,
-              paddingHorizontal: 24,
-              borderRadius: 10,
-              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
               alignItems: "center",
-              justifyContent: "center",
+              marginTop: 15,
+              gap: 15,
             }}
           >
-            <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
-              RSVP
-            </Text>
-          </Pressable>
+            {/* RSVP Button */}
+            <Pressable
+              style={{
+                backgroundColor: BUTTON_COLOR,
+                paddingVertical: 12,
+                paddingHorizontal: 24,
+                borderRadius: 10,
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
+                RSVP
+              </Text>
+            </Pressable>
 
             {/* Share Button */}
             <Pressable>
@@ -317,19 +317,19 @@ export default function EventInfo() {
             </View>
           </View>
 
-        {/* Profile picture, Organization name, organization motto */}
-        <View style={{ flexDirection: "row", marginLeft: 10, marginBottom: 30 }}>
-          {/* Profile Picture */}
-          <View
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 35, // 70 / 2 = 35 -> circle
-              backgroundColor: PRIMARY_COLOR,
-              justifyContent: "center", // ← centers children vertically
-              alignItems: "center", // ← centers children horizontally
-            }}
-          ></View>
+          {/* Profile picture, Organization name, organization motto */}
+          <View style={{ flexDirection: "row", marginLeft: 10, marginBottom: 30 }}>
+            {/* Profile Picture */}
+            <View
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: 35, // 70 / 2 = 35 -> circle
+                backgroundColor: PRIMARY_COLOR,
+                justifyContent: "center", // ← centers children vertically
+                alignItems: "center", // ← centers children horizontally
+              }}
+            ></View>
 
             {/* Organization name+motto */}
             <View style={{ flexDirection: "column", marginLeft: 7 }}>
@@ -358,21 +358,21 @@ export default function EventInfo() {
             </View>
           </View>
 
-        {/* Phone number */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="call-outline"
-            size={20}
-            color={SECONDARY_COLOR}
+          {/* Phone number */}
+          <View
             style={{
-              marginRight: 4,
+              flexDirection: "row",
+              alignItems: "center",
             }}
-          />
+          >
+            <Ionicons
+              name="call-outline"
+              size={20}
+              color={SECONDARY_COLOR}
+              style={{
+                marginRight: 4,
+              }}
+            />
 
             <View>
               <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
@@ -384,20 +384,20 @@ export default function EventInfo() {
 
           {/* Email */}
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="mail-outline"
-            size={20}
-            color={SECONDARY_COLOR}
+          <View
             style={{
-              marginRight: 5,
+              flexDirection: "row",
+              alignItems: "center",
             }}
-          />
+          >
+            <Ionicons
+              name="mail-outline"
+              size={20}
+              color={SECONDARY_COLOR}
+              style={{
+                marginRight: 5,
+              }}
+            />
 
             <View>
               <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
@@ -407,27 +407,28 @@ export default function EventInfo() {
           </View>
 
 
-        {/* Website */}
+          {/* Website */}
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Ionicons
-            name="globe-outline"
-            size={20}
-            color={SECONDARY_COLOR}
+          <View
             style={{
-              marginRight: 5,
+              flexDirection: "row",
+              alignItems: "center",
             }}
-          />
+          >
+            <Ionicons
+              name="globe-outline"
+              size={20}
+              color={SECONDARY_COLOR}
+              style={{
+                marginRight: 5,
+              }}
+            />
 
-          <View>
-            <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-              john-doe.org
-            </Text>
+            <View>
+              <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+                john-doe.org
+              </Text>
+            </View>
           </View>
         </View>
       </ScrollView>
