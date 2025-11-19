@@ -27,8 +27,8 @@ export default function WelcomeScreen(){
                 called grouping folders, and what they do is make it so we can easily organize
                 without changing the actually path of the file. So if I were to reference 
                 secondPostScreen, (which to us in the code editor has the path 
-                '@/src/app/(tabs)/(post)/secondPostScreen'), it will just look like 
-                '/secondPostScreen'. We also still have regular folders as well.
+                '@/src/app/(tabs)/post/secondPostScreen'), it will just look like 
+                '/post/secondPostScreen'. We also still have regular folders as well.
             </Text>
             <Text>
                 All folders/groups with screens should have a '_layout.tsx' and 'index.tsx' file, 
