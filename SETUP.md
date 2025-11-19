@@ -75,7 +75,7 @@ npm -v
 ##### Use these commands to connect
 ```bash
 git clone https://github.com/luisjaco/GoVolunteer
-cd volunteer-app
+cd GoVolunteer
 npm install
 ```
 
