@@ -5,21 +5,16 @@ import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router"
 import { BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "../constants/colors";
+import { useState } from 'react';
+import EventModal from "./EventModal";
 
 export default function EventCard() {
-  return (
-    <View
-      style={{
-        marginHorizontal: 20,
-        marginTop: 20,
-        padding: 20,
-        paddingBottom: 10,
-        borderRadius: 10,
-        borderColor: "#B8B8B8",
-        borderWidth: 1, 
-        
-      }}
-    >
+
+  // whether or not to show modal of the card...
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const Header = (
+    <>
       {/* Name of events + tag */}
       <View
         style={{
@@ -27,7 +22,7 @@ export default function EventCard() {
           alignItems: "center",
           justifyContent: "space-between",
         }}
->
+      >
         {/* Name Of events */}
         <View>
           <Text
@@ -51,7 +46,7 @@ export default function EventCard() {
           <Text
             style={{
               color: "white",
-              fontWeight: "600", 
+              fontWeight: "600",
             }}
           >
             Tag
@@ -64,13 +59,18 @@ export default function EventCard() {
           Organization Name
         </Text>
       </View>
+    </>
+  );
+
+  const Description = (
+    <>
       {/* Description */}
       <View>
         <Text
           style={{
             color: "#656565",
             marginTop: 8,
-            fontWeight: "400", 
+            fontWeight: "400",
             fontSize: 14,
             marginBottom: 10,
           }}
@@ -175,50 +175,70 @@ export default function EventCard() {
           </Text>
         </View>
       </View>
+    </>
+  );
 
-      {/* Buttons */}
-      <View
+  const Buttons = (
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 15,
+        gap: 15,
+      }}
+    >
+      {/* RSVP Button */}
+      <Pressable
         style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
+          backgroundColor: BUTTON_COLOR,
+          paddingVertical: 12,
+          paddingHorizontal: 24,
+          borderRadius: 10,
+          flex: 1,
           alignItems: "center",
-          marginTop: 15,
-          gap: 15,
+          justifyContent: "center",
         }}
       >
-        {/* RSVP Button */}
-        <Pressable
-          style={{
-            backgroundColor: BUTTON_COLOR,
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-            borderRadius: 10,
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
-            RSVP
-          </Text>
-        </Pressable>
+        <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
+          RSVP
+        </Text>
+      </Pressable>
 
-        {/* View Button */}
-        <Pressable
-          onPress={() => router.push("/viewEventInfo")}
-          style={{
-            backgroundColor: "#FFF",
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-            borderRadius: 10,
-            borderWidth: 2,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ fontSize: 14, fontWeight: "600" }}>View</Text>
-        </Pressable>
-      </View>
+      {/* View Button */}
+      <Pressable
+        onPress={() => setModalVisible(() => true)}
+        style={{
+          backgroundColor: "#FFF",
+          paddingVertical: 12,
+          paddingHorizontal: 24,
+          borderRadius: 10,
+          borderWidth: 2,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text style={{ fontSize: 14, fontWeight: "600" }}>View</Text>
+      </Pressable>
+    </View>
+  )
+
+  return (
+    <View
+      style={{
+        marginHorizontal: 20,
+        marginTop: 20,
+        padding: 20,
+        paddingBottom: 10,
+        borderRadius: 10,
+        borderColor: "#B8B8B8",
+        borderWidth: 1, 
+      }}
+    >
+      {Header}
+      {Description}
+      {Buttons}
+      <EventModal modalVisible={modalVisible} setModalVisible={setModalVisible}/>
     </View>
   );
 }

@@ -10,9 +10,6 @@ export default function FeedLayout(){
                 <Stack.Screen name='index' options={{
                     headerShown: false
                 }}/>
-                <Stack.Screen name="viewEventInfo" options={{
-                    headerShown: false
-                }} />
             </Stack>
         </React.Fragment>
     )
