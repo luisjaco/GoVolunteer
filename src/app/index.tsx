@@ -3,12 +3,15 @@ import React from 'react';
 import { View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SafeAreaStatusBar from '../components/SafeAreaStatusBar';
+import GVArea from '@components/GVArea';
 
 export default function WelcomeScreen(){
 
     return (
-        <SafeAreaStatusBar>
+        <GVArea>
+            <Text>
+                Go Volunteer
+            </Text>
             <Text>
                 This would be our home screen. Basically where the user will sign in and stuff, then
                 we add the tabs to the stack (as the top screen). Or maybe transfer the route (Luis)
@@ -40,46 +43,11 @@ export default function WelcomeScreen(){
             <Text>
                 Look at the comments in this screens file to see the roles and screens we decided.
             </Text>
-            <Link href='/(tabs)/(feed)' push asChild>
+            <Link href='/feed' push asChild>
                 <Button>
                     Move to main tabs!
                 </Button>
             </Link>
-        </SafeAreaStatusBar>
+        </GVArea>
     )
 }
-
-/*
-    Right here is a general overview of all the pages we will be making and whos doing what
-
-    Nicole
-    | Homepage (will show title and show signIn, signUpUser, and signUpOrganization buttons.)
-    | - SignIn (take in all users & organizations)
-    | - SignUpUser (username, firstname, lastname, password, email, etc.)
-    | - SignUpOrganization (username, orgname, password, email, url, etc.)
-
-    Matt
-    | HomeFeed (display what evens are posted)
-    | - EventCard (basic info for the event)
-    | - EventInfo (in-depth info page for the event, rsvp button)
-
-    Daniella
-    | ViewAccount (show current rsvps, username, pfp, etc.)
-    | - EditAccount (change username, pfp, password, name, etc.)
-
-    ^v honestly these two can be pretty similar with slight changes.
-
-    Emily
-    | ViewOrganization (organization info, current posts)
-    | - EditOrganization (change username, pfp, password, etc)
-    
-    Logan
-    | - EventInfoOrganization (EventInfo but for orgs, will show whos rsvp and an edit button)
-    | - EditEvent (edit location, pictures, names, etc.)
-    | - CreateEvent
-
-    Luis 
-    | NavBar
-    ** Look into backend
-
-  */

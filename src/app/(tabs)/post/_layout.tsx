@@ -10,6 +10,9 @@ export default function PostLayout(){
                 <Stack.Screen name='index' options={{
                     headerShown: false
                 }}/>
+                <Stack.Screen name='secondPostScreen' options={{
+                    title: 'hello'
+                }}/>
             </Stack>
         </React.Fragment>
     )

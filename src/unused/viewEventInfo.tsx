@@ -2,7 +2,7 @@ import { View, Text, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "@/src/constants/colors";
-import SafeAreaStatusBar from "@/src/components/SafeAreaStatusBar";
+import SafeAreaStatusBar from "@/src/components/GVArea";
 
 export default function EventInfo() {
   const router = useRouter();

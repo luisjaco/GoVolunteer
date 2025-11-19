@@ -13,7 +13,7 @@ export default function RootLayout() {
         headerShown: false,
         tabBarShowLabel: false
       }}>
-        <Tabs.Screen name='(feed)' options={{
+        <Tabs.Screen name='feed' options={{
           // title: "Home Feed",
           tabBarIcon: ({color, size}) => (
             <Ionicons
@@ -23,7 +23,7 @@ export default function RootLayout() {
             />
           )
         }} />
-        <Tabs.Screen name='(post)' options={{
+        <Tabs.Screen name='post' options={{
           // title: "Post",
           tabBarIcon: ({color, size}) => (
             <Ionicons
@@ -33,7 +33,16 @@ export default function RootLayout() {
             />
           )
         }} />
-        <Tabs.Screen name='(profile)' options={{
+        <Tabs.Screen name='myRSVPs' options={{
+          tabBarIcon: ({color, size}) => (
+            <Ionicons
+              name='calendar-outline'
+              size={size}
+              color={color}
+            />
+          )
+        }} />
+        <Tabs.Screen name='profile' options={{
           // title: "Profile",
           tabBarIcon: ({color, size}) => (
             <Ionicons

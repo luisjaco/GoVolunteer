@@ -1,4 +1,4 @@
-import SafeAreaStatusBar from '@/src/components/SafeAreaStatusBar';
+import GVArea from '@/src/components/GVArea';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { View } from 'react-native';
@@ -9,7 +9,7 @@ export default function HomeScreen() {
     const router = useRouter(); // method used to push a new screen onto a stack.
 
     return (
-        <SafeAreaStatusBar>
+        <GVArea>
             <Text>
                 This will be a profile screen. It will kind of combine both aspects of the Home and
                 Post, since it will allow users to both check their posts (given they're an 
@@ -17,6 +17,6 @@ export default function HomeScreen() {
                 their profiles here. So we'll reuse the EventModal and also stacks to perform these
                 tasks.
             </Text>
-        </SafeAreaStatusBar>
+        </GVArea>
     );
 }
