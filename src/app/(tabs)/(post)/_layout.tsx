@@ -6,7 +6,11 @@ export default function PostLayout(){
     return (
         <React.Fragment>
             <StatusBar style='auto' />
-            <Stack/>
+            <Stack>
+                <Stack.Screen name='index' options={{
+                    headerShown: false
+                }}/>
+            </Stack>
         </React.Fragment>
     )
 }

@@ -2,16 +2,16 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 
-export default function HomeLayout(){
+export default function FeedLayout(){
     return (
         <React.Fragment>
-            <StatusBar style='auto' />
+            <StatusBar style='auto'/>
             <Stack>
                 <Stack.Screen name='index' options={{
-                    title: "home feed"
+                    headerShown: false
                 }}/>
                 <Stack.Screen name="viewEventInfo" options={{
-                    title: "event details"
+                    headerShown: false
                 }} />
             </Stack>
         </React.Fragment>

@@ -1,19 +1,24 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "@/src/constants/colors";
+import SafeAreaStatusBar from "@/src/components/SafeAreaStatusBar";
 
-export default function () {
+export default function EventInfo() {
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaStatusBar>
       {/* Header */}
-      <View style={{ backgroundColor: "#00A63E", paddingBottom: 25 }}>
+      <View style={{
+        backgroundColor: PRIMARY_COLOR,
+        paddingBottom: 25
+      }}>
         <View style={{ marginLeft: 20, marginRight: 20, marginTop: 15 }}>
           {/* Back Button */}
           <View style={{ marginTop: 8 }}>
             <Pressable
-              onPress={() => router.dismissTo('/(tabs)/(home)')}
+              onPress={() => router.dismissTo('/(tabs)/(feed)')}
               style={{
                 width: 70,
                 height: 70,
@@ -69,7 +74,7 @@ export default function () {
           {/* Tag */}
           <View
             style={{
-              backgroundColor: "rgba(0,166,62,.43)",
+              backgroundColor: SECONDARY_COLOR,
               paddingVertical: 2,
               paddingHorizontal: 35,
               borderRadius: 20,
@@ -77,7 +82,7 @@ export default function () {
           >
             <Text
               style={{
-                color: "#006B28",
+                color: 'white',
                 fontWeight: "600",
               }}
             >
@@ -112,7 +117,7 @@ export default function () {
             <Ionicons
               name="calendar-clear-outline"
               size={20}
-              color="#00A63E"
+              color={SECONDARY_COLOR}
               style={{
                 marginRight: 5,
               }}
@@ -137,7 +142,7 @@ export default function () {
             <Ionicons
               name="time-outline"
               size={20}
-              color="#00A63E"
+              color={SECONDARY_COLOR}
               style={{
                 marginRight: 2,
               }}
@@ -159,7 +164,7 @@ export default function () {
           <Ionicons
             name="location-outline"
             size={20}
-            color="#00A63E"
+            color={SECONDARY_COLOR}
             style={{
               marginRight: 5,
             }}
@@ -182,7 +187,7 @@ export default function () {
           <Ionicons
             name="person-outline"
             size={20}
-            color="#00A63E"
+            color={SECONDARY_COLOR}
             style={{
               marginRight: 5,
             }}
@@ -239,7 +244,7 @@ export default function () {
           {/* RSVP Button */}
           <Pressable
             style={{
-              backgroundColor: "#00A63E",
+              backgroundColor: BUTTON_COLOR,
               paddingVertical: 12,
               paddingHorizontal: 24,
               borderRadius: 10,
@@ -314,7 +319,7 @@ export default function () {
               width: 30,
               height: 30,
               borderRadius: 35, // 70 / 2 = 35 -> circle
-              backgroundColor: "#00A63E",
+              backgroundColor: PRIMARY_COLOR,
               justifyContent: "center", // ← centers children vertically
               alignItems: "center", // ← centers children horizontally
             }}
@@ -357,7 +362,7 @@ export default function () {
           <Ionicons
             name="call-outline"
             size={20}
-            color="#00A63E"
+            color={SECONDARY_COLOR}
             style={{
               marginRight: 4,
             }}
@@ -382,7 +387,7 @@ export default function () {
           <Ionicons
             name="mail-outline"
             size={20}
-            color="#00A63E"
+            color={SECONDARY_COLOR}
             style={{
               marginRight: 5,
             }}
@@ -395,7 +400,7 @@ export default function () {
           </View>
         </View>
 
-        
+
         {/* Website */}
 
         <View
@@ -407,7 +412,7 @@ export default function () {
           <Ionicons
             name="globe-outline"
             size={20}
-            color="#00A63E"
+            color={SECONDARY_COLOR}
             style={{
               marginRight: 5,
             }}
@@ -419,9 +424,7 @@ export default function () {
             </Text>
           </View>
         </View>
-       
-        
       </View>
-    </View>
+    </SafeAreaStatusBar>
   );
 }

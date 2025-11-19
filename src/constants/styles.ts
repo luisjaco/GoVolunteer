@@ -1,8 +1,9 @@
 // This will contain constants we might reuse in the future
 import {StyleSheet} from 'react-native';
+import { PRIMARY_COLOR, SECONDARY_COLOR } from './colors';
 
 // CSS stuff to alter the page.
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1, // fill available space
   },
@@ -34,5 +35,3 @@ const styles = StyleSheet.create({
   },
 
 });
-
-export default styles;
