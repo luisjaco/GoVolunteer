@@ -13,7 +13,6 @@ export default function RootLayout() {
         }} />
         <Stack.Screen name='(tabs)' options={{
           headerShown: false,
-          title: 'Test'
         }} />
       </Stack>
     </React.Fragment>

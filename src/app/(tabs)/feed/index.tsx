@@ -7,7 +7,7 @@ import { Router } from 'expo-router';
 import EventCard from "@/src/components/EventCard";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import SafeAreaStatusBar from '@/src/components/SafeAreaStatusBar';
+import GVArea from '@/src/components/GVArea';
 
 // Added components:
 
@@ -20,8 +20,6 @@ import SafeAreaStatusBar from '@/src/components/SafeAreaStatusBar';
   // <TextInput/> because it doesn't have any inner content
 
   // Ionicons = a library that contains icons. https://ionic.io/ionicons
-
-
 
 export default function Feed() {
 
@@ -85,11 +83,11 @@ export default function Feed() {
   );
 
   return (
-    <SafeAreaStatusBar>
+    <GVArea>
       {Header}
       <ScrollView>
         <EventCard />
       </ScrollView>
-    </SafeAreaStatusBar>
+    </GVArea>
   );
 }

@@ -5,11 +5,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { View } from 'react-native';
 import { PRIMARY_COLOR } from '../constants/colors';
 
-type SafeAreaStatusBarProps = {
+type GVAreaProps = {
     children?: React.ReactNode
 };
 
-export default function SafeAreaStatusBar(props: SafeAreaStatusBarProps) {
+export default function GVArea(props: GVAreaProps) {
     return (
         <SafeAreaView style={{
             flex: 1, 

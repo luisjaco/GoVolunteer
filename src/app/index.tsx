@@ -2,7 +2,7 @@ import { Link } from 'expo-router';
 import React from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SafeAreaStatusBar from '../components/SafeAreaStatusBar';
+import GVArea from '@components/GVArea';
 import { PRIMARY_COLOR, SECONDARY_COLOR } from '@constants/colors';
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "@constants/styles";
@@ -10,7 +10,7 @@ import { white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors
 
 export default function WelcomeScreen() {
   return (
-    <SafeAreaStatusBar>
+    <GVArea>
       <View
         style={{
           flex: 1,
@@ -116,7 +116,7 @@ export default function WelcomeScreen() {
             </TouchableOpacity>
         </Link>
       </View>
-    </SafeAreaStatusBar>
+    </GVArea>
   );
 }
 
@@ -128,37 +128,6 @@ export default function WelcomeScreen() {
                     Move to main tabs!
                 </Button>
             </Link>
-        </SafeAreaStatusBar>
-    Right here is a general overview of all the pages we will be making and whos doing what
-
-    Nicole
-    | Homepage (will show title and show signIn, signUpUser, and signUpOrganization buttons.)
-    | - SignIn (take in all users & organizations)
-    | - SignUpUser (username, firstname, lastname, password, email, etc.)
-    | - SignUpOrganization (username, orgname, password, email, url, etc.)
-
-    Matt
-    | HomeFeed (display what evens are posted)
-    | - EventCard (basic info for the event)
-    | - EventInfo (in-depth info page for the event, rsvp button)
-
-    Daniella
-    | ViewAccount (show current rsvps, username, pfp, etc.)
-    | - EditAccount (change username, pfp, password, name, etc.)
-
-    ^v honestly these two can be pretty similar with slight changes.
-
-    Emily
-    | ViewOrganization (organization info, current posts)
-    | - EditOrganization (change username, pfp, password, etc)
-    
-    Logan
-    | - EventInfoOrganization (EventInfo but for orgs, will show whos rsvp and an edit button)
-    | - EditEvent (edit location, pictures, names, etc.)
-    | - CreateEvent
-
-    Luis 
-    | NavBar
-    ** Look into backend
-
-  */
+        </GVArea>
+    )
+}
