@@ -56,7 +56,7 @@ export default function WelcomeScreen() {
               textAlign: "center",
             }}
           >
-            Connect with opportunities to make a difference
+            Connect with opportunities to make a difference!
           </Text>
         </View>
 
@@ -110,7 +110,7 @@ export default function WelcomeScreen() {
           </TouchableOpacity>
         </View>
         
-        <Link href='/(tabs)/(feed)' push asChild>
+        <Link href='/feed' push asChild>
             <TouchableOpacity style={{ padding: 10, alignItems: "center", justifyContent: "center"}}>
                 <Text style={{ color: "white", fontSize: 16 }}>Dev skip</Text>
             </TouchableOpacity>
@@ -131,3 +131,5 @@ export default function WelcomeScreen() {
         </GVArea>
     )
 }
+
+*/
