@@ -5,6 +5,7 @@ import {PRIMARY_COLOR, SECONDARY_COLOR, BUTTON_COLOR} from '@/src/constants/colo
 import {Ionicons} from '@expo/vector-icons';
 import GVArea from '@/src/components/GVArea';
 import {Link} from 'expo-router';
+import NavigationBar from '@/src/components/NavigationBar';
 
 export default function EventModal() {
     const EventCard = (
@@ -404,6 +405,7 @@ export default function EventModal() {
     
     return (
       <GVArea>
+            <NavigationBar />
             {/* Scrollable Content */}
             <ScrollView
                 style={{ flex: 1 }}
