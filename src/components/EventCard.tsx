@@ -1,18 +1,12 @@
 // this card will be used to generate
 // a new volunteering event card on the home feed (volunteer view)
 
-import { View, Text, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router"
-import { BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "../constants/colors";
-import { useState } from 'react';
-import EventModal from "./EventModal";
+import {View, Text, Pressable} from "react-native";
+import {Ionicons} from "@expo/vector-icons";
+import {Link} from "expo-router";
+import {BUTTON_COLOR, SECONDARY_COLOR} from "../constants/colors";
 
 export default function EventCard() {
-
-  // whether or not to show modal of the card...
-  const [modalVisible, setModalVisible] = useState(false);
-
   const Header = (
     <>
       {/* Name of events + tag */}
@@ -239,7 +233,6 @@ export default function EventCard() {
       {Header}
       {Description}
       {Buttons}
-      <EventModal modalVisible={modalVisible} setModalVisible={setModalVisible}/>
     </View>
   );
 }
