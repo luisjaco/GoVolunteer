@@ -5,7 +5,7 @@ import NavigationBar from '@/src/components/NavigationBar';
 import OrganizationCard from '@/src/components/OrganizationCard';
 import EventInfo from '@/src/components/EventInfo';
 
-export default function EventModal() {
+export default function Event() {
     return (
       <GVArea>
             <NavigationBar />
