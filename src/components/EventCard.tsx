@@ -3,7 +3,7 @@
 
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router"
+import { Link } from "expo-router"
 import { BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "../constants/colors";
 import { useState } from 'react';
 import EventModal from "./EventModal";
@@ -206,20 +206,21 @@ export default function EventCard() {
       </Pressable>
 
       {/* View Button */}
-      <Pressable
-        onPress={() => setModalVisible(() => true)}
-        style={{
-          backgroundColor: "#FFF",
-          paddingVertical: 12,
-          paddingHorizontal: 24,
-          borderRadius: 10,
-          borderWidth: 2,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Text style={{ fontSize: 14, fontWeight: "600" }}>View</Text>
-      </Pressable>
+      <Link href='/event' push asChild>
+        <Pressable
+          style={{
+            backgroundColor: "#FFF",
+            paddingVertical: 12,
+            paddingHorizontal: 24,
+            borderRadius: 10,
+            borderWidth: 2,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ fontSize: 14, fontWeight: "600" }}>View</Text>
+        </Pressable>
+      </Link>
     </View>
   )
 
