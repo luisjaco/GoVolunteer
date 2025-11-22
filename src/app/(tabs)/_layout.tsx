@@ -23,16 +23,6 @@ export default function RootLayout() {
             />
           )
         }} />
-        <Tabs.Screen name='(post)' options={{
-          // title: "Post",
-          tabBarIcon: ({color, size}) => (
-            <Ionicons
-              name='add-circle-outline'
-              size={size}
-              color={color}
-            />
-          )
-        }} />
         <Tabs.Screen name='(myRSVPs)' options={{
           tabBarIcon: ({color, size}) => (
             <Ionicons
@@ -46,7 +36,7 @@ export default function RootLayout() {
           // title: "Profile",
           tabBarIcon: ({color, size}) => (
             <Ionicons
-              name='at-circle-outline'
+              name='person-outline'
               size={size}
               color={color}
             />
