@@ -6,7 +6,11 @@ export default function RootLayout() {
   return (
     <React.Fragment>
       <StatusBar style='auto'/>
-      <Stack>
+      <Stack
+        screenOptions={{
+            headerShown: false,
+        }}
+      >
         <Stack.Screen name='index' options={{
           headerShown: false,
           title: 'GoVolunteer'

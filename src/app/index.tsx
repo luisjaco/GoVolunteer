@@ -128,6 +128,12 @@ export default function WelcomeScreen() {
                     Move to main tabs!
                 </Button>
             </Link>
+            <Link href={'/vSignIn'}>
+                <Button>
+                    Move to volunteer sign in
+                </Button>
+            </Link>
+
         </GVArea>
     )
 }
