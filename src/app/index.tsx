@@ -1,49 +1,129 @@
 import { Link } from 'expo-router';
 import React from 'react';
-import { View } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { View, Text, TextInput, Pressable, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GVArea from '@components/GVArea';
+import { PRIMARY_COLOR, SECONDARY_COLOR } from '@constants/colors';
+import { Ionicons } from "@expo/vector-icons";
+import { styles } from "@constants/styles";
+import { white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
-export default function WelcomeScreen(){
+export default function WelcomeScreen() {
+  return (
+    <GVArea>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: PRIMARY_COLOR,
+          justifyContent: "flex-start",
+          alignItems: "center",
+          paddingTop: 60,
+        }}
+      >
 
-    return (
-        <GVArea>
-            <Text>
-                Go Volunteer
+        {/* Logo + Titles */}
+        <View
+          style={{
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Image
+            source={require('@/assets/icons/earthLogo.png')}
+            style={{ width: 200, height: 200, marginBottom: 50 }}
+          />
+
+          {/* Main Title */}
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "800",
+              fontSize: 32,
+              textAlign: "center",
+            }}
+          >
+            GoVolunteer
+          </Text>
+
+          {/* Subtext */}
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "400",
+              fontSize: 16,
+              marginTop: 8,
+              marginBottom: 60,
+              textAlign: "center",
+            }}
+          >
+            Connect with opportunities to make a difference!
+          </Text>
+        </View>
+
+        {/* Buttons Column */}
+        <View style={{ width: "80%" }}>
+          {/* Sign In */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: "white",
+              paddingVertical: 12,
+              borderRadius: 10,
+              marginBottom: 12,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ fontWeight: "600", fontSize: 16, color: PRIMARY_COLOR }}>
+              Sign In
             </Text>
-            <Text>
-                This would be our home screen. Basically where the user will sign in and stuff, then
-                we add the tabs to the stack (as the top screen). Or maybe transfer the route (Luis)
-                will figure that stuff out.
+          </TouchableOpacity>
+
+          {/* Sign Up as Volunteer */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: "white",
+              paddingVertical: 12,
+              borderRadius: 10,
+              marginBottom: 12,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ fontWeight: "600", fontSize: 16, color: PRIMARY_COLOR }}>
+              Sign Up as Volunteer
             </Text>
-            <Text>
-                Expo router has these things called stacks and tabs. They're exactly what they sound
-                like and pretty simple to use. Stacks are screens that go on top of each other, and
-                tabs are tabs which can be accessed on one tab bar.
+          </TouchableOpacity>
+
+          {/* Sign Up as Organization */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: PRIMARY_COLOR,
+              borderWidth: 2,                
+              borderColor: "white",
+              paddingVertical: 12,
+              borderRadius: 10,
+              marginBottom: 12,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ fontWeight: "600", fontSize: 16, color:"white" }}>
+              Sign Up as Organization
             </Text>
-            <Text>
-                You'll see that in this file there are a bunch of folders like (this), these are
-                called grouping folders, and what they do is make it so we can easily organize
-                without changing the actually path of the file. So if I were to reference 
-                secondPostScreen, (which to us in the code editor has the path 
-                '@/src/app/(tabs)/(post)/secondPostScreen'), it will just look like 
-                '/secondPostScreen'. We also still have regular folders as well.
-            </Text>
-            <Text>
-                All folders/groups with screens should have a '_layout.tsx' and 'index.tsx' file, 
-                which is a file that defines the layout of adjacent screens in the folder and the 
-                starting screen, respectively.
-            </Text>
-            <Text>
-                Linking between screens and stuff is pretty easy, you can see examples all 
-                throughout the code. As well on how to alter the layout files, everywhere. Ask Luis
-                about anything you might not understand.
-            </Text>
-            <Text>
-                Look at the comments in this screens file to see the roles and screens we decided.
-            </Text>
-            <Link href='/feed' push asChild>
+          </TouchableOpacity>
+        </View>
+        
+        <Link href='/feed' push asChild>
+            <TouchableOpacity style={{ padding: 10, alignItems: "center", justifyContent: "center"}}>
+                <Text style={{ color: "white", fontSize: 16 }}>Dev skip</Text>
+            </TouchableOpacity>
+        </Link>
+      </View>
+    </GVArea>
+  );
+}
+
+
+/*
+
+<Link href='/(tabs)/(feed)' push asChild>
                 <Button>
                     Move to main tabs!
                 </Button>
@@ -51,3 +131,5 @@ export default function WelcomeScreen(){
         </GVArea>
     )
 }
+
+*/

@@ -1,19 +1,20 @@
-// this card will be used to generate
-// a new volunteering event card on the home feed (volunteer view)
+import {Ionicons} from '@expo/vector-icons'
+import {Pressable, Text, View} from 'react-native'
+import {SECONDARY_COLOR, BUTTON_COLOR} from '../constants/colors'
 
-import React from 'react';
-import {View, Text, Pressable} from "react-native";
-import {Ionicons} from "@expo/vector-icons";
-import {BUTTON_COLOR, SECONDARY_COLOR} from "../constants/colors";
-
-interface EventCardProps {
-  showCancelButton?: boolean;
-  onCancelRSVP?: () => void;
-}
-
-export default function EventCard({ showCancelButton = false, onCancelRSVP }: EventCardProps = {}) {
-  const Header = (
-    <>
+export default function EventInfo() {
+  return (
+    <View
+      style={{
+        marginHorizontal: 20,
+        marginTop: 10,
+        padding: 20,
+        paddingBottom: 10,
+        borderRadius: 10,
+        borderColor: "#B8B8B8",
+        borderWidth: 1,
+      }}
+    >
       {/* Name of events + tag */}
       <View
         style={{
@@ -28,6 +29,7 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
             style={{
               lineHeight: 20,
               fontWeight: "600",
+              fontSize: 16
             }}
           >
             Name of Event
@@ -44,7 +46,7 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
         >
           <Text
             style={{
-              color: "white",
+              color: 'white',
               fontWeight: "600",
             }}
           >
@@ -54,27 +56,8 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
       </View>
       {/* Organization Name */}
       <View>
-        <Text style={{ color: "#656565", fontWeight: "600" }}>
+        <Text style={{ color: "#656565", fontWeight: "600", marginBottom: 30 }}>
           Organization Name
-        </Text>
-      </View>
-    </>
-  );
-
-  const Description = (
-    <>
-      {/* Description */}
-      <View>
-        <Text
-          style={{
-            color: "#656565",
-            marginTop: 8,
-            fontWeight: "400",
-            fontSize: 14,
-            marginBottom: 10,
-          }}
-        >
-          Description
         </Text>
       </View>
       {/* Date and Time */}
@@ -130,7 +113,6 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
           </Text>
         </View>
       </View>
-
       {/* Location */}
       <View
         style={{
@@ -152,7 +134,6 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
           </Text>
         </View>
       </View>
-
       {/* Volunteers */}
       <View
         style={{
@@ -168,75 +149,83 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
             marginRight: 5,
           }}
         />
+        {/* Border */}
         <View>
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
             0/20 Volunteers
           </Text>
         </View>
       </View>
-    </>
-  );
-
-  const Buttons = (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginTop: 15,
-        gap: 15,
-      }}
-    >
-      {/* RSVP or CANCEL RSVP Button */}
-      <Pressable
-        onPress={showCancelButton ? onCancelRSVP : undefined}
-        style={{
-          backgroundColor: showCancelButton ? '#B22222' : BUTTON_COLOR,
-          paddingVertical: 12,
-          paddingHorizontal: 24,
-          borderRadius: 10,
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
-          {showCancelButton ? 'CANCEL RSVP' : 'RSVP'}
+      <View style={{ height: 1, backgroundColor: "#B8B8B8", marginTop: 25 }}></View>
+      {/* About this event */}
+      <View>
+        <Text
+          style={{
+            lineHeight: 20,
+            fontWeight: "600",
+            marginTop: 15,
+          }}
+        >
+          About this Event
         </Text>
-      </Pressable>
-
-      {/* View Button */}
-      <Pressable
+      </View>
+      {/* Description */}
+      <View>
+        <Text
+          style={{
+            color: "#656565",
+            marginTop: 8,
+            fontWeight: "400",
+            fontSize: 14,
+            marginBottom: 25,
+          }}
+        >
+          Description
+        </Text>
+      </View>
+      {/* Buttons */}
+      <View
         style={{
-          backgroundColor: "#FFF",
-          paddingVertical: 12,
-          paddingHorizontal: 24,
-          borderRadius: 10,
-          borderWidth: 2,
+          flexDirection: "row",
+          justifyContent: "space-between",
           alignItems: "center",
-          justifyContent: "center",
+          marginTop: 15,
+          gap: 15,
         }}
       >
-        <Text style={{ fontSize: 14, fontWeight: "600" }}>View</Text>
-      </Pressable>
+        {/* RSVP Button */}
+        <Pressable
+          style={{
+            backgroundColor: BUTTON_COLOR,
+            paddingVertical: 12,
+            paddingHorizontal: 24,
+            borderRadius: 10,
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
+            RSVP
+          </Text>
+        </Pressable>
+        {/* Share Button */}
+        <Pressable>
+          <Ionicons
+            name="share-social-outline"
+            size={30}
+            style={{
+              borderWidth: 1.5,
+              borderColor: "#898989",
+              borderRadius: 10,
+              paddingVertical: 4,
+              paddingHorizontal: 4,
+              justifyContent: "center",
+              paddingRight: 5,
+            }}
+          />
+        </Pressable>
+      </View>
     </View>
   )
-
-  return (
-    <View
-      style={{
-        marginHorizontal: 20,
-        marginTop: 20,
-        padding: 20,
-        paddingBottom: 10,
-        borderRadius: 10,
-        borderColor: "#B8B8B8",
-        borderWidth: 1, 
-      }}
-    >
-      {Header}
-      {Description}
-      {Buttons}
-    </View>
-  );
 }

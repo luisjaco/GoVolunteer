@@ -2,13 +2,13 @@ import { View, Text, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "@/src/constants/colors";
-import SafeAreaStatusBar from "@/src/components/GVArea";
+import GVArea from "@/src/components/GVArea";
 
 export default function EventInfo() {
   const router = useRouter();
 
   return (
-    <SafeAreaStatusBar>
+    <GVArea>
       {/* Header */}
       <View style={{
         backgroundColor: PRIMARY_COLOR,
@@ -18,7 +18,7 @@ export default function EventInfo() {
           {/* Back Button */}
           <View style={{ marginTop: 8 }}>
             <Pressable
-              onPress={() => router.dismissTo('/(tabs)/(feed)')}
+              onPress={() => router.dismissTo('/feed')}
               style={{
                 width: 70,
                 height: 70,
@@ -432,6 +432,6 @@ export default function EventInfo() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaStatusBar>
+    </GVArea>
   );
 }
