@@ -62,21 +62,23 @@ export default function WelcomeScreen() {
 
         {/* Buttons Column */}
         <View style={{ width: "80%" }}>
-          {/* Sign In */}
-          <TouchableOpacity
-            style={{
-              backgroundColor: "white",
-              paddingVertical: 12,
-              borderRadius: 10,
-              marginBottom: 12,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ fontWeight: "600", fontSize: 16, color: PRIMARY_COLOR }}>
-              Sign In
-            </Text>
-          </TouchableOpacity>
-
+          <Link href='/(auth)/vSignIn' push asChild>
+            {/* Sign In */}
+            <TouchableOpacity
+              style={{
+                backgroundColor: "white",
+                paddingVertical: 12,
+                borderRadius: 10,
+                marginBottom: 12,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontWeight: "600", fontSize: 16, color: PRIMARY_COLOR }}>
+                Sign In
+              </Text>
+            </TouchableOpacity>
+          </Link>
+          
           {/* Sign Up as Volunteer */}
           <TouchableOpacity
             style={{

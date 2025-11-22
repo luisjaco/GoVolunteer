@@ -64,6 +64,18 @@ export default function VolunteerSignInScreen() {
         // TODO: navigation to volunteer sign up screen
     };
 
+    const createConfetti = () => {
+        return (
+            <ConfettiCannon
+                count={200}
+                origin={{ x: 200, y: 0 }}
+                fadeOut
+                explosionSpeed={500}
+                fallSpeed={2000}
+                colors={[PRIMARY_COLOR, '#588156', SECONDARY_COLOR, BUTTON_COLOR, '#ccc']}
+            />
+        );
+    }
     const Header = (
         <View
             style={{
@@ -170,16 +182,7 @@ export default function VolunteerSignInScreen() {
             <View style={{flex: 1, position: 'relative'}}>
                 {Header}
                 {Form}
-                {showConf&& (
-                    <ConfettiCannon
-                        count={1000}
-                        origin={{x: 200, y:0}}
-                        fadeOut
-                        explosionSpeed={1500}
-                        fallSpeed={3000}
-                        colors={[PRIMARY_COLOR, '#588156', SECONDARY_COLOR, BUTTON_COLOR, '#ccc']}
-                    />
-                )}
+                {showConf && createConfetti()}
                 {kbVisible && (
                     <IconButton
                         icon="keyboard-close"
