@@ -1,12 +1,18 @@
 // this card will be used to generate
 // a new volunteering event card on the home feed (volunteer view)
 
+import React from 'react';
 import {View, Text, Pressable} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
-import {Link} from "expo-router";
 import {BUTTON_COLOR, SECONDARY_COLOR} from "../constants/colors";
+import {Link} from "expo-router";
 
-export default function EventCard() {
+interface EventCardProps {
+  showCancelButton?: boolean;
+  onCancelRSVP?: () => void;
+}
+
+export default function EventCard({ showCancelButton = false, onCancelRSVP }: EventCardProps = {}) {
   const Header = (
     <>
       {/* Name of events + tag */}
@@ -182,10 +188,11 @@ export default function EventCard() {
         gap: 15,
       }}
     >
-      {/* RSVP Button */}
+      {/* RSVP or CANCEL RSVP Button */}
       <Pressable
+        onPress={showCancelButton ? onCancelRSVP : undefined}
         style={{
-          backgroundColor: BUTTON_COLOR,
+          backgroundColor: showCancelButton ? '#B22222' : BUTTON_COLOR,
           paddingVertical: 12,
           paddingHorizontal: 24,
           borderRadius: 10,
@@ -195,7 +202,7 @@ export default function EventCard() {
         }}
       >
         <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
-          RSVP
+          {showCancelButton ? 'CANCEL RSVP' : 'RSVP'}
         </Text>
       </Pressable>
 
