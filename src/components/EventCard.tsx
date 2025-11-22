@@ -8,7 +8,12 @@ import { BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "../constants/color
 import { useState } from 'react';
 import EventModal from "./EventModal";
 
-export default function EventCard() {
+interface EventCardProps {
+  showCancelButton?: boolean;
+  onCancelRSVP?: () => void;
+}
+
+export default function EventCard({ showCancelButton = false, onCancelRSVP }: EventCardProps = {}) {
 
   // whether or not to show modal of the card...
   const [modalVisible, setModalVisible] = useState(false);
@@ -188,10 +193,11 @@ export default function EventCard() {
         gap: 15,
       }}
     >
-      {/* RSVP Button */}
+      {/* RSVP or CANCEL RSVP Button */}
       <Pressable
+        onPress={showCancelButton ? onCancelRSVP : undefined}
         style={{
-          backgroundColor: BUTTON_COLOR,
+          backgroundColor: showCancelButton ? '#B22222' : BUTTON_COLOR,
           paddingVertical: 12,
           paddingHorizontal: 24,
           borderRadius: 10,
@@ -201,7 +207,7 @@ export default function EventCard() {
         }}
       >
         <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
-          RSVP
+          {showCancelButton ? 'CANCEL RSVP' : 'RSVP'}
         </Text>
       </Pressable>
 
