@@ -15,7 +15,7 @@ export default function RootLayout() {
           headerShown: false,
           title: 'GoVolunteer'
         }} />
-        <Stack.Screen name='vSignIn' options={{
+        <Stack.Screen name='(auth)/vSignIn' options={{
           headerShown: false,
         }} />
         <Stack.Screen name='(tabs)' options={{
