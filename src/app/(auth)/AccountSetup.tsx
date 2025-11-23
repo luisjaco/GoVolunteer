@@ -14,7 +14,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 
 
 
-export default function VolunteerSignInScreen() {
+export default function SignInScreen() {
     const [email, setEmail] = useState('');
     const [pw, setPW] = useState('');
     const [kbVisible, setKBVisible] = useState(false);

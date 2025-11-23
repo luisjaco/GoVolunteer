@@ -38,7 +38,7 @@ export default function OrganizationCard() {
         </View>
 
         {/* More Info Button */}
-        <Link href="/event/organization" push asChild>
+        <Link href="/event/Organization" push asChild>
           <Pressable>
             <Ionicons
               name="information-circle-outline"
@@ -69,7 +69,8 @@ export default function OrganizationCard() {
             justifyContent: "center", // ← centers children vertically
             alignItems: "center", // ← centers children horizontally
           }}
-        ></View>
+        >
+        </View>
 
         {/* Organization name+motto */}
         <View style={{ flexDirection: "column", marginLeft: 7 }}>

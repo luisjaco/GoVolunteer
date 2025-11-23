@@ -196,7 +196,7 @@ export default function EventInfo() {
         {/* RSVP Button */}
         <TouchableOpacity
           style={{
-            backgroundColor: PRIMARY_COLOR,
+            backgroundColor: BUTTON_COLOR,
             paddingVertical: 12,
             paddingHorizontal: 24,
             borderRadius: 10,

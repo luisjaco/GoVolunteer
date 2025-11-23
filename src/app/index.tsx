@@ -62,9 +62,10 @@ export default function WelcomeScreen() {
 
         {/* Buttons Column */}
         <View style={{ width: "80%" }}>
-          <Link href='/(auth)/vSignIn' push asChild>
+          <Link href='/(auth)' push asChild>
             {/* Sign In */}
             <TouchableOpacity
+              activeOpacity={.4}
               style={{
                 backgroundColor: "white",
                 paddingVertical: 12,
@@ -80,22 +81,26 @@ export default function WelcomeScreen() {
           </Link>
           
           {/* Sign Up as Volunteer */}
-          <TouchableOpacity
-            style={{
-              backgroundColor: "white",
-              paddingVertical: 12,
-              borderRadius: 10,
-              marginBottom: 12,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ fontWeight: "600", fontSize: 16, color: PRIMARY_COLOR }}>
-              Sign Up as Volunteer
-            </Text>
-          </TouchableOpacity>
-
+          <Link href="/SignUp" push asChild>
+            <TouchableOpacity
+              activeOpacity={.6}
+              style={{
+                backgroundColor: "white",
+                paddingVertical: 12,
+                borderRadius: 10,
+                marginBottom: 12,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontWeight: "600", fontSize: 16, color: PRIMARY_COLOR }}>
+                Sign Up as Volunteer
+              </Text>
+            </TouchableOpacity>
+          </Link>
+          
           {/* Sign Up as Organization */}
           <TouchableOpacity
+            activeOpacity={.4}
             style={{
               backgroundColor: PRIMARY_COLOR,
               borderWidth: 2,                
@@ -121,23 +126,3 @@ export default function WelcomeScreen() {
     </GVArea>
   );
 }
-
-
-/*
-
-<Link href='/(tabs)/(feed)' push asChild>
-                <Button>
-                    Move to main tabs!
-                </Button>
-            </Link>
-            <Link href={'/vSignIn'}>
-                <Button>
-                    Move to volunteer sign in
-                </Button>
-            </Link>
-
-        </GVArea>
-    )
-}
-
-*/

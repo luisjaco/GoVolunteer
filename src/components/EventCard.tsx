@@ -190,9 +190,10 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
     >
       {/* RSVP or CANCEL RSVP Button */}
       <TouchableOpacity
+        activeOpacity={.6}
         onPress={showCancelButton ? onCancelRSVP : undefined}
         style={{
-          backgroundColor: showCancelButton ? 'red' : PRIMARY_COLOR,
+          backgroundColor: showCancelButton ? 'red' : BUTTON_COLOR,
           flex: 1,
           paddingVertical: 12,
           paddingHorizontal: 24,
@@ -209,6 +210,7 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
       {/* View Button */}
       <Link href='/event' push asChild>
         <TouchableOpacity
+          activeOpacity={.6}
           style={{
             backgroundColor: "white",
             paddingVertical: 12,

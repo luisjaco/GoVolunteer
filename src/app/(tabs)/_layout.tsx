@@ -4,7 +4,7 @@ import React from 'react';
 import { PRIMARY_COLOR, SECONDARY_COLOR } from "@/src/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function RootLayout() {
+export default function TabsLayout() {
   return (
     <React.Fragment>
       <StatusBar style='auto'/>
