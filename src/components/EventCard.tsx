@@ -2,9 +2,9 @@
 // a new volunteering event card on the home feed (volunteer view)
 
 import React from 'react';
-import {View, Text, Pressable} from "react-native";
+import {View, Text, Pressable, TouchableOpacity} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
-import {BUTTON_COLOR, SECONDARY_COLOR} from "../constants/colors";
+import {BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR} from "../constants/colors";
 import {Link} from "expo-router";
 
 interface EventCardProps {
@@ -189,38 +189,41 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
       }}
     >
       {/* RSVP or CANCEL RSVP Button */}
-      <Pressable
+      <TouchableOpacity
         onPress={showCancelButton ? onCancelRSVP : undefined}
         style={{
-          backgroundColor: showCancelButton ? '#B22222' : BUTTON_COLOR,
+          backgroundColor: showCancelButton ? 'red' : PRIMARY_COLOR,
+          flex: 1,
           paddingVertical: 12,
           paddingHorizontal: 24,
           borderRadius: 10,
-          flex: 1,
+          marginBottom: 12,
           alignItems: "center",
-          justifyContent: "center",
         }}
       >
-        <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
+        <Text style={{ fontWeight: "600", fontSize: 14, color: "white" }}>
           {showCancelButton ? 'CANCEL RSVP' : 'RSVP'}
         </Text>
-      </Pressable>
+      </TouchableOpacity>
 
       {/* View Button */}
       <Link href='/event' push asChild>
-        <Pressable
+        <TouchableOpacity
           style={{
-            backgroundColor: "#FFF",
+            backgroundColor: "white",
             paddingVertical: 12,
             paddingHorizontal: 24,
             borderRadius: 10,
-            borderWidth: 2,
+            borderWidth: 1.5,
+            borderColor: SECONDARY_COLOR,
+            marginBottom: 12,
             alignItems: "center",
-            justifyContent: "center",
           }}
         >
-          <Text style={{ fontSize: 14, fontWeight: "600" }}>View</Text>
-        </Pressable>
+          <Text style={{ fontWeight: "600", fontSize: 14, color: SECONDARY_COLOR }}>
+            View
+          </Text>
+        </TouchableOpacity>
       </Link>
     </View>
   )

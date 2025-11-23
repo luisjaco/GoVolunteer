@@ -3,7 +3,8 @@ import {
   View,
   KeyboardAvoidingView,
   ScrollView,
-  Keyboard
+  Keyboard,
+  TouchableOpacity
 } from 'react-native';
 import {Text, TextInput, Button, IconButton} from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -96,85 +97,89 @@ export default function VolunteerSignInScreen() {
     );
 
     const Form = (
-      <KeyboardAvoidingView
-          style={{flex:1}}
-          behavior='padding'
-      >
-          <ScrollView
-              contentContainerStyle={{
-                  flexGrow: 1,
-                  paddingHorizontal: 24,
-                  paddingTop: 32,
-              }}
-              keyboardShouldPersistTaps='handled'
-          >
-              <Text style={{marginBottom:6, fontSize: 16, fontWeight: '500'}}>
-                  Email Address
-              </Text>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior='padding'
+        >
+            <ScrollView
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    paddingHorizontal: 24,
+                    paddingTop: 32,
+                }}
+                keyboardShouldPersistTaps='handled'
+            >
+                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
+                    Email Address
+                </Text>
 
-              <TextInput
-                  mode="outlined"
-                  dense
-                  activeOutlineColor={SECONDARY_COLOR}
-                  placeholder="Enter your email"
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  style={{marginBottom:10}}
-              />
+                <TextInput
+                    mode="outlined"
+                    dense
+                    activeOutlineColor={SECONDARY_COLOR}
+                    placeholder="Enter your email"
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    style={{ marginBottom: 10 }}
+                />
 
-              <Text style={{marginBottom:6, fontSize: 16, fontWeight: '500'}}>
-                  Password
-              </Text>
+                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
+                    Password
+                </Text>
 
-              <TextInput
-                  mode="outlined"
-                  dense
-                  activeOutlineColor={SECONDARY_COLOR}
-                  placeholder="Enter your password"
-                  value={pw}
-                  onChangeText={setPW}
-                  secureTextEntry
-                  style={{marginBottom:6}}
-              />
+                <TextInput
+                    mode="outlined"
+                    dense
+                    activeOutlineColor={SECONDARY_COLOR}
+                    placeholder="Enter your password"
+                    value={pw}
+                    onChangeText={setPW}
+                    secureTextEntry
+                    style={{ marginBottom: 6 }}
+                />
 
-              <Text
-                  onPress={handleForgotPW}
-                  style={{
-                      textAlign: 'right',
-                      color: PRIMARY_COLOR,
-                      marginBottom: 20,
-                      fontWeight: '500',
-                  }}
-              >
-                  Forgot Password?
-              </Text>
+                <Text
+                    onPress={handleForgotPW}
+                    style={{
+                        textAlign: 'right',
+                        color: PRIMARY_COLOR,
+                        marginBottom: 20,
+                        fontWeight: '500',
+                    }}
+                >
+                    Forgot Password?
+                </Text>
 
-              <Button
-                  mode="contained"
-                  onPress={handleSignIn}
-                  buttonColor={BUTTON_COLOR}
-                  textColor='white'
-                  style={{borderRadius:50, paddingVertical: 4, marginBottom: 24}}
-                  labelStyle={{fontSize:16, fontWeight: '600'}}
-              >
-                  Sign In
-              </Button>
+                <TouchableOpacity
+                    onPress={handleSignIn}
+                    style={{
+                        backgroundColor: BUTTON_COLOR,
+                        paddingVertical: 12,
+                        borderRadius: 10,
+                        marginBottom: 12,
+                        alignItems: "center",
+                    }}
+                >
+                    <Text style={{ fontWeight: "600", fontSize: 16, color: 'white' }}>
+                        Sign In
+                    </Text>
+                </TouchableOpacity>
 
-              <View style={{alignItems: 'center'}}>
-                  <Text style={{fontSize: 14, color: '#777'}}>
-                      Don't have an account? {' '}
-                      <Text
-                          style={{color: PRIMARY_COLOR, fontWeight:'600'}}
-                          onPress={handleSignUp}
-                      >
-                          Sign up
-                      </Text>
-                  </Text>
-              </View>
-          </ScrollView>
-      </KeyboardAvoidingView>
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={{ fontSize: 14, color: '#777' }}>
+                        Don't have an account? {' '}
+                        <Text
+                            style={{ color: PRIMARY_COLOR, fontWeight: '600' }}
+                            onPress={handleSignUp}
+                        >
+                            Sign up
+                        </Text>
+                    </Text>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 
     return (

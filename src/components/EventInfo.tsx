@@ -1,6 +1,6 @@
 import {Ionicons} from '@expo/vector-icons'
-import {Pressable, Text, View} from 'react-native'
-import {SECONDARY_COLOR, BUTTON_COLOR} from '../constants/colors'
+import {Pressable, Text, TouchableOpacity, View} from 'react-native'
+import {SECONDARY_COLOR, BUTTON_COLOR, PRIMARY_COLOR} from '../constants/colors'
 
 export default function EventInfo() {
   return (
@@ -194,21 +194,21 @@ export default function EventInfo() {
         }}
       >
         {/* RSVP Button */}
-        <Pressable
+        <TouchableOpacity
           style={{
-            backgroundColor: BUTTON_COLOR,
+            backgroundColor: PRIMARY_COLOR,
             paddingVertical: 12,
             paddingHorizontal: 24,
             borderRadius: 10,
             flex: 1,
+            marginBottom: 12,
             alignItems: "center",
-            justifyContent: "center",
           }}
         >
-          <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>
+          <Text style={{ fontWeight: "600", fontSize: 14, color: "white" }}>
             RSVP
           </Text>
-        </Pressable>
+        </TouchableOpacity>
         {/* Share Button */}
         <Pressable>
           <Ionicons
@@ -222,6 +222,7 @@ export default function EventInfo() {
               paddingHorizontal: 4,
               justifyContent: "center",
               paddingRight: 5,
+              marginBottom: 12
             }}
           />
         </Pressable>
