@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     KeyboardAvoidingView,
     ScrollView,
-    Keyboard,
     TouchableOpacity,
     Image,
-    SectionList
 } from 'react-native';
-import { Text, TextInput, IconButton, Snackbar, HelperText } from 'react-native-paper';
+import { Text, TextInput, Snackbar, HelperText } from 'react-native-paper';
 import GVArea from '@components/GVArea';
-import { PRIMARY_COLOR, BUTTON_COLOR, SECONDARY_COLOR } from '@constants/colors';
+import { PRIMARY_COLOR, BUTTON_COLOR, SECONDARY_COLOR, BUTTON_DISABLED } from '@constants/colors';
 import supabase from '@utils/requests';
 
 
@@ -21,11 +19,11 @@ export default function SignUpScreen() {
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
     const [supabaseError, setSupabaseError] = useState(false);
+    const [passwordObscured, setPasswordObscured] = useState(true);
+    const [userSignedUp, setUserSignedUp] = useState(false);
 
     // will update emailError, passwordError, and return false if either have an error
     const verifyEmailPassword = (): boolean => {
-
-
         // verify email not empty and valid: anystring@anystring.anystring
         const regexEmail = /\S+@\S+\.\S+/;
         const emailValid = regexEmail.test(email);
@@ -59,6 +57,7 @@ export default function SignUpScreen() {
         console.log('succuss registering user, user must now confirm email before continuing.');
         setSnackbarVisible(true);
         setSupabaseError(false);
+        setUserSignedUp(true);
     };
 
     const Header = (
@@ -101,91 +100,95 @@ export default function SignUpScreen() {
     );
 
     const Form = (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior='padding'
+        <ScrollView
+            contentContainerStyle={{
+                flex: 1,
+                paddingHorizontal: 24,
+                paddingTop: 32,
+            }}
+            keyboardDismissMode="interactive"
+
         >
-            <ScrollView
-                contentContainerStyle={{
-                    flexGrow: 1,
-                    paddingHorizontal: 24,
-                    paddingTop: 32,
-                }}
-                keyboardDismissMode="on-drag"
+            <View style={{ marginBottom: 24 }}>
+                <Text style={{ marginBottom: 24, fontSize: 20, fontWeight: '700' }}>
+                    Sign up to start using GoVolunteer!
+                </Text>
 
-            >
-                <View style={{ marginBottom: 24 }}>
-                    <Text style={{ marginBottom: 24, fontSize: 20, fontWeight: '700' }}>
-                        Sign up to start using GoVolunteer!
-                    </Text>
-
-                    <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
-                        Email Address
-                    </Text>
-                    <TextInput
-                        mode="outlined"
-                        dense
-                        activeOutlineColor={SECONDARY_COLOR}
-                        placeholder="Enter your email"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCorrect={false}
-                        spellCheck={false}
-                        autoComplete="off"
-                        autoCapitalize="none"
-                        error={emailError || supabaseError}
-                    />
-                    <HelperText type="error" visible={emailError}>
-                        There is an error with the email.
-                    </HelperText>
-
-                    <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
-                        Password
-                    </Text>
-                    <TextInput
-                        mode="outlined"
-                        dense
-                        activeOutlineColor={SECONDARY_COLOR}
-                        placeholder="Enter your password"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry
-                        error={passwordError || supabaseError}
-                    />
-                    <Text style={{ color: 'gray', fontSize: 12, marginTop: 6 }}>
-                        The password should:
-                        {'\n\u2022'} Be at least 8 characters.
-                        {'\n\u2022'} Contain at least one symbol [!@#$%^&*].
-                        {'\n\u2022'} Contain at least one number.
-                        {'\n\u2022'} Contain at least one uppercase letter.
-                        {'\n\u2022'} Contain at least one lowercase letter.
-                    </Text>
-                    <HelperText type="error" visible={passwordError}>
-                        Make sure the password is valid!
-                    </HelperText>
-                </View>
-
-                <TouchableOpacity
-                    activeOpacity={.6}
-                    onPress={handleSignUp}
-                    style={{
-                        backgroundColor: BUTTON_COLOR,
-                        paddingVertical: 12,
-                        borderRadius: 10,
-                        marginBottom: 12,
-                        alignItems: "center",
-                    }}
-                >
-                    <Text style={{ fontWeight: "600", fontSize: 16, color: 'white' }}>
-                        Sign Up
-                    </Text>
-                </TouchableOpacity>
-                <HelperText type="error" visible={supabaseError}>
-                    There was an error signing up. Please try again.
+                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
+                    Email Address
+                </Text>
+                <TextInput
+                    mode="outlined"
+                    dense
+                    activeOutlineColor={SECONDARY_COLOR}
+                    placeholder="Enter your email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCorrect={false}
+                    spellCheck={false}
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    error={emailError || supabaseError}
+                    disabled={userSignedUp}
+                />
+                <HelperText type="error" visible={emailError}>
+                    There is an error with the email.
                 </HelperText>
-            </ScrollView>
-        </KeyboardAvoidingView>
+
+                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
+                    Password
+                </Text>
+                <TextInput
+                    mode="outlined"
+                    dense
+                    activeOutlineColor={SECONDARY_COLOR}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={passwordObscured}
+                    error={passwordError || supabaseError}
+                    right={
+                        <TextInput.Icon 
+                            icon={passwordObscured ? "eye-off" : "eye"}
+                            onPress={() => setPasswordObscured((passObs) => !passObs)}
+                        />
+                    }
+                    disabled={userSignedUp}
+                />
+                <Text style={{ color: 'gray', fontSize: 12, marginTop: 6 }}>
+                    The password should:
+                    {'\n\u2022'} Be at least 8 characters.
+                    {'\n\u2022'} Contain at least one symbol [!@#$%^&*].
+                    {'\n\u2022'} Contain at least one number.
+                    {'\n\u2022'} Contain at least one uppercase letter.
+                    {'\n\u2022'} Contain at least one lowercase letter.
+                </Text>
+                <HelperText type="error" visible={passwordError}>
+                    Make sure the password is valid!
+                </HelperText>
+            </View>
+
+            <TouchableOpacity
+                activeOpacity={.6}
+                onPress={handleSignUp}
+                style={{
+                    backgroundColor: (userSignedUp ? BUTTON_DISABLED : BUTTON_COLOR),
+                    paddingVertical: 12,
+                    borderRadius: 10,
+                    marginBottom: 12,
+                    alignItems: "center",
+                }}
+                disabled={userSignedUp}
+            >
+                <Text style={{ fontWeight: "600", fontSize: 16, color: 'white' }}>
+                    Sign Up
+                </Text>
+            </TouchableOpacity>
+            <HelperText type="error" visible={supabaseError}>
+                There was an error signing up. Please try again.
+            </HelperText>
+        </ScrollView>
     );
 
     const SnackBar = (

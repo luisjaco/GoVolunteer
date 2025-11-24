@@ -1,118 +1,112 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useState } from 'react';
 import {
-  View,
-  KeyboardAvoidingView,
-  ScrollView,
-  Keyboard,
-  TouchableOpacity
+    View,
+    KeyboardAvoidingView,
+    ScrollView,
+    TouchableOpacity,
+    Image,
 } from 'react-native';
-import {Text, TextInput, Button, IconButton} from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Text, TextInput, Snackbar, HelperText } from 'react-native-paper';
 import GVArea from '@components/GVArea';
-import {PRIMARY_COLOR, BUTTON_COLOR, SECONDARY_COLOR} from '@constants/colors';
-import ConfettiCannon from 'react-native-confetti-cannon';
-
+import { PRIMARY_COLOR, BUTTON_COLOR, SECONDARY_COLOR } from '@constants/colors';
+import supabase from '@utils/requests';
 
 
 export default function SignInScreen() {
     const [email, setEmail] = useState('');
-    const [pw, setPW] = useState('');
-    const [kbVisible, setKBVisible] = useState(false);
-    const [kbHeight, setKBHeight] = useState(0);
-    const [showConf, setShowConf] = useState(false);
+    const [password, setPassword] = useState('');
+    const [snackbarVisible, setSnackbarVisible] = useState(false);
+    const [emailError, setEmailError] = useState(false);
+    const [supabaseError, setSupabaseError] = useState(false);
+    const [passwordObscured, setPasswordObscured] = useState(true);
 
-    useEffect(() => {
-        const showSub = Keyboard.addListener('keyboardWillShow', (e)=>{
-            setKBVisible(true);
-            setKBHeight(e.endCoordinates.height);
-        });
+    // will update emailError 
+    const verifyEmail = (): boolean => {
+        // verify email not empty and valid: anystring@anystring.anystring
+        const regexEmail = /\S+@\S+\.\S+/;
+        const emailValid = regexEmail.test(email);
+        setEmailError(!emailValid);
 
-        const hideSub = Keyboard.addListener('keyboardWillHide', () => {
-           setKBVisible(false);
-           setKBHeight(0);
-        });
-
-        return () => {
-            showSub.remove();
-            hideSub.remove();
-        };
-    }, []);
-
-    // function to run when user taps "Sign In" button
-    const handleSignIn = () => {
-        console.log('Sign In pressed');
-        console.log('Email: ', email);
-        console.log('Password: ', pw);
-
-        // TODO: add actual auth logic
-        // call backend, validate input, nav to tabs if successful
-    };
-
-    const handleForgotPW = () => {
-        console.log('Forgot password pressed');
-        // TODO: navigation to forgot password screen
-
-        setShowConf(true);
-
-        setTimeout(()=> {
-            setShowConf(false);
-        }, 5000);
-    };
-
-    // nav to "sign up" screen
-    const handleSignUp = () => {
-        console.log('Sign up pressed');
-        // TODO: navigation to volunteer sign up screen
-    };
-
-    const createConfetti = () => {
-        return (
-            <ConfettiCannon
-                count={200}
-                origin={{ x: 200, y: 0 }}
-                fadeOut
-                explosionSpeed={500}
-                fallSpeed={2000}
-                colors={[PRIMARY_COLOR, '#588156', SECONDARY_COLOR, BUTTON_COLOR, '#ccc']}
-            />
-        );
+        return emailValid;
     }
+
+    const handleSignIn = async (e: any) => {
+        console.log('user attempting to sign up with combo: ', email, password);
+
+        // exit is email or password has an error
+        if (!verifyEmail()) {
+            console.log('validation error: email')
+            return;
+        }
+        
+        const {data, error} = await supabase.auth.signInWithPassword({email, password});
+        if (error) {
+            console.log('supabase error: signing in user:', error);
+            setSupabaseError(true);
+            return;
+        }
+
+        console.log('succussfully signed in user:', data);
+        setSnackbarVisible(true);
+        setSupabaseError(false);
+    };
+
     const Header = (
         <View
             style={{
                 backgroundColor: PRIMARY_COLOR,
-                paddingTop: 40,
-                paddingBottom: 16,
-                paddingHorizontal: 24,
+                paddingVertical: 20,
+                flex: 0,
+                display: 'flex',
+                justifyContent: 'center',
                 alignItems: 'center',
             }}
         >
-            <Text
-                variant="headlineMedium"
-                style={{color: 'white', fontWeight: '600'}}
-            >
-                Sign In
-            </Text>
+            <View style={{
+                width: 250,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+            }}>
+                <Image
+                    source={require('@/assets/icons/earthLogo.png')}
+                    style={{
+                        width: 50,
+                        height: 50,
+                        marginRight: 10
+                    }}
+                />
+                <Text
+                    style={{
+                        color: "white",
+                        fontWeight: "800",
+                        fontSize: 32,
+                        textAlign: "center",
+                    }}
+                >
+                    GoVolunteer
+                </Text>
+            </View>
         </View>
     );
 
     const Form = (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior='padding'
+        <ScrollView
+            contentContainerStyle={{
+                flex: 1,
+                paddingHorizontal: 24,
+                paddingTop: 32,
+            }}
+            keyboardDismissMode='interactive'
         >
-            <ScrollView
-                contentContainerStyle={{
-                    flexGrow: 1,
-                    paddingHorizontal: 24,
-                    paddingTop: 32,
-                }}
-                keyboardShouldPersistTaps='handled'
-            >
+            <View style={{ marginBottom: 24 }}>
+                <Text style={{ marginBottom: 24, fontSize: 20, fontWeight: '700' }}>
+                    Sign in to your GoVolunteer acconut!
+                </Text>
+
                 <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
                     Email Address
                 </Text>
-
                 <TextInput
                     mode="outlined"
                     dense
@@ -120,96 +114,85 @@ export default function SignInScreen() {
                     placeholder="Enter your email"
                     value={email}
                     onChangeText={setEmail}
-                    autoCapitalize="none"
                     keyboardType="email-address"
-                    style={{ marginBottom: 10 }}
+                    autoCorrect={false}
+                    spellCheck={false}
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    error={emailError || supabaseError}
                 />
+                <HelperText type="error" visible={emailError}>
+                    There is an error with the email.
+                </HelperText>
 
                 <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
                     Password
                 </Text>
-
                 <TextInput
                     mode="outlined"
                     dense
                     activeOutlineColor={SECONDARY_COLOR}
                     placeholder="Enter your password"
-                    value={pw}
-                    onChangeText={setPW}
-                    secureTextEntry
-                    style={{ marginBottom: 6 }}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={passwordObscured}
+                    error={supabaseError}
+                    right={
+                        <TextInput.Icon 
+                            icon={passwordObscured ? "eye-off" : "eye"}
+                            onPress={() => setPasswordObscured((passObs) => !passObs)}
+                        />
+                    }
                 />
+            </View>
 
-                <Text
-                    onPress={handleForgotPW}
-                    style={{
-                        textAlign: 'right',
-                        color: PRIMARY_COLOR,
-                        marginBottom: 20,
-                        fontWeight: '500',
-                    }}
-                >
-                    Forgot Password?
+            <TouchableOpacity
+                activeOpacity={.6}
+                onPress={handleSignIn}
+                style={{
+                    backgroundColor: BUTTON_COLOR,
+                    paddingVertical: 12,
+                    borderRadius: 10,
+                    marginBottom: 12,
+                    alignItems: "center",
+                }}
+            >
+                <Text style={{ fontWeight: "600", fontSize: 16, color: 'white' }}>
+                    Sign In
                 </Text>
-
-                <TouchableOpacity
-                    onPress={handleSignIn}
-                    style={{
-                        backgroundColor: BUTTON_COLOR,
-                        paddingVertical: 12,
-                        borderRadius: 10,
-                        marginBottom: 12,
-                        alignItems: "center",
-                    }}
-                >
-                    <Text style={{ fontWeight: "600", fontSize: 16, color: 'white' }}>
-                        Sign In
-                    </Text>
-                </TouchableOpacity>
-
-                <View style={{ alignItems: 'center' }}>
-                    <Text style={{ fontSize: 14, color: '#777' }}>
-                        Don't have an account? {' '}
-                        <Text
-                            style={{ color: PRIMARY_COLOR, fontWeight: '600' }}
-                            onPress={handleSignUp}
-                        >
-                            Sign up
-                        </Text>
-                    </Text>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+            </TouchableOpacity>
+            <HelperText type="error" visible={supabaseError}>
+                There was an error signing up. Please try again.
+            </HelperText>
+        </ScrollView>
     );
+
+    const SnackBar = (
+        <Snackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            duration={Snackbar.DURATION_SHORT}
+            style={{
+                backgroundColor: SECONDARY_COLOR,
+            }}
+        >
+            <Text
+                style={{
+                    color: 'white',
+                    fontWeight: 'bold'
+                }}>
+                Signed in!
+            </Text>
+        </Snackbar>
+    )
 
     return (
         <GVArea>
-            <View style={{flex: 1, position: 'relative'}}>
+            <View style={{ flex: 1, position: 'relative' }}>
                 {Header}
                 {Form}
-                {showConf && createConfetti()}
-                {kbVisible && (
-                    <IconButton
-                        icon="keyboard-close"
-                        size={24}
-                        mode='contained'
-                        iconColor={PRIMARY_COLOR}
-                        containerColor={PRIMARY_COLOR}
-                        onPress={() => {
-                            setKBVisible(false);
-                            Keyboard.dismiss();
-                        }}
-                        style={{
-                            position: 'absolute',
-                            right: 16,
-                            bottom: kbHeight + 16,
-                            backgroundColor: 'white',
-                        }}
-                    />
-                )}
+                {SnackBar}
             </View>
         </GVArea>
     );
-
-
 }
