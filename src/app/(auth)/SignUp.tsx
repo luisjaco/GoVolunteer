@@ -5,9 +5,10 @@ import {
     ScrollView,
     Keyboard,
     TouchableOpacity,
-    Image
+    Image,
+    SectionList
 } from 'react-native';
-import { Text, TextInput, IconButton, Snackbar } from 'react-native-paper';
+import { Text, TextInput, IconButton, Snackbar, HelperText } from 'react-native-paper';
 import GVArea from '@components/GVArea';
 import { PRIMARY_COLOR, BUTTON_COLOR, SECONDARY_COLOR } from '@constants/colors';
 import supabase from '@utils/requests';
@@ -16,45 +17,48 @@ import supabase from '@utils/requests';
 export default function SignUpScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [keyboardVisible, setKeyboardVisible] = useState(false);
-    const [keyboardHeight, setKeyboardHeight] = useState(0);
     const [snackbarVisible, setSnackbarVisible] = useState(false);
+    const [emailError, setEmailError] = useState(false);
+    const [passwordError, setPasswordError] = useState(false);
+    const [supabaseError, setSupabaseError] = useState(false);
 
-    useEffect(() => {
-        const showSub = Keyboard.addListener('keyboardWillShow', (e) => {
-            setKeyboardVisible(true);
-            setKeyboardHeight(e.endCoordinates.height);
-        });
+    // will update emailError, passwordError, and return false if either have an error
+    const verifyEmailPassword = (): boolean => {
 
-        const hideSub = Keyboard.addListener('keyboardWillHide', () => {
-            setKeyboardVisible(false);
-            setKeyboardHeight(0);
-        });
 
-        return () => {
-            showSub.remove();
-            hideSub.remove();
-        };
-    }, []);
+        // verify email not empty and valid: anystring@anystring.anystring
+        const regexEmail = /\S+@\S+\.\S+/;
+        const emailValid = regexEmail.test(email);
+        setEmailError(!emailValid);
 
-    const handleKeyboardClose = () => {
-        setKeyboardVisible(false);
-        Keyboard.dismiss;
+        // verify password at least 8 characters long, contains one uppercase letter, one lowercase
+        // letter, a number, and has a symbol.
+        var regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+        const passwordValid = regexPassword.test(password);
+        setPasswordError(!passwordValid);
+
+        return (emailValid && passwordValid);
     }
 
-    // function to run when user taps "Sign In" button
     const handleSignUp = async (e: any) => {
         console.log('user attempting to sign up with combo: ', email, password);
 
+        // exit is email or password has an error
+        if (!verifyEmailPassword()) {
+            console.log('validation error: email or password')
+            return;
+        }
+        
         const {error} = await supabase.auth.signUp({email, password});
         if (error) {
-            console.error('error signing up user:', error);
+            console.log('supabase error: signing up user:', error);
+            setSupabaseError(true);
             return;
         }
 
         console.log('succuss registering user, user must now confirm email before continuing.');
-        handleKeyboardClose();
         setSnackbarVisible(true);
+        setSupabaseError(false);
     };
 
     const Header = (
@@ -108,11 +112,11 @@ export default function SignUpScreen() {
                     paddingTop: 32,
                 }}
                 keyboardDismissMode="on-drag"
-                
+
             >
                 <View style={{ marginBottom: 24 }}>
                     <Text style={{ marginBottom: 24, fontSize: 20, fontWeight: '700' }}>
-                        Sign up to start looking for volunteering opportunities!
+                        Sign up to start using GoVolunteer!
                     </Text>
 
                     <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
@@ -125,10 +129,16 @@ export default function SignUpScreen() {
                         placeholder="Enter your email"
                         value={email}
                         onChangeText={setEmail}
-                        autoCapitalize="none"
                         keyboardType="email-address"
-                        style={{ marginBottom: 10 }}
+                        autoCorrect={false}
+                        spellCheck={false}
+                        autoComplete="off"
+                        autoCapitalize="none"
+                        error={emailError || supabaseError}
                     />
+                    <HelperText type="error" visible={emailError}>
+                        There is an error with the email.
+                    </HelperText>
 
                     <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
                         Password
@@ -141,8 +151,19 @@ export default function SignUpScreen() {
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry
-                        style={{ marginBottom: 6 }}
+                        error={passwordError || supabaseError}
                     />
+                    <Text style={{ color: 'gray', fontSize: 12, marginTop: 6 }}>
+                        The password should:
+                        {'\n\u2022'} Be at least 8 characters.
+                        {'\n\u2022'} Contain at least one symbol [!@#$%^&*].
+                        {'\n\u2022'} Contain at least one number.
+                        {'\n\u2022'} Contain at least one uppercase letter.
+                        {'\n\u2022'} Contain at least one lowercase letter.
+                    </Text>
+                    <HelperText type="error" visible={passwordError}>
+                        Make sure the password is valid!
+                    </HelperText>
                 </View>
 
                 <TouchableOpacity
@@ -160,6 +181,9 @@ export default function SignUpScreen() {
                         Sign Up
                     </Text>
                 </TouchableOpacity>
+                <HelperText type="error" visible={supabaseError}>
+                    There was an error signing up. Please try again.
+                </HelperText>
             </ScrollView>
         </KeyboardAvoidingView>
     );
@@ -188,25 +212,6 @@ export default function SignUpScreen() {
             <View style={{ flex: 1, position: 'relative' }}>
                 {Header}
                 {Form}
-                {keyboardVisible && (
-                    <IconButton
-                        icon="keyboard-close"
-                        size={24}
-                        mode='contained'
-                        iconColor={PRIMARY_COLOR}
-                        containerColor={PRIMARY_COLOR}
-                        onPress={() => {
-                            setKeyboardVisible(false);
-                            Keyboard.dismiss();
-                        }}
-                        style={{
-                            position: 'absolute',
-                            right: 16,
-                            bottom: keyboardHeight + 16,
-                            backgroundColor: 'white',
-                        }}
-                    />
-                )}
                 {SnackBar}
             </View>
         </GVArea>
