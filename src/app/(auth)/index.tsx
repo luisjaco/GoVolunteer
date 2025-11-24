@@ -31,7 +31,7 @@ export default function SignInScreen() {
     }
 
     const handleSignIn = async (e: any) => {
-        console.log('user attempting to sign up with combo: ', email, password);
+        console.log('user attempting to sign in with combo: ', email, password);
 
         // exit is email or password has an error
         if (!verifyEmail()) {
@@ -162,7 +162,7 @@ export default function SignInScreen() {
                 </Text>
             </TouchableOpacity>
             <HelperText type="error" visible={supabaseError}>
-                There was an error signing up. Please try again.
+                There was an error signing in. Please try again.
             </HelperText>
         </ScrollView>
     );
