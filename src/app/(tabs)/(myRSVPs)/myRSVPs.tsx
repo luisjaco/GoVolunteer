@@ -1,7 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView} from 'react-native';
 import GVArea from '@/src/components/GVArea';
 import EventCard from '@/src/components/EventCard';
+
+//Temp import
+
+import {Link} from 'expo-router'
 
 import { PRIMARY_COLOR } from '@/src/constants/colors';
 
@@ -48,6 +52,11 @@ export default function MyRSVPsScreen() {
             </ScrollView>
         </GVArea>
     );
+
+    <View>
+        
+        <Link href="/">To postEvent Page</Link>
+    </View>
 
 }
 

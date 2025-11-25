@@ -1,3 +1,4 @@
+//Welcome Screen
 import { Link } from 'expo-router';
 import React from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, Image, TouchableOpacity } from 'react-native';
