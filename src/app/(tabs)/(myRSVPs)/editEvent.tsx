@@ -12,11 +12,11 @@ import {
   Keyboard,
 } from "react-native";
 import { Link } from "expo-router";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Calendar } from "react-native-calendars";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-export default function PostEvent() {
+export default function EditEvent() {
   // Scroll + input refs
   const scrollRef = useRef<ScrollView>(null);
   const addressRef = useRef<View>(null);
@@ -26,23 +26,6 @@ export default function PostEvent() {
   const [openDate, setOpenDate] = useState(false);
   const [time, setTime] = useState<Date | null>(null);
   const [openTime, setOpenTime] = useState(false);
-  const [keyboardOpen, setKeyboardOpen] = useState(false);
-
-  // Listen for keyboard open/close
-  useEffect(() => {
-    const showSub = Keyboard.addListener("keyboardDidShow", () => {
-      setKeyboardOpen(true);
-    });
-
-    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardOpen(false);
-    });
-
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
 
   function formatDate(iso: string) {
     const d = new Date(iso);
@@ -68,7 +51,7 @@ export default function PostEvent() {
         scrollRef.current as any,
         (x: number, y: number) => {
           scrollRef.current?.scrollTo({
-            y: y - 20,
+            y: y - 20, // slight offset
             animated: true,
           });
         },
@@ -81,7 +64,7 @@ export default function PostEvent() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerText}>Create an Event</Text>
+        <Text style={styles.headerText}>Edit Event</Text>
       </View>
 
       {/* Keyboard Handling */}
@@ -94,10 +77,8 @@ export default function PostEvent() {
           ref={scrollRef}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 160 }}
           automaticallyAdjustKeyboardInsets={false}
-          contentContainerStyle={{
-            paddingBottom: keyboardOpen ? 20 : 160,
-          }}
         >
           <View style={styles.container}>
             {/* Event Name */}
@@ -242,19 +223,22 @@ export default function PostEvent() {
               />
             </View>
 
-            {/* BUTTONS */}
+            {/* ACTION BUTTONS */}
             <View style={styles.buttonContainer}>
-              <Pressable style={styles.postButton}>
-                <Text style={styles.postButtonText}>Post</Text>
+              <Pressable style={styles.confirmButton}>
+                <Text style={styles.confirmText}>Confirm Edit</Text>
+              </Pressable>
+
+              <Pressable style={styles.undoButton}>
+                <Text style={styles.undoText}>Undo Changes</Text>
               </Pressable>
 
               <Pressable style={styles.deleteButton}>
-                <Text style={styles.deleteButtonText}>Delete Event</Text>
+                <Text style={styles.deleteText}>Delete Event</Text>
               </Pressable>
             </View>
           </View>
 
-          {/* BACK LINK */}
           <Link
             href="/(tabs)/(myRSVPs)/myRSVPs"
             style={{
@@ -264,9 +248,8 @@ export default function PostEvent() {
               fontWeight: "600",
             }}
           >
-            ← Back to My RSVPs
+            ← Back to myRSVPS
           </Link>
-
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -339,15 +322,26 @@ const styles = StyleSheet.create({
   /* BUTTONS */
   buttonContainer: {
     marginTop: 10,
-    gap: 15,
+    gap: 12,
   },
-  postButton: {
+  confirmButton: {
     backgroundColor: "#00A400",
     paddingVertical: 12,
     borderRadius: 6,
     alignItems: "center",
   },
-  postButtonText: {
+  confirmText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  undoButton: {
+    backgroundColor: "#D18800",
+    paddingVertical: 12,
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  undoText: {
     color: "white",
     fontSize: 16,
     fontWeight: "600",
@@ -358,7 +352,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignItems: "center",
   },
-  deleteButtonText: {
+  deleteText: {
     color: "white",
     fontSize: 16,
     fontWeight: "600",

@@ -101,7 +101,7 @@ export default function SignInScreen() {
         >
             <View style={{ marginBottom: 24 }}>
                 <Text style={{ marginBottom: 24, fontSize: 20, fontWeight: '700' }}>
-                    Sign in to your GoVolunteer acconut!
+                    Sign in to your GoVolunteer account!
                 </Text>
 
                 <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>

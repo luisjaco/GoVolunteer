@@ -50,13 +50,17 @@ export default function MyRSVPsScreen() {
                     onCancelRSVP={() => handleCancelRSVP('3')}
                 />
             </ScrollView>
+
+            <View>
+                <Link href="/(tabs)/(myRSVPs)/postEvent" style={{fontSize: 30, textDecorationLine: "underline"}}>➡️To Event Creation Screen</Link>
+            </View>
+            <View>
+                <Link href="/(tabs)/(myRSVPs)/editEvent" style={{fontSize: 30, textDecorationLine: "underline"}}>➡️To Event Edit Screen</Link>
+            </View>
         </GVArea>
     );
 
-    <View>
-        
-        <Link href="/">To postEvent Page</Link>
-    </View>
+    
 
 }
 
