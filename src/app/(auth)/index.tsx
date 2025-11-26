@@ -10,7 +10,7 @@ import { Text, TextInput, Snackbar, HelperText } from 'react-native-paper';
 import GVArea from '@components/GVArea';
 import { PRIMARY_COLOR, BUTTON_COLOR, SECONDARY_COLOR } from '@constants/colors';
 import supabase from '@utils/requests';
-
+import { useRouter } from 'expo-router';
 
 export default function SignInScreen() {
     const [email, setEmail] = useState('');
@@ -20,6 +20,7 @@ export default function SignInScreen() {
     const [supabaseError, setSupabaseError] = useState(false);
     const [passwordObscured, setPasswordObscured] = useState(true);
 
+    const router = useRouter();
     // will update emailError 
     const verifyEmail = (): boolean => {
         // verify email not empty and valid: anystring@anystring.anystring
@@ -28,9 +29,9 @@ export default function SignInScreen() {
         setEmailError(!emailValid);
 
         return emailValid;
-    }
+    };
 
-    const handleSignIn = async (e: any) => {
+    const handleSignIn = async () => {
         console.log('user attempting to sign in with combo: ', email, password);
 
         // exit is email or password has an error
@@ -49,7 +50,17 @@ export default function SignInScreen() {
         console.log('succussfully signed in user:', data);
         setSnackbarVisible(true);
         setSupabaseError(false);
+        determinePushAfterSignIn();
     };
+
+    // this will check if a user is a first time user or if they're returning, and will direct the
+    // route accordingly.
+    const determinePushAfterSignIn = async () => {
+        // TODO some logic to detect if user made or not (user in public users table)
+        const firstTimeUser = true;
+
+        firstTimeUser ? router.push('/AccountSetup') : router.push("/(tabs)/(feed)/feed")
+    }
 
     const Header = (
         <View

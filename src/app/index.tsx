@@ -117,7 +117,7 @@ export default function WelcomeScreen() {
           </TouchableOpacity>
         </View>
         
-        <Link href='/feed' push asChild>
+        <Link href='/feed' replace asChild>
             <TouchableOpacity style={{ padding: 10, alignItems: "center", justifyContent: "center"}}>
                 <Text style={{ color: "white", fontSize: 16 }}>Dev skip</Text>
             </TouchableOpacity>

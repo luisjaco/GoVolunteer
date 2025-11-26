@@ -6,14 +6,15 @@ import { View } from 'react-native';
 import { PRIMARY_COLOR } from '../constants/colors';
 
 type GVAreaProps = {
+    safeAreaColor?: string,
     children?: React.ReactNode
 };
 
-export default function GVArea(props: GVAreaProps) {
+export default function GVArea({children, safeAreaColor=PRIMARY_COLOR}: GVAreaProps) {
     return (
         <SafeAreaView style={{
             flex: 1, 
-            backgroundColor: PRIMARY_COLOR
+            backgroundColor: safeAreaColor
         }}
         edges={['top', 'left', 'right']}
         >
@@ -21,7 +22,7 @@ export default function GVArea(props: GVAreaProps) {
                 flex: 1,
                 backgroundColor: 'white'
             }}>
-                {props.children}
+                {children}
             </View>
         </SafeAreaView>
     )
