@@ -63,7 +63,7 @@ export default function WelcomeScreen() {
 
         {/* Buttons Column */}
         <View style={{ width: "80%" }}>
-          <Link href='/(auth)' push asChild>
+          <Link href='/auth' push asChild>
             {/* Sign In */}
             <TouchableOpacity
               activeOpacity={.4}
@@ -82,7 +82,7 @@ export default function WelcomeScreen() {
           </Link>
           
           {/* Sign Up as Volunteer */}
-          <Link href="/SignUp" push asChild>
+          <Link href="/auth/SignUp" push asChild>
             <TouchableOpacity
               activeOpacity={.6}
               style={{

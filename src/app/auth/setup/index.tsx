@@ -27,10 +27,10 @@ export default function AccountSetupIntroduction() {
             case 'none':
                 return;
             case 'user':
-                router.push('/(auth)/AccountSetup/(userSetup)');
+                router.push('/auth/setup/VolunteerSetup');
                 break; 
             case 'organization':
-                router.push('/(auth)/AccountSetup/(organizationSetup)');
+                router.push('/auth/setup/OrganizationSetup');
                 break;
         }
     }

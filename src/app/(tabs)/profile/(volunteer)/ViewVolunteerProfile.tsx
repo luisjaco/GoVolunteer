@@ -9,7 +9,7 @@ export default function ProfileScreen() {
     const router = useRouter(); // method used to push a new screen onto a stack.
 
     const handleEditAccount = () => {
-        router.push('/profile/EditProfile');
+        router.push('/profile/EditVolunteerProfile');
         //  navigate to edit profile screen
     };
 
@@ -44,7 +44,7 @@ export default function ProfileScreen() {
                     <View style={styles.buttonSpacer} />
                 </Pressable>
 
-                <Pressable style={styles.button} onPress={() => {router.push('/(tabs)/(profile)/profile/editOrgProfile')}}>
+                <Pressable style={styles.button} onPress={() => {router.push('/profile/EditOrganizationProfile')}}>
                     <Ionicons name="settings-outline" size={24} color="#333" style={styles.buttonIcon} />
                     <Text style={styles.buttonText}>Edit ORG Account TESTING</Text>
                     <View style={styles.buttonSpacer} />

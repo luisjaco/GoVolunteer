@@ -256,7 +256,7 @@ export default function PostEvent() {
 
           {/* BACK LINK */}
           <Link
-            href="/(tabs)/(myRSVPs)/myRSVPs"
+            href="/myRSVPs"
             style={{
               marginTop: 30,
               marginLeft: 20,

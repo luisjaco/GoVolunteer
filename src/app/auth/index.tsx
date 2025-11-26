@@ -59,7 +59,7 @@ export default function SignInScreen() {
         // TODO some logic to detect if user made or not (user in public users table)
         const firstTimeUser = true;
 
-        firstTimeUser ? router.push('/AccountSetup') : router.push("/(tabs)/(feed)/feed")
+        firstTimeUser ? router.push('/auth/setup') : router.push("/feed")
     }
 
     const Header = (

@@ -13,15 +13,15 @@ export default function AuthLayout() {
             >
                 <Stack.Screen name='index' options={{
                     headerShown: false,
-                    title: 'User or organization?'
+                    title: 'Sign In'
                 }} />
-                <Stack.Screen name='(userSetup)/index' options={{
+                <Stack.Screen name='SignUp' options={{
                     headerShown: false,
-                    title: 'User setup'
+                    title: 'Sign Up'
                 }} />
-                <Stack.Screen name='(organizationSetup)/index' options={{
+                <Stack.Screen name='setup' options={{
                     headerShown: false,
-                    title: 'OrganizationSetup'
+                    title: 'Create your account'
                 }} />
             </Stack>
         </React.Fragment>

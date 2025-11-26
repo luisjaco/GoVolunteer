@@ -240,7 +240,7 @@ export default function EditEvent() {
           </View>
 
           <Link
-            href="/(tabs)/(myRSVPs)/myRSVPs"
+            href="/myRSVPs"
             style={{
               marginTop: 30,
               marginLeft: 20,

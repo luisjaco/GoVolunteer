@@ -52,10 +52,10 @@ export default function MyRSVPsScreen() {
             </ScrollView>
 
             <View>
-                <Link href="/(tabs)/(myRSVPs)/postEvent" style={{fontSize: 30, textDecorationLine: "underline"}}>➡️To Event Creation Screen</Link>
+                <Link href="/myRSVPs/PostEvent" style={{fontSize: 30, textDecorationLine: "underline"}}>➡️To Event Creation Screen</Link>
             </View>
             <View>
-                <Link href="/(tabs)/(myRSVPs)/editEvent" style={{fontSize: 30, textDecorationLine: "underline"}}>➡️To Event Edit Screen</Link>
+                <Link href="/myRSVPs/EditEvent" style={{fontSize: 30, textDecorationLine: "underline"}}>➡️To Event Edit Screen</Link>
             </View>
         </GVArea>
     );

@@ -15,7 +15,7 @@ export default function RootLayout() {
           headerShown: false,
           title: 'GoVolunteer'
         }} />
-        <Stack.Screen name='(auth)' options={{
+        <Stack.Screen name='auth' options={{
           headerShown: false,
           title: 'Auth'
         }} />

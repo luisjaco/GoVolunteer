@@ -30,7 +30,7 @@ export default function OrgProfileScreen() {
                     </View>
     
                     {/* User info */}
-                    <Text style={styles.organizationName}>John Doe</Text>
+                    <Text style={styles.organizationName}>ORGANIZATION</Text>
                     <Text style={styles.website}>johndoe@nyit.edu</Text>
                 </View>
     
