@@ -1,7 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView} from 'react-native';
 import GVArea from '@/src/components/GVArea';
 import EventCard from '@/src/components/EventCard';
+
+//Temp import
+
+import {Link} from 'expo-router'
 
 import { PRIMARY_COLOR } from '@/src/constants/colors';
 
@@ -46,8 +50,17 @@ export default function MyRSVPsScreen() {
                     onCancelRSVP={() => handleCancelRSVP('3')}
                 />
             </ScrollView>
+
+            <View>
+                <Link href="/(tabs)/(myRSVPs)/postEvent" style={{fontSize: 30, textDecorationLine: "underline"}}>➡️To Event Creation Screen</Link>
+            </View>
+            <View>
+                <Link href="/(tabs)/(myRSVPs)/editEvent" style={{fontSize: 30, textDecorationLine: "underline"}}>➡️To Event Edit Screen</Link>
+            </View>
         </GVArea>
     );
+
+    
 
 }
 
