@@ -101,7 +101,7 @@ export default function EditOrganizationScreen() {
                 onPress: async () => {
                     try {
                         const result = await ImagePicker.launchImageLibraryAsync({
-                            mediaTypes: ["images"],
+                            mediaTypes: ['images'],
                             allowsEditing: true,
                             aspect: [1, 1],
                             quality: 0.8,
@@ -166,11 +166,11 @@ export default function EditOrganizationScreen() {
                 }}
                 keyboardShouldPersistTaps="handled"
             >
-
+                {/* Logo / profile picture */}
                 <TouchableOpacity
                     onPress={handleEditProfilePic}
                     activeOpacity={0.7}
-                    style={{ alignItems: "center", marginBottom: 12 }}
+                    style={{ alignItems: "center", marginBottom: 16 }}
                 >
                     <View style={{ position: "relative" }}>
                         <View
@@ -223,132 +223,185 @@ export default function EditOrganizationScreen() {
                     </View>
                 </TouchableOpacity>
 
-                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                    Organization Name
+                {/* ================== INFO SECTION ================== */}
+                <Text
+                    style={{
+                        fontSize: 18,
+                        fontWeight: "600",
+                        marginBottom: 8,
+                    }}
+                >
+                    Organization Info
                 </Text>
-                <TextInput
-                    mode="outlined"
-                    dense
-                    activeOutlineColor={SECONDARY_COLOR}
-                    placeholder="Enter organization name"
-                    value={title}
-                    onChangeText={setTitle}
-                    style={{ marginBottom: 12 }}
-                />
 
-                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                    Motto
+                <View
+                    style={{
+                        backgroundColor: "#fafafa",
+                        borderRadius: 12,
+                        padding: 12,
+                        marginBottom: 20,
+                        borderWidth: 1,
+                        borderColor: "#e0e0e0",
+                    }}
+                >
+                    <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+                        Organization Name
+                    </Text>
+                    <TextInput
+                        mode="outlined"
+                        dense
+                        activeOutlineColor={SECONDARY_COLOR}
+                        placeholder="Enter organization name"
+                        value={title}
+                        onChangeText={setTitle}
+                        style={{ marginBottom: 12 }}
+                    />
+
+                    <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+                        Website
+                    </Text>
+                    <TextInput
+                        mode="outlined"
+                        dense
+                        activeOutlineColor={SECONDARY_COLOR}
+                        placeholder="https://your-organization.org"
+                        value={organizationUrl}
+                        onChangeText={setOrganizationUrl}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        spellCheck={false}
+                        style={{ marginBottom: 12 }}
+                    />
+
+                    <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+                        Motto
+                    </Text>
+                    <TextInput
+                        mode="outlined"
+                        dense
+                        activeOutlineColor={SECONDARY_COLOR}
+                        placeholder="Enter organization motto"
+                        value={motto}
+                        onChangeText={setMotto}
+                        style={{ marginBottom: 12 }}
+                    />
+
+                    <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+                        Description
+                    </Text>
+                    <TextInput
+                        mode="outlined"
+                        activeOutlineColor={SECONDARY_COLOR}
+                        placeholder="Describe your organization"
+                        value={description}
+                        onChangeText={setDescription}
+                        multiline
+                        numberOfLines={10}
+                        style={{
+                            marginBottom: 4,
+                            textAlignVertical: "top",
+                        }}
+                    />
+                </View>
+
+                <Text
+                    style={{
+                        fontSize: 18,
+                        fontWeight: "600",
+                        marginBottom: 8,
+                    }}
+                >
+                    Contact
                 </Text>
-                <TextInput
-                    mode="outlined"
-                    dense
-                    activeOutlineColor={SECONDARY_COLOR}
-                    placeholder="Enter organization motto"
-                    value={motto}
-                    onChangeText={setMotto}
-                    style={{ marginBottom: 12 }}
-                />
 
-                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                    Description
-                </Text>
-                <TextInput
-                    mode="outlined"
-                    activeOutlineColor={SECONDARY_COLOR}
-                    placeholder="Describe your organization"
-                    value={description}
-                    onChangeText={setDescription}
-                    multiline
-                    numberOfLines={10}
-                    style={{ marginBottom: 12 }}
-                />
+                <View
+                    style={{
+                        backgroundColor: "#fafafa",
+                        borderRadius: 12,
+                        padding: 12,
+                        marginBottom: 24,
+                        borderWidth: 1,
+                        borderColor: "#e0e0e0",
+                    }}
+                >
+                    <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+                        Email
+                    </Text>
+                    <TextInput
+                        mode="outlined"
+                        dense
+                        activeOutlineColor={SECONDARY_COLOR}
+                        placeholder="Enter contact email"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        spellCheck={false}
+                        style={{ marginBottom: 12 }}
+                    />
 
-                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                    Email
-                </Text>
-                <TextInput
-                    mode="outlined"
-                    dense
-                    activeOutlineColor={SECONDARY_COLOR}
-                    placeholder="Enter contact email"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    spellCheck={false}
-                    style={{ marginBottom: 12 }}
-                />
+                    <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+                        Phone Number
+                    </Text>
+                    <TextInput
+                        mode="outlined"
+                        dense
+                        activeOutlineColor={SECONDARY_COLOR}
+                        placeholder="Enter phone number"
+                        value={phone}
+                        onChangeText={setPhone}
+                        keyboardType="phone-pad"
+                        style={{ marginBottom: 12 }}
+                    />
 
-                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                    Phone Number
-                </Text>
-                <TextInput
-                    mode="outlined"
-                    dense
-                    activeOutlineColor={SECONDARY_COLOR}
-                    placeholder="Enter phone number"
-                    value={phone}
-                    onChangeText={setPhone}
-                    keyboardType="phone-pad"
-                    style={{ marginBottom: 12 }}
-                />
+                    <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+                        Address
+                    </Text>
+                    <TextInput
+                        mode="outlined"
+                        dense
+                        activeOutlineColor={SECONDARY_COLOR}
+                        placeholder="Street address"
+                        value={address}
+                        onChangeText={setAddress}
+                        style={{ marginBottom: 12 }}
+                    />
 
-                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                    Website
-                </Text>
-                <TextInput
-                    mode="outlined"
-                    dense
-                    activeOutlineColor={SECONDARY_COLOR}
-                    placeholder="https://your-organization.org"
-                    value={organizationUrl}
-                    onChangeText={setOrganizationUrl}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    spellCheck={false}
-                    style={{ marginBottom: 12 }}
-                />
+                    <View style={{ flexDirection: "row", gap: 12 }}>
+                        <View style={{ flex: 1 }}>
+                            <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+                                City
+                            </Text>
+                            <TextInput
+                                mode="outlined"
+                                dense
+                                activeOutlineColor={SECONDARY_COLOR}
+                                placeholder="City"
+                                value={city}
+                                onChangeText={setCity}
+                                style={{ marginBottom: 12 }}
+                            />
+                        </View>
 
-                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                    Address
-                </Text>
-                <TextInput
-                    mode="outlined"
-                    dense
-                    activeOutlineColor={SECONDARY_COLOR}
-                    placeholder="Street address"
-                    value={address}
-                    onChangeText={setAddress}
-                    style={{ marginBottom: 12 }}
-                />
+                        <View style={{ width: 90 }}>
+                            <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+                                State
+                            </Text>
+                            <TextInput
+                                mode="outlined"
+                                dense
+                                activeOutlineColor={SECONDARY_COLOR}
+                                placeholder="State"
+                                value={state}
+                                onChangeText={setState}
+                                style={{ marginBottom: 12 }}
+                            />
+                        </View>
+                    </View>
+                </View>
 
-                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                    City
-                </Text>
-                <TextInput
-                    mode="outlined"
-                    dense
-                    activeOutlineColor={SECONDARY_COLOR}
-                    placeholder="City"
-                    value={city}
-                    onChangeText={setCity}
-                    style={{ marginBottom: 12 }}
-                />
-
-                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                    State
-                </Text>
-                <TextInput
-                    mode="outlined"
-                    dense
-                    activeOutlineColor={SECONDARY_COLOR}
-                    placeholder="State"
-                    value={state}
-                    onChangeText={setState}
-                    style={{ marginBottom: 20, maxWidth: 120 }}
-                />
-
+                {/* Save button */}
                 <TouchableOpacity
                     activeOpacity={0.6}
                     onPress={handleSave}
