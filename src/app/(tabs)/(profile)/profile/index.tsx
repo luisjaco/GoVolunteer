@@ -44,6 +44,12 @@ export default function ProfileScreen() {
                     <View style={styles.buttonSpacer} />
                 </Pressable>
 
+                <Pressable style={styles.button} onPress={() => {router.push('/(tabs)/(profile)/profile/editOrgProfile')}}>
+                    <Ionicons name="settings-outline" size={24} color="#333" style={styles.buttonIcon} />
+                    <Text style={styles.buttonText}>Edit ORG Account TESTING</Text>
+                    <View style={styles.buttonSpacer} />
+                </Pressable>
+
                 {/* log Out button */}
                 <Pressable style={styles.button} onPress={handleLogOut}>
                     <Ionicons name="log-out-outline" size={24} color="#333" style={styles.buttonIcon} />
