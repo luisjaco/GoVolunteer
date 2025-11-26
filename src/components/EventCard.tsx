@@ -5,7 +5,7 @@ import React from 'react';
 import {View, Text, Pressable, TouchableOpacity} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR} from "../constants/colors";
-import {Link} from "expo-router";
+import {Link, useRouter} from "expo-router";
 
 interface EventCardProps {
   showCancelButton?: boolean;
@@ -13,6 +13,8 @@ interface EventCardProps {
 }
 
 export default function EventCard({ showCancelButton = false, onCancelRSVP }: EventCardProps = {}) {
+  const router = useRouter();
+
   const Header = (
     <>
       {/* Name of events + tag */}
@@ -208,7 +210,6 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
       </TouchableOpacity>
 
       {/* View Button */}
-      <Link href='/event' push asChild>
         <TouchableOpacity
           activeOpacity={.6}
           style={{
@@ -221,12 +222,12 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
             marginBottom: 12,
             alignItems: "center",
           }}
+          onPress={() => router.push('/infoScreens/EventInfo')}
         >
           <Text style={{ fontWeight: "600", fontSize: 14, color: SECONDARY_COLOR }}>
             View
           </Text>
         </TouchableOpacity>
-      </Link>
     </View>
   )
 

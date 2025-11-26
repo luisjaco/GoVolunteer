@@ -7,41 +7,46 @@ import { Ionicons } from "@expo/vector-icons";
 export default function TabsLayout() {
   return (
     <React.Fragment>
-      <StatusBar style='auto'/>
-      <Tabs screenOptions={ {
-        tabBarActiveTintColor: PRIMARY_COLOR,
-        headerShown: false,
-        tabBarShowLabel: false
-      }}>
-        <Tabs.Screen name='feed' options={{
-          // title: "Home Feed",
-          tabBarIcon: ({color, size}) => (
-            <Ionicons
-              name='home-outline'
-              size={size}
-              color={color}
-            />
-          )
-        }} />
-        <Tabs.Screen name='myRSVPs' options={{
-          tabBarIcon: ({color, size}) => (
-            <Ionicons
-              name='calendar-outline'
-              size={size}
-              color={color}
-            />
-          )
-        }} />
-        <Tabs.Screen name='profile' options={{
-          // title: "Profile",
-          tabBarIcon: ({color, size}) => (
-            <Ionicons
-              name='person-outline'
-              size={size}
-              color={color}
-            />
-          )
-        }} />
+      <StatusBar style='auto' />
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: PRIMARY_COLOR,
+          headerShown: false,
+          tabBarShowLabel: false
+        }}>
+        <Tabs.Screen
+          name='(feed)'
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons
+                name='home-outline'
+                size={size}
+                color={color}
+              />
+            )
+          }} />
+        <Tabs.Screen
+          name='(myRSVPs)'
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons
+                name='calendar-outline'
+                size={size}
+                color={color}
+              />
+            )
+          }} />
+        <Tabs.Screen
+          name='(profile)/profile'
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons
+                name='person-outline'
+                size={size}
+                color={color}
+              />
+            )
+          }} />
       </Tabs>
     </React.Fragment>
   )

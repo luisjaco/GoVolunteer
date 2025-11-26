@@ -38,7 +38,7 @@ export default function OrganizationCard() {
         </View>
 
         {/* More Info Button */}
-        <Link href="/event/organization" push asChild>
+        <Link href="/infoScreens/OrganizationInfo" push asChild>
           <Pressable>
             <Ionicons
               name="information-circle-outline"
