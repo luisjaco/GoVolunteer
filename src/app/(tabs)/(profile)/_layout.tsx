@@ -1,11 +1,12 @@
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import React from 'react';
 
-export default function ProfileLayout() {
+export default function MyRSVPsLayout() {
   return (
     <React.Fragment>
-      <Stack screenOptions={{headerShown: false}} />
+      <Stack screenOptions={{headerShown: false}}>
+          <Stack.Screen name='profile' />
+      </Stack>
     </React.Fragment>
   )
 }

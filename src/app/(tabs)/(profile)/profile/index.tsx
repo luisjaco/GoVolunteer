@@ -9,11 +9,12 @@ export default function ProfileScreen() {
     const router = useRouter(); // method used to push a new screen onto a stack.
 
     const handleEditAccount = () => {
-        console.log('Edit Account pressed');
+        router.push('/profile/EditProfile');
         //  navigate to edit profile screen
     };
 
     const handleLogOut = () => {
+
         console.log('Log Out pressed');
         //  add logout logic
     };
