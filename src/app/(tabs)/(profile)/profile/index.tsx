@@ -24,6 +24,11 @@ export default function HomeScreen() {
                     Edit Profile
                 </Text>
             </Link>
+            <Link href={"/profile/editOrgProfile"} asChild>
+                <Text>
+                    Edit Org Profile
+                </Text>
+            </Link>
         </GVArea>
     );
 }
