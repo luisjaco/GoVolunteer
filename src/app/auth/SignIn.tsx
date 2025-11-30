@@ -11,6 +11,7 @@ import { PRIMARY_COLOR, BUTTON_COLOR, SECONDARY_COLOR, BUTTON_DISABLED } from '@
 import supabase from '@utils/requests';
 import { useRouter } from 'expo-router';
 import { storage } from '@/src/utils/storage';
+import BackButton from '../../components/BackButton';
 
 interface User {
     id: string,
@@ -92,6 +93,8 @@ is_organization:${userData.is_organization}`);
     }
 
     const Header = (
+        
+        
         <View
             style={{
                 backgroundColor: PRIMARY_COLOR,
@@ -102,6 +105,8 @@ is_organization:${userData.is_organization}`);
                 alignItems: 'center',
             }}
         >
+           
+            
             <View style={{
                 width: 250,
                 display: 'flex',
@@ -229,6 +234,9 @@ is_organization:${userData.is_organization}`);
     return (
         <GVArea>
             <View style={{ flex: 1, position: 'relative' }}>
+                {/* back button */}
+
+                <BackButton />
                 {Header}
                 {Form}
                 {SnackBar}

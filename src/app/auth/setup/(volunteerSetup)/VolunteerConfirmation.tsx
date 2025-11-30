@@ -9,6 +9,7 @@ import UserCard from '@/src/components/UserCard';
 import { HelperText } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { storage } from '@/src/utils/storage';
+import BackButton from '@/src/components/BackButton';
 type Gender = 'male' | 'female' | 'other' | null;
 
 export default function VolunteerConfirmation() {
@@ -254,6 +255,7 @@ is_organization:false`);
 
     return (
         <GVArea>
+            <BackButton />
             {header}
             {body}
         </GVArea>

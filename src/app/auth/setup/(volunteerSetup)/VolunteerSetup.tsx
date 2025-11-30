@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import BackButton from '@/src/components/BackButton';
 
 export default function OrganizationSetup() {
     const [firstName, setFirstName] = useState('');
@@ -373,6 +374,7 @@ export default function OrganizationSetup() {
 
     return (
         <GVArea>
+            <BackButton />
             {header}
             {form}
         </GVArea>

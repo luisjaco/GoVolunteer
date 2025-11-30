@@ -61,7 +61,7 @@ export default function WelcomeScreen() {
                 </View>
 
                 {/* Buttons Column */}
-                <View style={{ width: "80%" }}>
+                <View style={{ width: "80%", marginTop: 40 }}>
                     <Link href='/auth/SignIn' push asChild>
                         {/* Sign In */}
                         <TouchableOpacity
@@ -85,49 +85,26 @@ export default function WelcomeScreen() {
                         <TouchableOpacity
                             activeOpacity={.6}
                             style={{
-                                backgroundColor: "white",
-                                paddingVertical: 12,
-                                borderRadius: 10,
-                                marginBottom: 12,
-                                alignItems: "center",
-                            }}
-                        >
-                            <Text style={{ fontWeight: "600", fontSize: 16, color: PRIMARY_COLOR }}>
-                                Sign Up as Volunteer
-                            </Text>
-                        </TouchableOpacity>
-                    </Link>
-
-                    {/* Sign Up as Organization */}
-                    <TouchableOpacity
-                        activeOpacity={.4}
-                        style={{
-                            backgroundColor: PRIMARY_COLOR,
+                                backgroundColor: PRIMARY_COLOR,
                             borderWidth: 2,
                             borderColor: "white",
                             paddingVertical: 12,
                             borderRadius: 10,
                             marginBottom: 12,
                             alignItems: "center",
-                        }}
-                    >
-                        <Text style={{ fontWeight: "600", fontSize: 16, color: "white" }}>
-                            Sign Up as Organization
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                <Link href='/(tabs)/(feed)' replace asChild>
-                    <TouchableOpacity 
-                        style={{ 
-                            padding: 10, 
-                            alignItems: "center", 
-                            justifyContent: "center" 
                             }}
                         >
-                        <Text style={{ color: "white", fontSize: 16 }}>Dev skip</Text>
-                    </TouchableOpacity>
-                </Link>
+                            <Text style={{ fontWeight: "600", fontSize: 16, color: "white" }}>
+                                Sign Up
+                            </Text>
+                        </TouchableOpacity>
+                    </Link>
+
+                    {/* Sign Up as Organization */}
+                    
+                </View>
+
+               
                 
             </View>
         </GVArea>

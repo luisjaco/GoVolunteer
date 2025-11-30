@@ -10,6 +10,7 @@ import { Text, TextInput, Snackbar, HelperText } from 'react-native-paper';
 import GVArea from '@components/GVArea';
 import { PRIMARY_COLOR, BUTTON_COLOR, SECONDARY_COLOR, BUTTON_DISABLED } from '@constants/colors';
 import supabase from '@utils/requests';
+import BackButton from '../../components/BackButton';
 
 
 export default function SignUpScreen() {
@@ -213,6 +214,8 @@ export default function SignUpScreen() {
     return (
         <GVArea>
             <View style={{ flex: 1, position: 'relative' }}>
+                {/* back button */}
+                <BackButton />
                 {Header}
                 {Form}
                 {SnackBar}

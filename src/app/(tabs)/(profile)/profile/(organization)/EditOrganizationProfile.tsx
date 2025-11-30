@@ -16,6 +16,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import GVArea from "@components/GVArea";
 import { PRIMARY_COLOR, SECONDARY_COLOR, BUTTON_COLOR } from "@constants/colors";
+import BackButton from '../../../../../components/BackButton'
 
 export default function EditOrganizationScreen() {
     const [title, setTitle] = useState("Organization Name From Backend");
@@ -429,6 +430,7 @@ export default function EditOrganizationScreen() {
     return (
         <GVArea>
             <View style={{ flex: 1, position: "relative" }}>
+                <BackButton />
                 {Header}
                 {Form}
             </View>

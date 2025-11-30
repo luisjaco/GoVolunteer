@@ -7,6 +7,8 @@ import EventInfo from '@/src/components/EventInfo';
 
 export default function Event() {
     return (
+
+      
       <GVArea>
             <NavigationBar />
             {/* Scrollable Content */}
@@ -15,7 +17,7 @@ export default function Event() {
                 contentContainerStyle={{ paddingTop: 30 }}
             >
               <EventInfo />
-              <OrganizationCard />
+              <OrganizationCard title={''} phone={''} email={''} organizationURL={''} state={''} city={''} />
             </ScrollView>
         </GVArea>
     );
