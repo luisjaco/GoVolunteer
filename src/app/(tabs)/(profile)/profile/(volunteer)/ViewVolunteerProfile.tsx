@@ -1,61 +1,140 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import GVArea from '@/src/components/GVArea';
 import { PRIMARY_COLOR } from '@/src/constants/colors';
+import supabase, { Volunteer } from '@/src/utils/requests';
+import { storage } from '@/src/utils/storage';
+import VolunteerCard from '@components/VolunteerCard';
+import { Avatar, HelperText } from 'react-native-paper';
+import OrganizationCard from "@components/OrganizationCard";
 
 export default function ProfileScreen() {
     const router = useRouter(); // method used to push a new screen onto a stack.
+    const [volunteer, setVolunteer] = React.useState<Volunteer | null>(null);
+    const [email, setEmail] = React.useState('');
+
+    const fetchVolunteerInfo = async (uid: string) => {
+        const { data, error } = await supabase.from('volunteers').select('*').eq('user_id', uid)
+
+        console.log('[ViewVolunteerProfile] grabbing info from volunteers table');
+        if (error || data?.length === 0) {
+            console.log('[ViewVolunteerProfile] error: grabbing from volunteers table', error);
+            return;
+        } else {
+            setVolunteer(data[0]);
+        }
+    }
+
+    const fetchEmail = async () => {
+        const { data, error } = await supabase.from('users').select('*');
+
+        console.log('[ViewVolunteerProfile] grabbing information from users table');
+        if (error || data.length === 0) {
+            console.log('[ViewVolunteerProfile] error: grabbing from users table', error);
+            return;
+        }
+        else {
+            setEmail(data[0].email);
+        }
+    }
 
     const handleEditAccount = () => {
-        router.push('/profile/EditVolunteerProfile');
+        router.push({
+            pathname: '/profile/EditVolunteerProfile',
+            params: {...volunteer}
+        });
         //  navigate to edit profile screen
     };
 
     const handleLogOut = () => {
-
         console.log('Log Out pressed');
         //  add logout logic
     };
 
+    const gatherVolunteerInfo = async () => {
+        const uid = await storage.get('userUID') || 'ERROR';
+        await fetchVolunteerInfo(uid);
+        await fetchEmail();
+    }
+    useEffect(() => {
+        gatherVolunteerInfo();
+    }, []);
+
+    const header = (
+        <View style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '35%',
+            backgroundColor: PRIMARY_COLOR,
+        }}>
+            <Avatar.Image
+                size={128}
+                source={(volunteer?.profile_picture_url ?
+                        { uri: volunteer?.profile_picture_url } :
+                        require('@/assets/icons/default-volunteer.png')
+                )}
+            />
+
+            <Text style={styles.volunteerName}>{volunteer?.first_name}</Text>
+            <Text style={styles.volunteerEmail}>{email}</Text>
+        </View>
+    );
+
+    const body = (
+        <View style={{alignItems: 'center', marginTop: '5%'}}>
+            {(volunteer && email) && (
+                <VolunteerCard
+                    firstName={volunteer.first_name}
+                    lastName={volunteer.last_name}
+                    email={email}
+                    age={volunteer.age}
+                    gender={volunteer.gender}
+                    phone={volunteer.phone}
+                    profilePictureURL={volunteer.profile_picture_url}
+                />
+            )}
+            <HelperText type='info' style={{alignItems: 'center'}}>
+                This is how organizations & fellow volunteers see you.
+            </HelperText>
+        </View>
+    );
+
+    const buttons = (
+        <View
+            style={{
+                marginTop: '5%',
+                display: 'flex',
+                width: '80%',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent: 'center'
+            }}
+        >
+            <Pressable style={styles.button} onPress={handleEditAccount}>
+                <Ionicons name="settings-outline" size={24} color="#333" style={styles.buttonIcon} />
+                <Text style={styles.buttonText}>Edit Account</Text>
+                <View style={styles.buttonSpacer} />
+            </Pressable>
+
+            {/* log Out button */}
+            <Pressable style={styles.button} onPress={handleLogOut}>
+                <Ionicons name="log-out-outline" size={24} color="#333" style={styles.buttonIcon} />
+                <Text style={styles.buttonText}>Log Out</Text>
+                <View style={styles.buttonSpacer} />
+            </Pressable>
+        </View>
+    );
+
     return (
         <GVArea>
-            {/*  header section with pfp and user info */}
-            <View style={styles.headerSection}>
-                {/* pfp */}
-                <View style={styles.pfpContainer}>
-                    <View style={styles.pfp}>
-                        <Text style={styles.pfpText}>JD</Text>
-                    </View>
-                </View>
-
-                {/* User info */}
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@nyit.edu</Text>
-            </View>
-
-            {/*  section with buttons */}
-            <View style={styles.contentSection}>
-                {/* Edit Account button */}
-                <Pressable style={styles.button} onPress={handleEditAccount}>
-                    <Ionicons name="settings-outline" size={24} color="#333" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}>Edit Account</Text>
-                    <View style={styles.buttonSpacer} />
-                </Pressable>
-
-                <Pressable style={styles.button} onPress={() => {router.push('/profile/EditOrganizationProfile')}}>
-                    <Ionicons name="settings-outline" size={24} color="#333" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}>Edit ORG Account TESTING</Text>
-                    <View style={styles.buttonSpacer} />
-                </Pressable>
-
-                {/* log Out button */}
-                <Pressable style={styles.button} onPress={handleLogOut}>
-                    <Ionicons name="log-out-outline" size={24} color="#333" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}>Log Out</Text>
-                    <View style={styles.buttonSpacer} />
-                </Pressable>
+            <View style={{flex: 1, alignItems:'center'}}>
+                {header}
+                {body}
+                {buttons}
             </View>
         </GVArea>
     );
@@ -87,13 +166,13 @@ const styles = StyleSheet.create({
         fontSize: 36,
         fontWeight: '600',
     },
-    userName: {
+    volunteerName: {
         color: 'white',
         fontSize: 24,
         fontWeight: '600',
         marginBottom: 4,
     },
-    userEmail: {
+    volunteerEmail: {
         color: 'white',
         fontSize: 16,
         fontWeight: '400',

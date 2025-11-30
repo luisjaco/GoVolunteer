@@ -5,7 +5,7 @@ import GVArea from '@/src/components/GVArea';
 
 import { PRIMARY_COLOR, BUTTON_COLOR, BUTTON_DISABLED} from '@constants/colors';
 import { useLocalSearchParams } from 'expo-router';
-import UserCard from '@/src/components/UserCard';
+import VolunteerCard from '@components/VolunteerCard';
 import { HelperText } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { storage } from '@/src/utils/storage';
@@ -221,7 +221,7 @@ is_organization:false`);
                 alignItems: 'center'
             }}>
                 
-            <UserCard 
+            <VolunteerCard
                 firstName={firstName as string}
                 lastName={lastName as string}
                 age={(age) ? Number(age) : undefined}
