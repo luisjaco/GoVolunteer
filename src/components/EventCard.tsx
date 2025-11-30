@@ -7,12 +7,23 @@ import {Ionicons} from "@expo/vector-icons";
 import {BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR} from "../constants/colors";
 import {Link, useRouter} from "expo-router";
 
-interface EventCardProps {
-  showCancelButton?: boolean;
-  onCancelRSVP?: () => void;
-}
 
-export default function EventCard({ showCancelButton = false, onCancelRSVP }: EventCardProps = {}) {
+type EventCardProps = {
+  created_at: string,
+  organization_id: number,
+  category: string,
+  category_id: number,
+  description: string,
+  state: string,
+  city: string,
+  max_volunteers: number,
+  current_volunteers: number,
+  image_url: string,
+  date: string,
+  time: string
+};
+
+export default function EventCard(props: EventCardProps) {
   const router = useRouter();
 
   const Header = (
@@ -190,24 +201,7 @@ export default function EventCard({ showCancelButton = false, onCancelRSVP }: Ev
         gap: 15,
       }}
     >
-      {/* RSVP or CANCEL RSVP Button */}
-      <TouchableOpacity
-        activeOpacity={.6}
-        onPress={showCancelButton ? onCancelRSVP : undefined}
-        style={{
-          backgroundColor: showCancelButton ? 'red' : BUTTON_COLOR,
-          flex: 1,
-          paddingVertical: 12,
-          paddingHorizontal: 24,
-          borderRadius: 10,
-          marginBottom: 12,
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ fontWeight: "600", fontSize: 14, color: "white" }}>
-          {showCancelButton ? 'CANCEL RSVP' : 'RSVP'}
-        </Text>
-      </TouchableOpacity>
+
 
       {/* View Button */}
         <TouchableOpacity

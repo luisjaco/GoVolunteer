@@ -11,18 +11,14 @@ export default function RootLayout() {
           headerShown: false,
         }}
       >
-        <Stack.Screen name='index' options={{
-          headerShown: false,
-          title: 'GoVolunteer'
-        }} />
-        <Stack.Screen name='auth' options={{
-          headerShown: false,
-          title: 'Auth'
-        }} />
-        <Stack.Screen name='(tabs)' options={{
-          headerShown: false,
-          title: 'Home'
-        }} />
+        <Stack.Screen name='index' />
+        <Stack.Screen name='auth/SignUp' />
+        <Stack.Screen name='auth/SignIn' />
+        <Stack.Screen name='auth/setup/index' />
+        <Stack.Screen name='auth/setup/(organizationSetup)/OrganizationSetup' />
+        <Stack.Screen name='auth/setup/(volunteerSetup)/VolunteerSetup' />
+        <Stack.Screen name='auth/setup/(volunteerSetup)/VolunteerConfirmation' />
+        <Stack.Screen name='(tabs)'/>
       </Stack>
     </React.Fragment>
   )

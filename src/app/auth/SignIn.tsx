@@ -8,9 +8,16 @@ import {
 } from 'react-native';
 import { Text, TextInput, Snackbar, HelperText } from 'react-native-paper';
 import GVArea from '@components/GVArea';
-import { PRIMARY_COLOR, BUTTON_COLOR, SECONDARY_COLOR } from '@constants/colors';
+import { PRIMARY_COLOR, BUTTON_COLOR, SECONDARY_COLOR, BUTTON_DISABLED } from '@constants/colors';
 import supabase from '@utils/requests';
 import { useRouter } from 'expo-router';
+import { storage } from '@/src/utils/storage';
+
+interface User {
+    id: string,
+    email: string,
+    is_organization: boolean
+}
 
 export default function SignInScreen() {
     const [email, setEmail] = useState('');
@@ -19,9 +26,10 @@ export default function SignInScreen() {
     const [emailError, setEmailError] = useState(false);
     const [supabaseError, setSupabaseError] = useState(false);
     const [passwordObscured, setPasswordObscured] = useState(true);
-
+    const [active, setActive] = useState(false);
     const router = useRouter();
     // will update emailError 
+
     const verifyEmail = (): boolean => {
         // verify email not empty and valid: anystring@anystring.anystring
         const regexEmail = /\S+@\S+\.\S+/;
@@ -33,6 +41,7 @@ export default function SignInScreen() {
 
     const handleSignIn = async () => {
         console.log('user attempting to sign in with combo: ', email, password);
+        setActive(true);
 
         // exit is email or password has an error
         if (!verifyEmail()) {
@@ -41,6 +50,9 @@ export default function SignInScreen() {
         }
         
         const {data, error} = await supabase.auth.signInWithPassword({email, password});
+
+        setActive(false);
+
         if (error) {
             console.log('supabase error: signing in user:', error);
             setSupabaseError(true);
@@ -48,18 +60,34 @@ export default function SignInScreen() {
         }
 
         console.log('succussfully signed in user:', data);
-        setSnackbarVisible(true);
+        // setSnackbarVisible(true);
         setSupabaseError(false);
-        determinePushAfterSignIn();
+        await determinePushAfterSignIn();
     };
 
     // this will check if a user is a first time user or if they're returning, and will direct the
     // route accordingly.
     const determinePushAfterSignIn = async () => {
-        // TODO some logic to detect if user made or not (user in public users table)
-        const firstTimeUser = true;
+        // since rls set up, if there is one result from this query, the user already has their 
+        // account setup.
+        const { data, error } = await supabase.from('users').select('*');
+        
 
-        firstTimeUser ? router.push('/auth/setup') : router.push("/feed")
+        if (error) {
+            console.error('error: grabbing from users table');
+            setSupabaseError(true);
+            return;
+        }
+        else if (data.length > 0) {
+            const userData = data[0] as User;
+            await storage.set('userUID', userData.id);
+            await storage.set('userType', (userData.is_organization ? 'organization' : 'volunteer'));
+            router.dismissAll();
+            router.replace('/(tabs)/(feed)');
+        }
+        else {
+            router.push('/auth/setup');
+        }
     }
 
     const Header = (
@@ -161,7 +189,7 @@ export default function SignInScreen() {
                 activeOpacity={.6}
                 onPress={handleSignIn}
                 style={{
-                    backgroundColor: BUTTON_COLOR,
+                    backgroundColor: (active ? BUTTON_DISABLED : BUTTON_COLOR),
                     paddingVertical: 12,
                     borderRadius: 10,
                     marginBottom: 12,

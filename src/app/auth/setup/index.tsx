@@ -28,7 +28,7 @@ export default function AccountSetupIntroduction() {
                 return;
             case 'user':
                 router.push('/auth/setup/VolunteerSetup');
-                break; 
+                break;
             case 'organization':
                 router.push('/auth/setup/OrganizationSetup');
                 break;
@@ -165,7 +165,7 @@ export default function AccountSetupIntroduction() {
     const footer = (
         <View style={{
             flex: 1,
-            paddingTop: 180,
+            marginTop: 80,
 
             alignContent: 'center',
             alignItems: 'center'
@@ -175,13 +175,15 @@ export default function AccountSetupIntroduction() {
                 activeOpacity={.4}
                 style={{
                     backgroundColor: (userIdentity !== 'none' ? BUTTON_COLOR : BUTTON_DISABLED),
-                    paddingVertical: 12,
+                    marginTop: '5%',
                     borderRadius: 10,
                     marginBottom: 12,
                     alignItems: "center",
+                    justifyContent: 'center',
+                    height: 50,
                     width: '40%',
                 }}
-                disabled = {userIdentity === 'none'}
+                disabled={userIdentity === 'none'}
                 onPress={determinePush}
             >
                 <Text style={{ fontWeight: "600", fontSize: 16, color: "white" }}>
@@ -193,9 +195,9 @@ export default function AccountSetupIntroduction() {
 
     return (
         <GVArea>
-                    {header}
-                    {form}
-                    {footer}
+            {header}
+            {form}
+            {footer}
         </GVArea>
     )
 }

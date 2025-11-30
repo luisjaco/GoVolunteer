@@ -1,57 +1,92 @@
 import GVArea from '@/src/components/GVArea';
 import { PRIMARY_COLOR, SECONDARY_COLOR, BUTTON_COLOR } from '@/src/constants/colors';
-import supabase from '@/src/utils/requests';
 import React, { useState } from 'react';
 import { View, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Text, TextInput, HelperText, Avatar } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export default function OrganizationSetup() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [phone, setPhone] = useState('');
     const [age, setAge] = useState('');
-    const [gender, setGender] = useState<'male' | 'female' | 'other' | 'none'>('none');
+    const [gender, setGender] = useState<'male' | 'female' | 'other' | null>(null);
     // will hold the path from the users device.
     const [profilePicture, setProfilePicture] = useState<ImagePickerAsset | null>(null);
-
     // for required values, ensure correct/filled
     const [firstNameError, setFirstNameError] = useState(false);
     const [lastNameError, setLastNameError] = useState(false);
     const [phoneError, setPhoneError] = useState(false);
     const [ageError, setAgeError] = useState(false);
-    const [profilePictureError, setProfilePictureError] = useState(false);
 
-    // USE IN LAST PAGE
-    // const [supabaseError, setSupabaseError] = useState(false);
-    // const [session, setSession] = useState<any>(null);
+    // will return true if all fields are valid.
+    const validateForm = (): boolean => {
+        // error is false if valid.. true if invalid.
+        const firstNameValid = Boolean(firstName);
+        setFirstNameError(!firstNameValid);
 
-    // const fetchSession = async () => {
-    //     const session = await supabase.auth.getSession();
-    //     setSession(session);
-    // }
+        const lastNameValid = Boolean(lastName);
+        setLastNameError(!lastNameValid);
+
+        let phoneValid = true;
+        const phoneRegEx = /^(\()?\d{3}(\))?(-|\s)?\d{3}(-|\s)\d{4}$/
+        if (phone) {
+            phoneValid = phoneRegEx.test(phone);
+        }
+        setPhoneError(!phoneValid);
+
+        // input is numeric so it should be impossible to input anything but a number
+        let ageValid = true;
+        if (age) {
+            const ageNum = Number(age);
+            ageValid = (ageNum > 0) && (ageNum < 120); // we don't want any 120 year olds in here.
+        }
+        setAgeError(!ageValid);
+        
+        return (firstNameValid && lastNameValid && phoneValid && ageValid);
+    };
+
+    const handleSubmit = () => {
+        if (!validateForm()) {
+            return;
+        }
+
+        router.push({
+            pathname: '/auth/setup/VolunteerConfirmation',
+            params: {
+                firstName: firstName,
+                lastName: lastName,
+                age: ( age ? Number(age) : undefined),
+                phone: ( phone ? phone : undefined),
+                gender: gender,
+                profilePictureURI: (profilePicture !== null ? profilePicture.uri : undefined),
+                profilePictureFileName: (profilePicture !== null ? profilePicture.fileName : undefined),
+            }
+        });
+    }
 
     const handleRadioPress = (button: string) => {
         switch (button) {
             case 'male':
-                gender === 'male' ? setGender('none') : setGender('male');
+                gender === 'male' ? setGender(null) : setGender('male');
                 break;
             case 'female':
-                gender === 'female' ? setGender('none') : setGender('female');
+                gender === 'female' ? setGender(null) : setGender('female');
                 break;
             case 'other':
-                gender === 'other' ? setGender('none') : setGender('other');
+                gender === 'other' ? setGender(null) : setGender('other');
                 break;
             default:
-                setGender('none');
+                setGender(null);
                 break;
         }
     };
 
     const pickImage = async () => {
-        console.log('user initiated image upload');
+        console.log('user initiated local image upload');
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
             Alert.alert('Permission required', 'Permission to access the media library is required.');
@@ -69,7 +104,7 @@ export default function OrganizationSetup() {
             console.log('user canceled image upload');
         } else {
             setProfilePicture(result.assets[0]);
-            console.log("image uploaded: ", result);
+            console.log("image uploaded local: ", result);
         }
     };
 
@@ -126,15 +161,18 @@ export default function OrganizationSetup() {
                 activeOpacity={.4}
                 style={{
                     backgroundColor: BUTTON_COLOR,
-                    paddingVertical: 12,
+                    marginTop: '3%',
+                    marginBottom: '10%',
                     borderRadius: 10,
-                    marginBottom: 12,
                     alignItems: "center",
+                    justifyContent: 'center',
+                    height: 45,
                     width: '40%',
                 }}
+                onPress={handleSubmit}
             >
                 <Text style={{ fontWeight: "600", fontSize: 16, color: "white" }}>
-                    Next
+                    Review
                 </Text>
             </TouchableOpacity>
         </View>
@@ -143,14 +181,13 @@ export default function OrganizationSetup() {
     const form = (
         <ScrollView
             contentContainerStyle={{
-                height:'105%',
                 paddingHorizontal: 24,
             }}
             keyboardDismissMode="interactive"
         >
             <Text
                 style={{
-                    paddingVertical: 20,
+                    paddingVertical: 15,
                     fontWeight: "800",
                     fontSize: 30,
                     textAlign: "center",
@@ -159,7 +196,7 @@ export default function OrganizationSetup() {
                 Tell us more about you!
             </Text >
             <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
-                First Name
+                First Name <Text style={{color: (firstNameError ? 'red' : 'black')}}>*</Text>
             </Text>
             <TextInput
                 mode="outlined"
@@ -171,11 +208,11 @@ export default function OrganizationSetup() {
                 error={firstNameError}
             />
             <HelperText type="error" visible={firstNameError}>
-                This is a required field
+                This is a required field.
             </HelperText>
 
             <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
-                Last Name
+                Last Name <Text style={{color: (lastNameError ? 'red' : 'black')}}>*</Text>
             </Text>
             <TextInput
                 mode="outlined"
@@ -187,7 +224,7 @@ export default function OrganizationSetup() {
                 error={lastNameError}
             />
             <HelperText type="error" visible={lastNameError}>
-                This is a required field
+                This is a required field.
             </HelperText>
 
             <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
@@ -299,12 +336,12 @@ export default function OrganizationSetup() {
             <View
                 style={{
                     marginLeft: 25,
-                    height: 128,
-                    width: 128
+                    height: 100,
+                    width: 100
                 }}
             >
                 <Avatar.Image
-                    size={128}
+                    size={100}
                     source={(profilePicture !== null ?
                         { uri: profilePicture.uri } :
                         require('@/assets/icons/default-volunteer.png'))} />
@@ -313,7 +350,7 @@ export default function OrganizationSetup() {
                 >
                     <Ionicons
                         name={(profilePicture !== null ? 'close-outline' : 'pencil-outline')}
-                        size={32}
+                        size={24}
                         color='white'
                         style={{
                             position: 'absolute',
@@ -327,13 +364,12 @@ export default function OrganizationSetup() {
                 </TouchableOpacity>
             </View>
             <HelperText type="error" visible={false}>
-                wont show, for padding.
+                does nothing, for padding.
             </HelperText>
 
             {nextButton}
         </ScrollView>
     );
-
 
     return (
         <GVArea>

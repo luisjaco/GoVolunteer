@@ -1,130 +1,115 @@
-import {Ionicons} from '@expo/vector-icons'
-import {Link} from 'expo-router'
-import {Pressable, Text, View} from 'react-native'
-import {PRIMARY_COLOR, SECONDARY_COLOR} from '../constants/colors'
+import { Ionicons } from '@expo/vector-icons'
+import { Link } from 'expo-router'
+import { Pressable, Text, View } from 'react-native'
+import { PRIMARY_COLOR, SECONDARY_COLOR } from '../constants/colors'
+import { Avatar } from 'react-native-paper'
 
-export default function OrganizationCard() {
-  return (
+type OrganizationCardProps = {
+  title: string,
+  motto?: string,
+  phone: string,
+  email: string,
+  organizationURL: string,
+  state: string,
+  city: string,
+  address?: string,
+  description?: string,
+  profilePictureURI?: string,
+  profilePictureURL?: string,
+  disabled?: boolean
+}
+
+export default function OrganizationCard(props: OrganizationCardProps) {
+  // console.log(props);
+  
+  const header = (
     <View
       style={{
-        marginHorizontal: 20,
-        marginTop: 10,
-        padding: 20,
+        width: '100%',
         paddingBottom: 10,
-        borderRadius: 10,
-        borderColor: "#B8B8B8",
-        borderWidth: 1,
+        borderBottomWidth: .5,
+        borderBottomColor: '#B8B8B8',
       }}
     >
-      {/* Organization Info */}
+      <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+        Organization Info
+      </Text>
+
       <View
         style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'row',
+          marginLeft: 10,
+          marginTop: 10,
+          alignItems: 'center',
         }}
       >
-        <View>
+        <Avatar.Image
+          size={50}
+          source={(props.profilePictureURI ?
+            { uri: props.profilePictureURI } :
+            (props.profilePictureURL ?
+              { uri: props.profilePictureURL } :
+              require('@/assets/icons/default-organization.png')
+            )
+          )}
+          style={{ marginRight: 20 }} />
+
+        <View style={{ display: 'flex', width: '75%' }}>
           <Text
             style={{
-              lineHeight: 20,
-              fontWeight: "600",
-              fontSize: 13,
-              marginBottom: 30,
-            }}
-          >
-            Organization Info
-          </Text>
-        </View>
-
-        {/* More Info Button */}
-        <Link href="/infoScreens/OrganizationInfo" push asChild>
-          <Pressable>
-            <Ionicons
-              name="information-circle-outline"
-              size={30}
-              style={{
-                borderWidth: 1.5,
-                borderColor: "#898989",
-                borderRadius: 10,
-                paddingVertical: 4,
-                paddingHorizontal: 4,
-                justifyContent: "center",
-                paddingRight: 5,
-              }}
-            />
-          </Pressable>
-        </Link>
-      </View>
-
-      {/* Profile picture, Organization name, organization motto */}
-      <View style={{ flexDirection: "row", marginLeft: 10, marginBottom: 30 }}>
-        {/* Profile Picture */}
-        <View
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: 35, // 70 / 2 = 35 -> circle
-            backgroundColor: PRIMARY_COLOR,
-            justifyContent: "center", // ← centers children vertically
-            alignItems: "center", // ← centers children horizontally
-          }}
-        >
-        </View>
-
-        {/* Organization name+motto */}
-        <View style={{ flexDirection: "column", marginLeft: 7 }}>
-          {/* Organization name */}
-          <Text
-            style={{
-              lineHeight: 20,
               fontWeight: "500",
               fontSize: 13,
             }}
           >
-            John Doe Foundation
+            {props.title}
           </Text>
 
-          {/* Organization motto */}
           <Text
             style={{
-              lineHeight: 15,
               fontWeight: "500",
               fontSize: 12,
               color: "#656565",
             }}
           >
-            Dedicated to preserving the John Doe ecosystem
+            {props.city} | {props.state}
+          </Text>
+
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 12,
+              color: "#656565",
+              fontStyle: 'italic',
+            }}
+          >
+            {props.motto && (props.motto)}
           </Text>
         </View>
+
       </View>
+    </View>
+  );
 
-      {/* Phone number */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Ionicons
-          name="call-outline"
-          size={20}
-          color={SECONDARY_COLOR}
-          style={{
-            marginRight: 4,
-          }}
-        />
+  const description = (
+    <View
+      style={{
+        paddingVertical: 5,
+        borderBottomWidth: .5,
+        borderBottomColor: '#B8B8B8',
+      }}
+    >
+      <Text style={{fontWeight: 'bold', color: '#656565', fontSize: 10}}>
+        {props.description}
+      </Text>
+    </View>
+  )
 
-        <View>
-          <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-            (123)-456-7890
-          </Text>
-        </View>
-      </View>
+  const body = (
+    <View style={{ marginBottom: 5 }}>
 
-
-      {/* Email */}
-
+                {props.description && (description)}
       <View
         style={{
           flexDirection: "row",
@@ -139,16 +124,33 @@ export default function OrganizationCard() {
             marginRight: 5,
           }}
         />
-
         <View>
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-            john.doe@nyit.edu
+            {props.email}
           </Text>
         </View>
       </View>
 
-
-      {/* Website */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Ionicons
+          name="call-outline"
+          size={20}
+          color={SECONDARY_COLOR}
+          style={{
+            marginRight: 4,
+          }}
+        />
+        <View>
+          <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+            {props.phone}
+          </Text>
+        </View>
+      </View>
 
       <View
         style={{
@@ -161,16 +163,59 @@ export default function OrganizationCard() {
           size={20}
           color={SECONDARY_COLOR}
           style={{
-            marginRight: 5,
+            marginRight: 4,
           }}
         />
-
         <View>
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-            john-doe.org
+            {props.organizationURL}
           </Text>
         </View>
       </View>
+
+      {props.address && (
+        <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Ionicons
+          name="location-outline"
+          size={20}
+          color={SECONDARY_COLOR}
+          style={{
+            marginRight: 4,
+          }}
+        />
+        <View>
+          <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+            {props.address}
+          </Text>
+        </View>
+      </View>
+      )}
+    </View>
+  );
+
+  return (
+    <View
+      style={{
+        marginHorizontal: 20,
+        marginTop: 10,
+        padding: 20,
+        paddingBottom: 10,
+        borderRadius: 10,
+        borderColor: "#B8B8B8",
+        borderWidth: 1,
+        width: '90%',
+        height: 'auto'
+      }}
+    >
+
+      {header}
+      {body}
+
     </View>
   )
 }
