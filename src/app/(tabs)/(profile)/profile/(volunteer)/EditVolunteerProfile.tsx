@@ -16,6 +16,7 @@ import {
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import GVArea from "@components/GVArea";
 import {PRIMARY_COLOR, SECONDARY_COLOR, BUTTON_COLOR} from "@constants/colors";
+import BackButton from '../../../../../components/BackButton'
 
 type Gender = 'male' | 'female' | 'other' | '';
 type GenderOptionValue = Exclude<Gender, ''>;
@@ -30,8 +31,8 @@ const GENDER_OPTIONS: GenderOption[] = [
 ];
 
 export default function EditProfileScreen() {
-    const [firstName, setFirstName] = useState('First Name From Backend');
-    const [lastName, setLastName] = useState('Last Name From Backend');
+    const [firstName, setFirstName] = useState('First Name');
+    const [lastName, setLastName] = useState('Last Name');
     const [email, setEmail] = useState('email.from.backend@example.com');
     const [phone, setPhone] = useState('555-123-4567');
     const [age, setAge] = useState('21');
@@ -355,7 +356,9 @@ export default function EditProfileScreen() {
 
     return (
         <GVArea>
+            <BackButton/>
             <View style={{flex: 1, position: 'relative'}}>
+                
                 {Header}
                 {Form}
             </View>
