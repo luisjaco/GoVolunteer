@@ -39,22 +39,22 @@ export default function SignUpScreen() {
     }
 
     const handleSignUp = async (e: any) => {
-        console.log('user attempting to sign up with combo: ', email, password);
+        console.log('[SignUp] user attempting to sign up with combo: ', email, password);
 
         // exit is email or password has an error
         if (!verifyEmailPassword()) {
-            console.log('validation error: email or password')
+            console.log('[SignUp] validation error: email or password')
             return;
         }
         
         const {error} = await supabase.auth.signUp({email, password});
         if (error) {
-            console.log('supabase error: signing up user:', error);
+            console.log('[SignUp] error: signing up user:', error);
             setSupabaseError(true);
             return;
         }
 
-        console.log('succuss registering user, user must now confirm email before continuing.');
+        console.log('[SignUp] success registering user, user must now confirm email before continuing.');
         setSnackbarVisible(true);
         setSupabaseError(false);
         setUserSignedUp(true);

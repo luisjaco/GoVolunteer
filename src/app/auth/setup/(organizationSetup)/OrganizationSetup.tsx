@@ -76,7 +76,7 @@ export default function OrganizationSetup() {
     }
 
     const pickImage = async () => {
-        console.log('user initiated local image upload');
+        console.log('[OrganizationSetup] user initiated local image upload');
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
             Alert.alert('Permission required', 'Permission to access the media library is required.');
@@ -91,10 +91,10 @@ export default function OrganizationSetup() {
         });
 
         if (result.canceled) {
-            console.log('user canceled image upload');
+            console.log('[OrganizationSetup] user canceled image upload');
         } else {
             setProfilePicture(result.assets[0]);
-            console.log("image uploaded local: ", result);
+            console.log("[OrganizationSetup] image uploaded locally: ", result);
         }
     };
 

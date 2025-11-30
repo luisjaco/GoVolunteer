@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Link } from 'expo-router'
-import { Pressable, Text, View } from 'react-native'
+import { Image, Pressable, Text, View } from 'react-native'
 import { PRIMARY_COLOR, SECONDARY_COLOR } from '../constants/colors'
 import { Avatar } from 'react-native-paper'
+import supabase from '../utils/requests'
+import { useEffect, useState } from 'react'
 
 type OrganizationCardProps = {
   title: string,
@@ -20,8 +22,7 @@ type OrganizationCardProps = {
 }
 
 export default function OrganizationCard(props: OrganizationCardProps) {
-  // console.log(props);
-  
+
   const header = (
     <View
       style={{
@@ -45,16 +46,16 @@ export default function OrganizationCard(props: OrganizationCardProps) {
           alignItems: 'center',
         }}
       >
-        <Avatar.Image
+      <Avatar.Image
           size={50}
-          source={(props.profilePictureURI ?
-            { uri: props.profilePictureURI } :
-            (props.profilePictureURL ?
-              { uri: props.profilePictureURL } :
-              require('@/assets/icons/default-organization.png')
+          source={(props.profilePictureURI ? { uri: props.profilePictureURI } :
+            ( props.profilePictureURL ? 
+                { uri: props.profilePictureURL } :
+                require('@/assets/icons/default-organization.png')
             )
           )}
           style={{ marginRight: 20 }} />
+        
 
         <View style={{ display: 'flex', width: '75%' }}>
           <Text

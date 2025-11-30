@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
     View,
-    KeyboardAvoidingView,
     ScrollView,
     TouchableOpacity,
     Image,
@@ -40,12 +39,12 @@ export default function SignInScreen() {
     };
 
     const handleSignIn = async () => {
-        console.log('user attempting to sign in with combo: ', email, password);
+        console.log('[SignIn] user attempting to sign in with combo: ', email, password);
         setActive(true);
 
-        // exit is email or password has an error
+        // exit if email or password has an error
         if (!verifyEmail()) {
-            console.log('validation error: email')
+            console.log('[SignIn] validation error: email')
             return;
         }
         
@@ -54,12 +53,12 @@ export default function SignInScreen() {
         setActive(false);
 
         if (error) {
-            console.log('supabase error: signing in user:', error);
+            console.log('[SignIn] error: signing in user:', error);
             setSupabaseError(true);
             return;
         }
 
-        console.log('succussfully signed in user:', data);
+        console.log('[SignIn] succussfully signed in user:', data);
         // setSnackbarVisible(true);
         setSupabaseError(false);
         await determinePushAfterSignIn();
@@ -71,15 +70,17 @@ export default function SignInScreen() {
         // since rls set up, if there is one result from this query, the user already has their 
         // account setup.
         const { data, error } = await supabase.from('users').select('*');
-        
+        console.log('[SignIn] attempting to grab from users table');
 
         if (error) {
-            console.error('error: grabbing from users table');
+            console.error('[SignIn] error: grabbing from users table');
             setSupabaseError(true);
             return;
         }
         else if (data.length > 0) {
             const userData = data[0] as User;
+            console.log(`[SignIn] setting uid:${userData.id} & userType with \
+is_organization:${userData.is_organization}`);
             await storage.set('userUID', userData.id);
             await storage.set('userType', (userData.is_organization ? 'organization' : 'volunteer'));
             router.dismissAll();

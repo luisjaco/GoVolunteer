@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { PRIMARY_COLOR } from '@/src/constants/colors';
 import GVArea from '@/src/components/GVArea';
-import supabase from '@/src/utils/requests';
+import supabase, { Organization } from '@/src/utils/requests';
 import { storage } from '@/src/utils/storage';
+import OrganizationCard from '@/src/components/OrganizationCard';
+import { Avatar, HelperText } from 'react-native-paper';
 
 
 
@@ -13,32 +15,40 @@ export default function OrgProfileScreen() {
 
     // todo , fetch logic, 
     const router = useRouter(); // method used to push a new screen onto a stack.
-    const [uid, setUID] = useState('');
+    const [organization, setOrganization] = useState<Organization | null>(null);
+    const [email, setEmail] = useState('');
 
-    const fetchUID = async () => {
-        const uid = await storage.get('userUID');
-        setUID(uid || '');
-    }
-
-    const fetchOrganizationInfo = async () => {
-
+    const fetchOrganizationInfo = async (uid: string) => {
         const { data, error } = await supabase.from('organizations').select('*').eq('user_id', uid)
-        
 
-        if (error) {
-            console.error('error: grabbing from users table');
+        console.log('[ViewOrganizationProfile] grabbing information from organizations table');
+        if (error || data.length === 0) {
+            console.log('[ViewOrganizationProfile] error: grabbing from organizations table', error);
             return;
         }
-        else if (data.length > 0) {
-            
+        else {
+            setOrganization(data[0]);
+        }
+    }
+
+    const fetchEmail = async () => {
+        const { data, error } = await supabase.from('users').select('*');
+
+        console.log('[ViewOrganizationProfile] grabbing information from users table');
+        if (error || data.length === 0) {
+            console.log('[ViewOrganizationProfile] error: grabbing from users table', error);
+            return;
         }
         else {
-            router.push('/auth/setup');
+            setEmail(data[0].email);
         }
     }
 
     const handleEditAccount = () => {
-        router.push('/profile/EditOrganizationProfile')
+        router.push({
+            pathname: '/profile/EditOrganizationProfile',
+            params: {...organization}
+        });
     };
 
     const handleLogOut = () => {
@@ -46,37 +56,90 @@ export default function OrgProfileScreen() {
         //  add logout logic
     };
 
+    const gatherOrganizationInfo = async () => {
+        const uid = await storage.get('userUID') || 'ERROR';
+        await fetchOrganizationInfo(uid);
+        await fetchEmail();
+    }
+    useEffect(() => {
+        gatherOrganizationInfo();
+    }, []);
+
+
+    const header = (
+        <View style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%', 
+                height: '35%', 
+                backgroundColor: PRIMARY_COLOR,
+            }}>
+            <Avatar.Image
+                size={128}
+                source={(organization?.profile_picture_url ? 
+                    { uri: organization?.profile_picture_url } :
+                    require('@/assets/icons/default-organization.png')
+                )}/>
+
+            <Text style={styles.organizationName}>{organization?.title}</Text>
+            <Text style={styles.website}>{email}</Text>
+        </View>
+    );
+
+    const body = (
+        <View style={{alignItems: 'center', marginTop: '5%'}}>
+            {(organization && email) && (
+                <OrganizationCard
+                    title={organization.title}
+                    motto={organization.motto}
+                    phone={organization.phone}
+                    email={email}
+                    organizationURL={organization.organization_url}
+                    state={organization.state}
+                    city={organization.city}
+                    description={organization.description}
+                    profilePictureURL={organization.profile_picture_url}
+                />
+            )}
+            <HelperText type='info' style={{alignItems: 'center'}}>
+                This is how volunteers & fellow organizations see you.
+            </HelperText>
+        </View>
+    );
+
+    const buttons = (
+        <View 
+            style={{
+                marginTop: '5%',
+                display: 'flex',
+                width: '80%',
+                alignItems: 'center', 
+                justifyContent: 'center',
+                alignContent: 'center'
+            }}
+            >
+            <Pressable style={styles.button} onPress={handleEditAccount}>
+                <Ionicons name="settings-outline" size={24} color="#333" style={styles.buttonIcon} />
+                <Text style={styles.buttonText}>Edit Account</Text>
+                <View style={styles.buttonSpacer} />
+            </Pressable>
+
+            {/* log Out button */}
+            <Pressable style={styles.button} onPress={handleLogOut}>
+                <Ionicons name="log-out-outline" size={24} color="#333" style={styles.buttonIcon} />
+                <Text style={styles.buttonText}>Log Out</Text>
+                <View style={styles.buttonSpacer} />
+            </Pressable>
+        </View>
+    );
+
     return (
         <GVArea>
-            {/*  header section with pfp and user info */}
-            <View style={styles.headerSection}>
-                {/* pfp */}
-                <View style={styles.pfpContainer}>
-                    <View style={styles.pfp}>
-                        <Text style={styles.pfpText}>JD</Text>
-                    </View>
-                </View>
-
-                {/* User info */}
-                <Text style={styles.organizationName}>ORGANIZATION</Text>
-                <Text style={styles.website}>johndoe@nyit.edu</Text>
-            </View>
-
-            {/*  section with buttons */}
-            <View style={styles.contentSection}>
-                {/* Edit Account button */}
-                <Pressable style={styles.button} onPress={handleEditAccount}>
-                    <Ionicons name="settings-outline" size={24} color="#333" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}>Edit Account</Text>
-                    <View style={styles.buttonSpacer} />
-                </Pressable>
-
-                {/* log Out button */}
-                <Pressable style={styles.button} onPress={handleLogOut}>
-                    <Ionicons name="log-out-outline" size={24} color="#333" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}>Log Out</Text>
-                    <View style={styles.buttonSpacer} />
-                </Pressable>
+            <View style={{flex: 1, alignItems:'center'}}>
+                {header}
+                {body}
+                {buttons}
             </View>
         </GVArea>
     );
@@ -112,7 +175,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 24,
         fontWeight: '600',
-        marginBottom: 4,
+        marginVertical: 5,
     },
     website: {
         color: 'white',

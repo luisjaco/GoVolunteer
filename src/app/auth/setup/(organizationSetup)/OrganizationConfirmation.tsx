@@ -33,6 +33,7 @@ export default function VolunteerConfirmation() {
     } = useLocalSearchParams();
 
     const fetchSession = async () => {
+        console.log('[OrganizationConfirmation] fetching user session');
         const session = await supabase.auth.getSession();
         setSession(session);
         // console.log(session.data);
@@ -46,36 +47,37 @@ export default function VolunteerConfirmation() {
         const uint8Array = new Uint8Array(arrayBuffer);
 
         const [fileName, extension] = (profilePictureFileName as string).split('.') || '';
-        const filePath = `${uid}/${fileName}${Date.now()}.${extension}`;
+        const filePath = `${uid}/${fileName}_${Date.now()}.${extension}`;
         const contentType = `image/${extension}`;
 
-        console.log('attempting to upload user profile image: ', filePath)
+        console.log('[OrganizationConfirmation] attempting to upload image to\
+ organization_profile_images:', filePath)
         const { error } = await supabase.storage
-            .from('user_profile_images')
+            .from('organization_profile_images')
             .upload(
                 filePath,
                 uint8Array,
                 {
                     contentType: contentType,
-                    upsert: false
+                    upsert: true,
                 }
             );
 
         if (error) {
-            console.log('error uploading user profile image', error)
+            console.log('[OrganizationConfirmation] error: uploading user profile image:', error)
             setSupabaseError(true);
             return null;
         }
 
 
-        const { data } = await supabase.storage.from('user_profile_images').getPublicUrl(filePath);
-        console.log('success, ', data.publicUrl);
-        return data.publicUrl;
+        const { data } = await supabase.storage.from('organization_profile_images').getPublicUrl(filePath);
+        console.log('[OrganizationConfirmation] image upload success:', data.publicUrl);
+        return data.publicUrl
     };
 
     const insertToUsers = async (): Promise<boolean | null> => {
 
-        console.log('attemping to insert into users table. ');
+        console.log('[OrganizationConfirmation] attemping to insert into users table. ');
         const { error } = await supabase.from('users').insert({
             id: uid,
             email: email,
@@ -83,18 +85,18 @@ export default function VolunteerConfirmation() {
         }).single();
 
         if (error) {
-            console.log('error: unsuccessful users table insert', error)
+            console.log('[OrganizationConfirmation] error: unsuccessful users table insert', error)
             setSupabaseError(true);
             return false;
         }
 
-        console.log('insert into users table successful.')
+        console.log('[OrganizationConfirmation] insert into users table successful.')
         return true;
     }
 
     const insertToOrganizations = async (publicImageURL?: string) => {
 
-        console.log('attempting to insert into organizations table');
+        console.log('[OrganizationConfirmation] attempting to insert into organizations table');
         const { error } = await supabase.from('organizations').insert({
             user_id: uid,
             title: title,
@@ -109,12 +111,13 @@ export default function VolunteerConfirmation() {
         }).single();
 
         if (error) {
-            console.log('error: unsuccessful organizations table insert', error);
+            console.log('[OrganizationConfirmation] error: unsuccessful organizations table insert',
+                error);
             setSupabaseError(true);
             return;
         }
 
-        console.log('insert into organizations table successful')
+        console.log('[OrganizationConfirmation] insert into organizations table successful')
         return;
     }
 
@@ -134,14 +137,15 @@ export default function VolunteerConfirmation() {
 
 
         const insertToUserSuccess = await insertToUsers();
-        console.log(insertToUserSuccess);
+
         if (insertToUserSuccess && !supabaseError) {
             await insertToOrganizations(publicImageURL ? publicImageURL : undefined);
             setSupabaseError(false);
         }
 
         setCreatingProfile(false);
-
+        console.log(`[OrganizationConfirmation] setting uid:${uid} & userType with \
+is_organization:true`);
         await storage.set('userUID', uid);
         await storage.set('userType', 'organization');
         router.dismissAll();
@@ -253,10 +257,7 @@ export default function VolunteerConfirmation() {
                 </HelperText>
             </View>
         </View>
-
     )
-
-
 
 
     return (
