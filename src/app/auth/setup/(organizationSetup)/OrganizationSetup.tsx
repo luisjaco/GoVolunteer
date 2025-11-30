@@ -7,6 +7,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import BackButton from '../../../../components/BackButton'
+import { useEffect } from "react";
+import { Keyboard } from "react-native";
+
 
 export default function OrganizationSetup() {
     const [title, setTitle] = useState('');
@@ -357,6 +361,7 @@ export default function OrganizationSetup() {
 
     return (
         <GVArea>
+            <BackButton/>
             {header}
             {form}
         </GVArea>

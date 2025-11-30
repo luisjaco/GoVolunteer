@@ -8,6 +8,7 @@ import { HelperText } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import OrganizationCard from '@/src/components/OrganizationCard';
 import { storage } from '@utils/storage';
+import BackButton from '../../../../components/BackButton'
 
 export default function VolunteerConfirmation() {
     const [supabaseError, setSupabaseError] = useState(false);
@@ -262,6 +263,7 @@ is_organization:true`);
 
     return (
         <GVArea>
+            <BackButton/>
             {header}
             {body}
         </GVArea>
