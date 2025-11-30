@@ -27,3 +27,14 @@ export type User = {
     email: string,
     is_organization: boolean
 };
+
+
+export type Volunteer = {
+    id: string,
+    first_name: string,
+    last_name: string,
+    phone?: string,
+    age?: number,
+    gender?: 'male' | 'female' | 'other' | null,
+    profile_picture_url?: string
+};

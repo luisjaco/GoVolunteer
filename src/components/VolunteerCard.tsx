@@ -4,18 +4,18 @@ import { Pressable, Text, View } from 'react-native'
 import { PRIMARY_COLOR, SECONDARY_COLOR } from '../constants/colors'
 import { Avatar } from 'react-native-paper'
 
-type UserCardProps = {
+type VolunteerCardProps = {
     firstName: string,
     lastName: string,
     email: string,
     age?: number,
-    gender: 'male' | 'female' | 'other' | null,
+    gender?: 'male' | 'female' | 'other' | null,
     phone?: string
     profilePictureURI?: string,
     profilePictureURL?: string
 };
 
-export default function UserCard(props: UserCardProps) {
+export default function VolunteerCard(props: VolunteerCardProps) {
 
     //console.log("props: ", props)
 
