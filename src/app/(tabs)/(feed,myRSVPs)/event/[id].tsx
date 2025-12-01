@@ -44,6 +44,7 @@ export default function EventInfoPage() {
             >
                 {event
                     && <EventInfo 
+                            id={id}
                             name={event.name}
                             description={event.description}
                             maxVolunteers={event.max_volunteers}

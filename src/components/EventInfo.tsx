@@ -2,10 +2,13 @@ import {Ionicons} from '@expo/vector-icons';
 import {Text, TouchableOpacity, View, Image} from 'react-native';
 import {useState, useEffect} from 'react';
 import {SECONDARY_COLOR, BUTTON_COLOR} from '../constants/colors';
+import supabase from '../utils/requests';
+import {storage} from '../utils/storage';
 
 type UserType = 'organization' | 'volunteer';
 
 type EventInfoProps = {
+    id: number,
     name?: string,
     description?: string,
     categoryName?: string
@@ -25,9 +28,10 @@ type EventInfoProps = {
 export default function EventInfo(props: EventInfoProps) {
     const [formattedDate, setFomattedDate] = useState('');
     const [formattedTime, setFormattedTime] = useState('');
+    const [isRSVPed, setIsRSVPed] = useState<boolean>(false)
 
     const isOrg = props.userType === 'organization';
-    const primaryLabel = isOrg ? 'Edit' : 'RSVP';
+    const primaryLabel = isOrg ? 'Edit' : (isRSVPed ? 'Cancel RSVP' : 'RSVP' );
     const primaryOnPress = isOrg ? props.onEdit : props.onRSVP;
 
     const formatDate = (d: Date) => {
@@ -51,6 +55,28 @@ export default function EventInfo(props: EventInfoProps) {
         formatDate(dateTime);
         formatTime(dateTime);
     }, []);
+
+    const getIsRSVPed = async () => {
+        if (isOrg || props.disabled && props.id == undefined) {
+            console.log('[EventInfo] Declining to fetch RSVP status')
+            return
+        }
+        const uid = await storage.get('userUID') 
+        const {data, error} = await supabase.from('rsvps')
+            .select('*')
+            .eq('volunteer_id', uid)
+            .eq('event_id', props.id)
+        if (error != null) {
+            console.error(`[EventInfo] Failed to get RSVP status for user ${uid} and event ${props.id}:`, event)
+            return
+        }
+
+        const status = data.length > 0
+        setIsRSVPed(status)
+        console.log(`[EventInfo] Got RSVP status -- ${status}`)
+    }
+
+    useEffect(() => void getIsRSVPed(), [])
 
     const header = (
         <View
