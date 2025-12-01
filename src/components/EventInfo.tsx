@@ -1,18 +1,56 @@
 import {Ionicons} from '@expo/vector-icons'
-import {Pressable, Text, TouchableOpacity, View} from 'react-native'
+import { Text, TouchableOpacity, View, Image} from 'react-native'
+import { useState, useEffect} from 'react'
 import {SECONDARY_COLOR, BUTTON_COLOR, PRIMARY_COLOR} from '../constants/colors'
 
-export default function EventInfo() {
-  return (
+type EventInfoProps = {
+  name: string,
+  description: string,
+  categoryName: string
+  maxVolunteers: number,
+  currentVolunteers: number,
+  timestampz: string,
+  city: string,
+  state: string,
+  imageURI?: string,
+  publicImageURL?: string,
+  disabled: boolean
+}
+
+export default function EventInfo(props: EventInfoProps) {
+
+  const [formattedDate, setFomattedDate] = useState('');
+  const [formattedTime, setFormattedTime] = useState('');
+
+  const formatDate = (d: Date) => {
+    const formattedDate = d.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+    setFomattedDate(formattedDate);
+  }
+
+  const formatTime = (date: Date | null) => {
+    if (!date) return "";
+    const formattedTime = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    setFormattedTime(formattedTime);
+  }
+
+  useEffect(() => {
+    const dateTime = new Date(props.timestampz);
+    formatDate(dateTime);
+    formatTime(dateTime);
+  }, []);
+
+  const header = (
     <View
       style={{
-        marginHorizontal: 20,
-        marginTop: 10,
-        padding: 20,
+        width: '100%',
         paddingBottom: 10,
-        borderRadius: 10,
-        borderColor: "#B8B8B8",
-        borderWidth: 1,
+        borderBottomWidth: .5,
+        borderBottomColor: '#B8B8B8',
       }}
     >
       {/* Name of events + tag */}
@@ -32,7 +70,7 @@ export default function EventInfo() {
               fontSize: 16
             }}
           >
-            Name of Event
+            {props.name}
           </Text>
         </View>
         {/* Tag */}
@@ -42,37 +80,34 @@ export default function EventInfo() {
             paddingVertical: 2,
             paddingHorizontal: 35,
             borderRadius: 20,
+            width: 120,
+            justifyContent: 'center',
+            alignContent: 'center',
+            alignItems: 'center'
           }}
         >
           <Text
             style={{
+              width: 100,
               color: 'white',
               fontWeight: "600",
+              justifyContent: 'center',
+              textAlign: 'center'
             }}
           >
-            Tag
+            {props.categoryName || 'ERROR'}
           </Text>
         </View>
       </View>
-      {/* Organization Name */}
-      <View>
-        <Text style={{ color: "#656565", fontWeight: "600", marginBottom: 30 }}>
-          Organization Name
-        </Text>
-      </View>
-      {/* Date and Time */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+    </View>
+  );
+
+  const body = (
+    <View style={{marginVertical: 5}}>
         {/* Date */}
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-between",
             alignItems: "center",
           }}
         >
@@ -87,7 +122,7 @@ export default function EventInfo() {
 
           <View>
             <Text style={{ color: "#656565", fontSize: 13, lineHeight: 25 }}>
-              Date
+              {formattedDate}
             </Text>
           </View>
         </View>
@@ -95,7 +130,6 @@ export default function EventInfo() {
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-between",
             alignItems: "center",
             marginRight: 110,
           }}
@@ -105,14 +139,14 @@ export default function EventInfo() {
             size={20}
             color={SECONDARY_COLOR}
             style={{
-              marginRight: 2,
+              marginRight: 5,
             }}
           />
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-            12:00-2PM
+            {formattedTime}
           </Text>
         </View>
-      </View>
+        
       {/* Location */}
       <View
         style={{
@@ -130,7 +164,7 @@ export default function EventInfo() {
         />
         <View>
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-            Location
+            {props.city} | {props.state}
           </Text>
         </View>
       </View>
@@ -149,48 +183,76 @@ export default function EventInfo() {
             marginRight: 5,
           }}
         />
-        {/* Border */}
-        <View>
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-            0/20 Volunteers
+            {props.currentVolunteers}/{props.maxVolunteers} Volunteers
           </Text>
-        </View>
       </View>
-      <View style={{ height: 1, backgroundColor: "#B8B8B8", marginTop: 25 }}></View>
+    </View>
+  );
+
+  const footer = (
+    <View style={{ 
+      marginVertical: 5,
+      borderTopWidth: .5, 
+      borderBottomWidth: .5, 
+      borderColor: '#B8B8B8', 
+      }}>
+      {props.imageURI && (
+        <Image
+          source={{ uri: props.imageURI }}
+          style={{
+            marginTop: 5,
+            borderRadius: 5,
+            width: 320,
+            height: 180,
+            alignSelf:'center'
+          }} />
+      )}
       {/* About this event */}
-      <View>
-        <Text
-          style={{
-            lineHeight: 20,
-            fontWeight: "600",
-            marginTop: 15,
-          }}
-        >
-          About this Event
-        </Text>
-      </View>
+      <Text
+        style={{
+          fontWeight: "600",
+          marginTop: 5,
+        }}
+      >
+        About this Event
+      </Text>
       {/* Description */}
-      <View>
-        <Text
-          style={{
-            color: "#656565",
-            marginTop: 8,
-            fontWeight: "400",
-            fontSize: 14,
-            marginBottom: 25,
-          }}
-        >
-          Description
-        </Text>
-      </View>
+      <Text
+        style={{
+          color: "#656565",
+          fontWeight: "400",
+          fontStyle: 'italic',
+          fontSize: 14,
+          marginVertical: 5,
+        }}
+      >
+        {props.description}
+      </Text>
+    </View>
+  )
+  return (
+    <View
+      style={{
+        marginHorizontal: 20,
+        marginTop: 10,
+        padding: 20,
+        paddingBottom: 10,
+        borderRadius: 10,
+        borderColor: "#B8B8B8",
+        borderWidth: 1,
+      }}
+    >
+      {header}
+      {body}
+      {footer}
       {/* Buttons */}
       <View
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          marginTop: 15,
-          gap: 15,
+          marginTop: 5,
         }}
       >
         {/* RSVP Button */}
@@ -204,28 +266,15 @@ export default function EventInfo() {
             marginBottom: 12,
             alignItems: "center",
           }}
+          onPress={() => {
+            console.log("TODO")
+          }}
+          disabled={props.disabled}
         >
           <Text style={{ fontWeight: "600", fontSize: 14, color: "white" }}>
             RSVP
           </Text>
         </TouchableOpacity>
-        {/* Share Button */}
-        <Pressable>
-          <Ionicons
-            name="share-social-outline"
-            size={30}
-            style={{
-              borderWidth: 1.5,
-              borderColor: "#898989",
-              borderRadius: 10,
-              paddingVertical: 4,
-              paddingHorizontal: 4,
-              justifyContent: "center",
-              paddingRight: 5,
-              marginBottom: 12
-            }}
-          />
-        </Pressable>
       </View>
     </View>
   )

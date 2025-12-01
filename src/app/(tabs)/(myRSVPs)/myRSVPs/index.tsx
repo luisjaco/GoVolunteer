@@ -1,88 +1,94 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import GVArea from '@/src/components/GVArea';
 import EventCard from '@/src/components/EventCard';
 
 //Temp import
 
-import {Link} from 'expo-router'
+import { Link } from 'expo-router'
 
 import { PRIMARY_COLOR } from '@/src/constants/colors';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function MyRSVPsScreen() {
-    // Handler for Cancel RSVP button
-    const handleCancelRSVP = (eventId: string) => {
-        console.log('Cancel RSVP for event:', eventId);
-        // TODO: Add actual cancel RSVP logic here
-    };
+
+    const header = (
+        <View style={styles.headerContainer}>
+            <View style={styles.headerContent}>
+                <Text style={styles.headerTitle}>
+                    My Events
+                </Text>
+                <Text style={styles.headerSubtitle}>
+                    View your posted events
+                </Text>
+            </View>
+            <Link href='/myRSVPs/PostEvent' push asChild>
+                <TouchableOpacity activeOpacity={.6}>
+                    <Ionicons
+                        name='add-circle-outline'
+                        style={{ color: 'white' }}
+                        size={40}
+                    />
+                </TouchableOpacity>
+            </Link>
+
+        </View>
+    );
+
+    const body = (
+        <ScrollView style={styles.scrollContainer}>
+            <EventCard 
+                created_at={''}
+                organization_id={''}
+                category={'f'}
+                description={'f'}
+                state={'f'}
+                city={'f'}
+                max_volunteers={0}
+                current_volunteers={0}
+                image_url={'f'}
+                date={'f'}
+                time={'f'}
+                organization_title={'SAMPLE'}
+            />
+            
+        </ScrollView>
+    )
 
     return (
         <GVArea>
-            {/* Header */}
-            <View style={styles.headerContainer}>
-                <View style={styles.headerContent}>
-                    <Text style={styles.headerTitle}>
-                        My RSVPs
-                    </Text>
-                    <Text style={styles.headerSubtitle}>
-                        View your upcoming volunteer events
-                    </Text>
-                </View>
-            </View>
-
-            {/* ScrollView with event cards */}
-            <ScrollView style={styles.scrollContainer}>
-                {/* Event 1 */}
-                <EventCard 
-                    showCancelButton={true}
-                    onCancelRSVP={() => handleCancelRSVP('1')}
-                />
-
-                {/* Event 2 */}
-                <EventCard 
-                    showCancelButton={true}
-                    onCancelRSVP={() => handleCancelRSVP('2')}
-                />
-
-                {/* Event 3 */}
-                <EventCard 
-                    showCancelButton={true}
-                    onCancelRSVP={() => handleCancelRSVP('3')}
-                />
-            </ScrollView>
-
-            <View>
-                <Link href="/myRSVPs/PostEvent" style={{fontSize: 30, textDecorationLine: "underline"}}>➡️To Event Creation Screen</Link>
-            </View>
-            <View>
-                <Link href="/myRSVPs/EditEvent" style={{fontSize: 30, textDecorationLine: "underline"}}>➡️To Event Edit Screen</Link>
-            </View>
+            {header}
+            {body}
         </GVArea>
     );
 
-    
+
 
 }
 
 const styles = StyleSheet.create({
     headerContainer: {
         backgroundColor: PRIMARY_COLOR,
+        height: '15%',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: '5%'
     },
     headerContent: {
-        marginRight: 20,
-        marginLeft: 20,
     },
     headerTitle: {
         color: 'white',
-        paddingTop: 35,
         fontWeight: '500',
-        paddingBottom: 10,
+        paddingBottom: 5,
         fontSize: 24,
     },
     headerSubtitle: {
         color: 'white',
         fontSize: 14,
-        paddingBottom: 20,
         opacity: 0.9,
     },
 

@@ -6,13 +6,12 @@ import {View, Text, Pressable, TouchableOpacity} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR} from "../constants/colors";
 import {Link, useRouter} from "expo-router";
-
+import { Avatar } from 'react-native-paper';
 
 type EventCardProps = {
   created_at: string,
-  organization_id: number,
+  organization_id: string,
   category: string,
-  category_id: number,
   description: string,
   state: string,
   city: string,
@@ -20,14 +19,23 @@ type EventCardProps = {
   current_volunteers: number,
   image_url: string,
   date: string,
-  time: string
+  time: string,
+  organization_profile_picture_url?: string,
+  organization_title: string
 };
 
 export default function EventCard(props: EventCardProps) {
   const router = useRouter();
 
   const Header = (
-    <>
+    <View
+      style={{
+        width: '100%',
+        paddingBottom: 10,
+        borderBottomWidth: .5,
+        borderBottomColor: '#B8B8B8',
+      }}
+    >
       {/* Name of events + tag */}
       <View
         style={{
@@ -72,7 +80,7 @@ export default function EventCard(props: EventCardProps) {
           Organization Name
         </Text>
       </View>
-    </>
+    </View>
   );
 
   const Description = (
@@ -188,58 +196,50 @@ export default function EventCard(props: EventCardProps) {
           </Text>
         </View>
       </View>
+
+      
+      
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Avatar.Image
+        size={20}
+        style={{marginRight: 5}}
+        source={(props.organization_profile_picture_url ?
+          { uri: props.organization_profile_picture_url } :
+          require('@/assets/icons/default-organization.png')
+        )}/>
+        <View>
+          <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
+            Hosted by <Text style={{fontWeight:'bold'}}>{props.organization_title || 'SAMPLE'}</Text>
+          </Text>
+        </View>
+      </View>
     </>
   );
 
-  const Buttons = (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginTop: 15,
-        gap: 15,
-      }}
-    >
-
-
-      {/* View Button */}
-        <TouchableOpacity
-          activeOpacity={.6}
-          style={{
-            backgroundColor: "white",
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-            borderRadius: 10,
-            borderWidth: 1.5,
-            borderColor: SECONDARY_COLOR,
-            marginBottom: 12,
-            alignItems: "center",
-          }}
-          onPress={() => router.push('/infoScreens/EventInfo')}
-        >
-          <Text style={{ fontWeight: "600", fontSize: 14, color: SECONDARY_COLOR }}>
-            View
-          </Text>
-        </TouchableOpacity>
-    </View>
-  )
-
   return (
-    <View
-      style={{
-        marginHorizontal: 20,
-        marginTop: 20,
-        padding: 20,
-        paddingBottom: 10,
-        borderRadius: 10,
-        borderColor: "#B8B8B8",
-        borderWidth: 1, 
-      }}
-    >
-      {Header}
-      {Description}
-      {Buttons}
-    </View>
+    <Link href='/(tabs)/(feed)/infoScreens/EventInfo' push asChild>
+      <TouchableOpacity activeOpacity={.6}>
+        <View
+          style={{
+            marginHorizontal: 20,
+            marginTop: 20,
+            padding: 20,
+            paddingBottom: 10,
+            borderRadius: 10,
+            borderColor: "#B8B8B8",
+            borderWidth: 1,
+          }}
+        >
+          {Header}
+          {Description}
+        </View>
+      </TouchableOpacity>
+    </Link>
+
   );
 }

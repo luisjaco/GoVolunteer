@@ -65,7 +65,7 @@ export default function WelcomeScreen() {
                     <Link href='/auth/SignIn' push asChild>
                         {/* Sign In */}
                         <TouchableOpacity
-                            activeOpacity={.4}
+                            activeOpacity={.6}
                             style={{
                                 backgroundColor: "white",
                                 paddingVertical: 12,

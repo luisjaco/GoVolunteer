@@ -2,285 +2,549 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   Modal,
   Pressable,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   Keyboard,
+  TouchableOpacity,
+  Alert,
+  Image
 } from "react-native";
-import { Link } from "expo-router";
-import { useState, useRef, useEffect } from "react";
+import { useRouter } from "expo-router";
+import { useState, useEffect } from "react";
 import { Calendar } from "react-native-calendars";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import GVArea from "@/src/components/GVArea";
+import { BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "@/src/constants/colors";
+import React from "react";
+import supabase, { Organization } from "@/src/utils/requests";
+import DropDownPicker from 'react-native-dropdown-picker';
+import { HelperText, TextInput } from 'react-native-paper';
+import * as ImagePicker from 'expo-image-picker';
+import { ImagePickerAsset } from 'expo-image-picker';
+import { Ionicons } from "@expo/vector-icons";
 
 export default function PostEvent() {
-  // Scroll + input refs
-  const scrollRef = useRef<ScrollView>(null);
-  const addressRef = useRef<View>(null);
-  const maxVolunteersRef = useRef<View>(null);
+  const router = useRouter();
+  const [categoryList, setCategoryList] = useState<{ label: string; value: number }[]>([]);
 
-  const [date, setDate] = useState<string | null>(null);
   const [openDate, setOpenDate] = useState(false);
-  const [time, setTime] = useState<Date | null>(null);
   const [openTime, setOpenTime] = useState(false);
-  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [showDropDown, setShowDropDown] = useState(false);
 
-  // Listen for keyboard open/close
-  useEffect(() => {
-    const showSub = Keyboard.addListener("keyboardDidShow", () => {
-      setKeyboardOpen(true);
-    });
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [categoryID, setCategoryID] = useState(11);
+  const [date, setDate] = useState<Date | null>(null);
+  const [time, setTime] = useState<Date | null>(null);
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [maxVolunteers, setMaxVolunteers] = useState('');
+  const [image, setImage] = useState<ImagePickerAsset>();
 
-    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardOpen(false);
-    });
+  const [nameError, setNameError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [maxVolunteersError, setMaxVolunteersError] = useState(false);
+  const [dateError, setDateError] = useState(false);
+  const [timeError, setTimeError] = useState(false);
+  const [cityError, setCityError] = useState(false);
+  const [stateError, setStateError] = useState(false);
+  const [formError, setFormError] = useState(false);
 
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
-
-  function formatDate(iso: string) {
-    const d = new Date(iso);
-    return d.toLocaleDateString("en-US", {
+  const formatDate =(d: Date) => {
+    const formattedDate = d.toLocaleDateString("en-US", {
       weekday: "long",
       month: "long",
       day: "numeric",
       year: "numeric",
     });
+    return formattedDate;
   }
 
-  function formatTime(date: Date | null) {
+  const formatTime = (date: Date | null) => {
     if (!date) return "";
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const formattedDate = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    return formattedDate;
   }
 
-  // Scroll smoothly to any input ref
-  const scrollToRef = (ref: any) => {
-    setTimeout(() => {
-      if (!ref.current || !scrollRef.current) return;
+  const fetchCategories = async () => {
 
-      ref.current.measureLayout(
-        scrollRef.current as any,
-        (x: number, y: number) => {
-          scrollRef.current?.scrollTo({
-            y: y - 20,
-            animated: true,
-          });
-        },
-        () => {}
-      );
-    }, 250);
+    console.log('[PostEvent] fetching categories');
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.log('[PostEvent] error: fetching categories', error);
+      return;
+    }
+
+    console.log('[PostEvent] fetching categories successful');
+
+    const categoryList = data.map((t) => (
+      {
+        label: t.name,
+        value: t.id
+      }
+    ))
+
+    setCategoryList(categoryList);
+  }
+
+  const pickImage = async () => {
+    console.log('[PostEvent] user initiated local image upload');
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Permission required', 'Permission to access the media library is required.');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 1
+    });
+
+    if (result.canceled) {
+      console.log('[PostEvent] user canceled image upload');
+    } else {
+      setImage(result.assets[0]);
+      console.log("[PostEvent] image uploaded locally: ", result);
+    }
   };
 
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      {/* Header */}
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const validateForm = (): boolean => {
+    const nameValid = Boolean(name);
+    setNameError(!nameValid);
+
+    const descriptionValid = Boolean(description);
+    setDescriptionError(!descriptionValid);
+
+    const maxVolunteersValid = (maxVolunteers !== '' && Number(maxVolunteers) > 0);
+    setMaxVolunteersError(!maxVolunteersValid);
+
+    const dateValid = date !== null;
+    const timeValid = time !== null;
+    let timestampz: Date | null = null;
+    if (dateValid && timeValid) {
+      timestampz = new Date(date);
+      timestampz.setHours(
+        time.getHours(),
+        time.getMinutes(),
+      );
+    }
+
+    const timestampzValid = (timestampz !== null && timestampz.getTime() > Date.now());
+    setDateError(!dateValid || !timestampzValid)
+    setTimeError(!timeValid || !timestampzValid);
+
+    const stateRegEx = /^[A-Z]{2}$/;
+    const stateValid = stateRegEx.test(state);
+    setStateError(!stateValid);
+
+    const cityRegEx = /^[A-Za-z]+(?:[ -][A-Za-z]+)*$/;
+    const cityValid = cityRegEx.test(city);
+    setCityError(!cityValid);
+
+    return (nameValid && descriptionValid && maxVolunteersValid && timestampzValid && stateValid);
+  }
+
+  const createTimestampz = (): string => {
+    if (date && time) {
+      const t = new Date(date);
+        t.setHours(
+          time.getHours(),
+          time.getMinutes(),
+        );
+        return t.toString();
+    }
+    return '';
+  }
+
+  const handlePostEvent = async () => {
+    if (!validateForm()) {
+      setFormError(true);
+      return;
+    }
+
+    const timestampz = createTimestampz();
+
+
+    const category = categoryList.find( (x) => x.value === categoryID);
+    const categoryName = category?.label;
+
+    setFormError(false);
+    router.push({
+      pathname: '/myRSVPs/ConfirmPost',
+      params: {
+        name: name,
+        description: description,
+        categoryID: categoryID,
+        categoryName: categoryName,
+        maxVolunteers: maxVolunteers,
+        timestampz: timestampz,
+        city: city,
+        state: state,
+        imageFileName: image?.fileName,
+        imageURI: image?.uri
+      }
+    })
+  }
+
+
+  const categoryDropDown = (
+    <View style={{ zIndex: 1000, elevation: 1000 }}>
+      <DropDownPicker
+        open={showDropDown}
+        value={categoryID}
+        items={categoryList}
+        setOpen={() => setShowDropDown(!showDropDown)}
+        setValue={setCategoryID}
+        placeholder="Select an option"
+        searchable={true}
+        listMode="SCROLLVIEW" // or 'SCROLLVIEW' / 'FLATLIST'
+        style={styles.prettyInput}
+        dropDownContainerStyle={{
+          borderColor: "#b7b7b7"
+        }}
+      />
+    </View>
+
+  );
+
+  const imagePicker = (
+    <View
+      style={{
+        display: 'flex',
+        borderRadius: 5,
+        width: 240,
+        height: 135,
+        backgroundColor: "rgba(254, 251, 254, 1)",
+        borderWidth: 1,
+        borderColor: "rgba(136, 133, 141, 1)",
+        alignSelf: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent: 'center',
+        overflow: 'hidden'
+      }}
+    >
+      {(image && image !== null) ?
+        (
+          <Image
+            source={{ uri: image.uri }}
+            style={{
+              width: 240,
+              height: 135
+            }}
+          />
+        ) : (
+          <TouchableOpacity
+            activeOpacity={.6}
+            onPress={pickImage}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignContent: 'center'
+            }}
+          >
+            <Ionicons size={24} name='images-outline' color={"#B0B0B0"} />
+            <HelperText type='info'>
+              Insert image here
+            </HelperText>
+          </TouchableOpacity>
+        )}
+
+      {image && (
+        <TouchableOpacity
+          onPress={() => setImage(undefined)}
+        >
+          <Ionicons
+            name={'close-outline'}
+            size={24}
+            color='white'
+            style={{
+              position: 'absolute',
+              bottom: 85,
+              left: '30%',
+              padding: 8,
+              borderRadius: '100%',
+              backgroundColor: 'hsla(0, 4%, 83%, 0.50)'
+            }}
+          />
+        </TouchableOpacity>
+      )}
+    </View>
+
+  );
+
+  const header = (
+    <React.Fragment>
       <View style={styles.header}>
         <Text style={styles.headerText}>Create an Event</Text>
       </View>
+    </React.Fragment>
+  )
 
-      {/* Keyboard Handling */}
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 110 : 0}
-      >
-        <ScrollView
-          ref={scrollRef}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          automaticallyAdjustKeyboardInsets={false}
-          contentContainerStyle={{
-            paddingBottom: keyboardOpen ? 20 : 160,
-          }}
-        >
-          <View style={styles.container}>
-            {/* Event Name */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.text}>Event Name</Text>
+  const form = (
+    <ScrollView
+      contentContainerStyle={{
+        paddingHorizontal: 10,
+        paddingBottom: 20
+      }}
+      keyboardDismissMode="interactive"
+    >
+      <View style={styles.container}>
+        {/* Event Name */}
+        <View style={styles.fieldContainer}>
+          <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+            Event Name <Text style={{ color: (nameError ? 'red' : 'black') }}>*</Text>
+          </Text>
+          <TextInput
+            placeholder="Enter event name"
+            placeholderTextColor="#B0B0B0"
+            value={name}
+            onChangeText={(value) => setName(value)}
+            mode="outlined"
+            dense
+            activeOutlineColor={SECONDARY_COLOR}
+            error={nameError}
+          />
+          <HelperText type="error" visible={nameError}>
+            This is a required field.
+          </HelperText>
+        </View>
+
+        {/* Description */}
+        <View style={styles.fieldContainer}>
+          <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+            Description <Text style={{ color: (descriptionError ? 'red' : 'black') }}>*</Text>
+          </Text>
+          <TextInput
+            placeholder="Enter a description"
+            value={description}
+            onChangeText={(value) => setDescription(value)}
+            multiline
+            placeholderTextColor="#B0B0B0"
+            mode="outlined"
+            activeOutlineColor={SECONDARY_COLOR}
+            error={descriptionError}
+          />
+          <HelperText type="error" visible={descriptionError}>
+            This is a required field.
+          </HelperText>
+        </View>
+
+        {/* Tags */}
+        <View style={styles.fieldContainer}>
+          <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+            Event Category <Text style={{ color: 'black' }}>*</Text>
+          </Text>
+          {categoryDropDown}
+          <HelperText type="error" visible={false}>
+            Does nothing, for padding.
+          </HelperText>
+        </View>
+
+        {/* MAX VOLUNTEERS */}
+        <View style={styles.fieldContainer}>
+          <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+            Volunteers Needed <Text style={{ color: (maxVolunteersError ? 'red' : 'black') }}>*</Text>
+          </Text>
+          <TextInput
+            placeholder="Enter maximum number of volunteers"
+            placeholderTextColor="#B0B0B0"
+            value={maxVolunteers}
+            onChangeText={(value) => setMaxVolunteers(value)}
+            mode="outlined"
+            dense
+            activeOutlineColor={SECONDARY_COLOR}
+            error={maxVolunteersError}
+            keyboardType="numeric"
+          />
+          <HelperText type="error" visible={maxVolunteersError}>
+            Volunteers needed must be a positive integer.
+          </HelperText>
+        </View>
+
+        {/* DATE */}
+        <View style={styles.fieldContainer}>
+          <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+            Date <Text style={{ color: (dateError ? 'red' : 'black') }}>*</Text>
+          </Text>
+          <Pressable onPress={() => setOpenDate(true)}>
+            <View pointerEvents="none">
               <TextInput
-                placeholder="Enter event name"
+                placeholder="Enter a date"
                 placeholderTextColor="#B0B0B0"
-                style={styles.prettyInput}
-                returnKeyType="done"
-                onSubmitEditing={() => Keyboard.dismiss()}
+                value={date ? formatDate(date) : ""}
+                editable={false}
+                mode="outlined"
+                dense
+                activeOutlineColor={SECONDARY_COLOR}
+                error={dateError}
               />
             </View>
+          </Pressable>
+          <HelperText type="error" visible={dateError}>
+            Date must be in the future.
+          </HelperText>
+        </View>
 
-            {/* Description */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.text}>Description</Text>
-              <TextInput
-                placeholder="Enter a description"
-                placeholderTextColor="#B0B0B0"
-                style={[styles.prettyInput, { height: 90 }]}
-                multiline
-                textAlignVertical="top"
-                blurOnSubmit={true}
-                returnKeyType="done"
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-            </View>
-
-            {/* Tags */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.text}>Tag/s</Text>
-              <TextInput
-                placeholder="Enter tags"
-                placeholderTextColor="#B0B0B0"
-                style={styles.prettyInput}
-                returnKeyType="done"
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-            </View>
-
-            {/* DATE */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.text}>Date</Text>
-              <Pressable onPress={() => setOpenDate(true)}>
-                <View pointerEvents="none">
-                  <TextInput
-                    placeholder="Enter a date"
-                    placeholderTextColor="#B0B0B0"
-                    value={date ? formatDate(date) : ""}
-                    style={styles.prettyInput}
-                    editable={false}
-                  />
-                </View>
-              </Pressable>
-            </View>
-
-            {/* DATE MODAL */}
-            <Modal visible={openDate} transparent animationType="slide">
-              <View style={styles.modalContainer}>
-                <Pressable 
-                  style={styles.backdrop} 
-                  onPress={() => setOpenDate(false)}
-                />
-                <View style={styles.modalBox}>
-                  <Pressable
-                    style={styles.closeCircle}
-                    onPress={() => setOpenDate(false)}
-                  >
-                    <Text style={{ fontSize: 20, fontWeight: "700" }}>X</Text>
-                  </Pressable>
-
-                  <View style={{ height: 400, marginTop: 25 }}>
-                    <Calendar
-                      onDayPress={(day) => {
-                        setDate(day.dateString);
-                        setOpenDate(false);
-                      }}
-                      markedDates={{
-                        [date || ""]: { selected: true, selectedColor: "#588157" },
-                      }}
-                    />
-                  </View>
-                </View>
-              </View>
-            </Modal>
-
-            {/* TIME */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.text}>Time</Text>
-              <Pressable onPress={() => setOpenTime(true)}>
-                <View pointerEvents="none">
-                  <TextInput
-                    placeholder="Enter a time"
-                    placeholderTextColor="#B0B0B0"
-                    value={time ? formatTime(time) : ""}
-                    style={styles.prettyInput}
-                    editable={false}
-                  />
-                </View>
-              </Pressable>
-            </View>
-
-            <DateTimePickerModal
-              isVisible={openTime}
-              mode="time"
-              date={time || new Date()}
-              onConfirm={(selected) => {
-                setTime(selected);
-                setOpenTime(false);
-              }}
-              onCancel={() => setOpenTime(false)}
+        {/* DATE MODAL */}
+        <Modal visible={openDate} transparent animationType="slide">
+          <View style={styles.modalContainer}>
+            <Pressable
+              style={styles.backdrop}
+              onPress={() => setOpenDate(false)}
             />
+            <View style={styles.modalBox}>
+              <View style={{ height: 400, marginTop: 25 }}>
+                <Calendar
+                  onDayPress={(day) => {
 
-            {/* ADDRESS */}
-            <View ref={addressRef} style={styles.fieldContainer}>
-              <Text style={styles.text}>Address</Text>
-              <TextInput
-                placeholder="Enter full street address (123 Main St, City, State)"
-                placeholderTextColor="#B0B0B0"
-                style={[styles.prettyInput, { height: 100 }]}
-                multiline
-                textAlignVertical="top"
-                onFocus={() => scrollToRef(addressRef)}
-                blurOnSubmit={true}
-                returnKeyType="done"
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-            </View>
-
-            {/* MAX VOLUNTEERS */}
-            <View ref={maxVolunteersRef} style={styles.fieldContainer}>
-              <Text style={styles.text}>Maximum Volunteers</Text>
-              <TextInput
-                placeholder="Enter maximum number of volunteers"
-                placeholderTextColor="#B0B0B0"
-                style={styles.prettyInput}
-                keyboardType="numeric"
-                onFocus={() => scrollToRef(maxVolunteersRef)}
-                returnKeyType="done"
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-            </View>
-
-            {/* BUTTONS */}
-            <View style={styles.buttonContainer}>
-              <Pressable style={styles.postButton}>
-                <Text style={styles.postButtonText}>Post</Text>
-              </Pressable>
-
-              <Pressable style={styles.deleteButton}>
-                <Text style={styles.deleteButtonText}>Delete Event</Text>
-              </Pressable>
+                    setDate(new Date(day.year, day.month - 1, day.day))
+                    setOpenDate(false);
+                  }}
+                  markedDates={{
+                    [(date && formatDate(date)) || '']: { selected: true, selectedColor: PRIMARY_COLOR },
+                  }}
+                />
+              </View>
             </View>
           </View>
+        </Modal>
 
-          {/* BACK LINK */}
-          <Link
-            href="/myRSVPs"
-            style={{
-              marginTop: 30,
-              marginLeft: 20,
-              color: "#588157",
-              fontWeight: "600",
-            }}
-          >
-            ← Back to My RSVPs
-          </Link>
+        {/* TIME */}
+        <View style={styles.fieldContainer}>
+          <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+            Time <Text style={{ color: (timeError ? 'red' : 'black') }}>*</Text>
+          </Text>
+          <Pressable onPress={() => setOpenTime(true)}>
+            <View pointerEvents="none">
+              <TextInput
+                placeholder="Enter a time"
+                placeholderTextColor="#B0B0B0"
+                value={time ? formatTime(time) : ""}
+                editable={false}
+                mode="outlined"
+                dense
+                activeOutlineColor={SECONDARY_COLOR}
+                error={timeError}
+              />
+            </View>
+          </Pressable>
+          <HelperText type="error" visible={timeError}>
+            Time & date must be in the future.
+          </HelperText>
+        </View>
 
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        <DateTimePickerModal
+          isVisible={openTime}
+          mode="time"
+          date={time || new Date()}
+          onConfirm={(selected) => {
+            setTime(selected);
+            setOpenTime(false);
+          }}
+          onCancel={() => setOpenTime(false)}
+        />
+
+        {/* CITY */}
+        <View style={styles.fieldContainer}>
+          <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+            City <Text style={{ color: (cityError ? 'red' : 'black') }}>*</Text>
+          </Text>
+          <TextInput
+            placeholder="City"
+            value={city}
+            onChangeText={(value) => setCity(value)}
+            placeholderTextColor="#B0B0B0"
+            mode="outlined"
+            dense
+            activeOutlineColor={SECONDARY_COLOR}
+            error={cityError}
+          />
+          <HelperText type="error" visible={cityError}>
+            This is a required field.
+          </HelperText>
+        </View>
+
+        {/* STATE */}
+        <View style={styles.fieldContainer}>
+          <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
+            State <Text style={{ color: (stateError ? 'red' : 'black') }}>*</Text>
+          </Text>
+          <TextInput
+            placeholder="State"
+            value={state}
+            onChangeText={(value) => setState(value)}
+            placeholderTextColor="#B0B0B0"
+            mode="outlined"
+            dense
+            activeOutlineColor={SECONDARY_COLOR}
+            error={stateError}
+          />
+          <HelperText type="error" visible={stateError}>
+            This is a required field.
+          </HelperText>
+        </View>
+
+        {imagePicker}
+        <HelperText type="error" visible={false}>
+          does nothing, for padding
+        </HelperText>
+
+        <TouchableOpacity
+          activeOpacity={.6}
+          onPress={() => handlePostEvent()}
+          style={{
+            backgroundColor: BUTTON_COLOR,
+            paddingVertical: 12,
+            borderRadius: 10,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ fontWeight: "600", fontSize: 16, color: 'white' }}>
+            Review Event
+          </Text>
+        </TouchableOpacity>
+        <HelperText type="error" visible={formError}>
+            There is an error in this form.
+        </HelperText>
+      </View>
+    </ScrollView>
+  )
+
+  return (
+    <GVArea>
+      <View style={{ flex: 1, backgroundColor: "white" }}>
+        {header}
+        {form}
+      </View>
+    </GVArea>
   );
 }
 
-/* -------------------- STYLES -------------------- */
-
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: "#588157",
-    height: 70,
+    backgroundColor: PRIMARY_COLOR,
+    height: '15%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: "center",
-    justifyContent: "center",
+    alignContent: "center",
   },
   headerText: {
     fontSize: 24,
@@ -291,10 +555,9 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: 20,
     marginTop: 40,
-    gap: 20,
   },
   fieldContainer: {
-    gap: 8,
+    
   },
   text: {
     fontSize: 19,
@@ -364,3 +627,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
+

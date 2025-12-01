@@ -9,14 +9,13 @@ import { storage } from '@/src/utils/storage';
 import OrganizationCard from '@/src/components/OrganizationCard';
 import { Avatar, HelperText } from 'react-native-paper';
 
-
-
-export default function OrgProfileScreen() {
+export default function ViewOrganizationProfile() {
 
     // todo , fetch logic, 
     const router = useRouter(); // method used to push a new screen onto a stack.
-    const [organization, setOrganization] = useState<Organization | null>(null);
+    const [organization, setOrganization] = useState<Organization>();
     const [email, setEmail] = useState('');
+    const [id, setID] = useState('');
 
     const fetchOrganizationInfo = async (uid: string) => {
         const { data, error } = await supabase.from('organizations').select('*').eq('user_id', uid)
@@ -41,13 +40,14 @@ export default function OrgProfileScreen() {
         }
         else {
             setEmail(data[0].email);
+            setID(data[0].id)
         }
     }
 
     const handleEditAccount = () => {
         router.push({
             pathname: '/profile/EditOrganizationProfile',
-            params: {...organization}
+            params: {...organization, id: id}
         });
     };
 
@@ -61,10 +61,28 @@ export default function OrgProfileScreen() {
         await fetchOrganizationInfo(uid);
         await fetchEmail();
     }
+
     useEffect(() => {
         gatherOrganizationInfo();
     }, []);
 
+    useEffect( () => {
+        // update organization on frontend when it is updated.
+        const channel = supabase.channel('organization-channel');
+        channel.on('postgres_changes', 
+            {
+                event: "UPDATE", 
+                schema: 'public', 
+                table: 'organizations'
+            }, 
+            (payload) => {
+                const updateOrganization = payload.new as Organization;
+                setOrganization(updateOrganization);
+            }
+        ).subscribe((status) => {
+            console.log('[ViewOrganizationProfile]', status, 'to live changes')
+        });
+    }, [])
 
     const header = (
         <View style={{
@@ -88,7 +106,7 @@ export default function OrgProfileScreen() {
     );
 
     const body = (
-        <View style={{alignItems: 'center', marginTop: '5%'}}>
+        <View style={{alignItems: 'center', marginTop: '2%'}}>
             {(organization && email) && (
                 <OrganizationCard
                     title={organization.title}
@@ -111,7 +129,7 @@ export default function OrgProfileScreen() {
     const buttons = (
         <View 
             style={{
-                marginTop: '5%',
+                marginTop: '2%',
                 display: 'flex',
                 width: '80%',
                 alignItems: 'center', 

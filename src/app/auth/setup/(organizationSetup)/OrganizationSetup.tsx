@@ -197,7 +197,7 @@ export default function OrganizationSetup() {
                 mode="outlined"
                 dense
                 activeOutlineColor={SECONDARY_COLOR}
-                placeholder="Enter your organization title."
+                placeholder="Enter your organization title"
                 value={title}
                 onChangeText={(value) => setTitle(value)}
                 error={titleError}
@@ -280,7 +280,7 @@ export default function OrganizationSetup() {
                 mode="outlined"
                 dense
                 activeOutlineColor={SECONDARY_COLOR}
-                placeholder={"Old Westbury"}
+                placeholder={"City"}
                 value={city}
                 onChangeText={(value) => setCity(value)}
                 error={cityError}
@@ -296,7 +296,7 @@ export default function OrganizationSetup() {
                 mode="outlined"
                 dense
                 activeOutlineColor={SECONDARY_COLOR}
-                placeholder={"Northern Boulevard"}
+                placeholder={"Street adress"}
                 value={address}
                 onChangeText={(value) => setAddress(value)}
             />

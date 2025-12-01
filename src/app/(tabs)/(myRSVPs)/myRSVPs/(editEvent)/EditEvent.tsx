@@ -8,13 +8,13 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   Keyboard,
 } from "react-native";
 import { Link } from "expo-router";
 import { useState, useRef } from "react";
 import { Calendar } from "react-native-calendars";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import GVArea from "@/src/components/GVArea";
 
 export default function EditEvent() {
   // Scroll + input refs
@@ -55,204 +55,211 @@ export default function EditEvent() {
             animated: true,
           });
         },
-        () => {}
+        () => { }
       );
     }, 250);
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Edit Event</Text>
-      </View>
+    <GVArea>
+      <View style={{ 
+        flex: 1, 
+        backgroundColor: "white",
+        height: '15%',
+        width: '100%',
+        }}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Edit Event</Text>
+        </View>
 
-      {/* Keyboard Handling */}
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 110 : 0}
-      >
-        <ScrollView
-          ref={scrollRef}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 160 }}
-          automaticallyAdjustKeyboardInsets={false}
+        {/* Keyboard Handling */}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 110 : 0}
         >
-          <View style={styles.container}>
-            {/* Event Name */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.text}>Event Name</Text>
-              <TextInput
-                placeholder="Enter event name"
-                placeholderTextColor="#B0B0B0"
-                style={styles.prettyInput}
-                returnKeyType="done"
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-            </View>
-
-            {/* Description */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.text}>Description</Text>
-              <TextInput
-                placeholder="Enter a description"
-                placeholderTextColor="#B0B0B0"
-                style={[styles.prettyInput, { height: 90 }]}
-                multiline
-                textAlignVertical="top"
-                blurOnSubmit={true}
-                returnKeyType="done"
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-            </View>
-
-            {/* Tags */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.text}>Tag/s</Text>
-              <TextInput
-                placeholder="Enter tags"
-                placeholderTextColor="#B0B0B0"
-                style={styles.prettyInput}
-                returnKeyType="done"
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-            </View>
-
-            {/* DATE */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.text}>Date</Text>
-              <Pressable onPress={() => setOpenDate(true)}>
-                <View pointerEvents="none">
-                  <TextInput
-                    placeholder="Enter a date"
-                    placeholderTextColor="#B0B0B0"
-                    value={date ? formatDate(date) : ""}
-                    style={styles.prettyInput}
-                    editable={false}
-                  />
-                </View>
-              </Pressable>
-            </View>
-
-            {/* DATE MODAL */}
-            <Modal visible={openDate} transparent animationType="slide">
-              <View style={styles.modalContainer}>
-                <Pressable 
-                  style={styles.backdrop} 
-                  onPress={() => setOpenDate(false)}
+          <ScrollView
+            ref={scrollRef}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 160 }}
+            automaticallyAdjustKeyboardInsets={false}
+          >
+            <View style={styles.container}>
+              {/* Event Name */}
+              <View style={styles.fieldContainer}>
+                <Text style={styles.text}>Event Name</Text>
+                <TextInput
+                  placeholder="Enter event name"
+                  placeholderTextColor="#B0B0B0"
+                  style={styles.prettyInput}
+                  returnKeyType="done"
+                  onSubmitEditing={() => Keyboard.dismiss()}
                 />
-                <View style={styles.modalBox}>
-                  <Pressable
-                    style={styles.closeCircle}
-                    onPress={() => setOpenDate(false)}
-                  >
-                    <Text style={{ fontSize: 20, fontWeight: "700" }}>X</Text>
-                  </Pressable>
+              </View>
 
-                  <View style={{ height: 400, marginTop: 25 }}>
-                    <Calendar
-                      onDayPress={(day) => {
-                        setDate(day.dateString);
-                        setOpenDate(false);
-                      }}
-                      markedDates={{
-                        [date || ""]: { selected: true, selectedColor: "#588157" },
-                      }}
+              {/* Description */}
+              <View style={styles.fieldContainer}>
+                <Text style={styles.text}>Description</Text>
+                <TextInput
+                  placeholder="Enter a description"
+                  placeholderTextColor="#B0B0B0"
+                  style={[styles.prettyInput, { height: 90 }]}
+                  multiline
+                  textAlignVertical="top"
+                  blurOnSubmit={true}
+                  returnKeyType="done"
+                  onSubmitEditing={() => Keyboard.dismiss()}
+                />
+              </View>
+
+              {/* Tags */}
+              <View style={styles.fieldContainer}>
+                <Text style={styles.text}>Tag/s</Text>
+                <TextInput
+                  placeholder="Enter tags"
+                  placeholderTextColor="#B0B0B0"
+                  style={styles.prettyInput}
+                  returnKeyType="done"
+                  onSubmitEditing={() => Keyboard.dismiss()}
+                />
+              </View>
+
+              {/* DATE */}
+              <View style={styles.fieldContainer}>
+                <Text style={styles.text}>Date</Text>
+                <Pressable onPress={() => setOpenDate(true)}>
+                  <View pointerEvents="none">
+                    <TextInput
+                      placeholder="Enter a date"
+                      placeholderTextColor="#B0B0B0"
+                      value={date ? formatDate(date) : ""}
+                      style={styles.prettyInput}
+                      editable={false}
                     />
                   </View>
-                </View>
+                </Pressable>
               </View>
-            </Modal>
 
-            {/* TIME */}
-            <View style={styles.fieldContainer}>
-              <Text style={styles.text}>Time</Text>
-              <Pressable onPress={() => setOpenTime(true)}>
-                <View pointerEvents="none">
-                  <TextInput
-                    placeholder="Enter a time"
-                    placeholderTextColor="#B0B0B0"
-                    value={time ? formatTime(time) : ""}
-                    style={styles.prettyInput}
-                    editable={false}
+              {/* DATE MODAL */}
+              <Modal visible={openDate} transparent animationType="slide">
+                <View style={styles.modalContainer}>
+                  <Pressable
+                    style={styles.backdrop}
+                    onPress={() => setOpenDate(false)}
                   />
+                  <View style={styles.modalBox}>
+                    <Pressable
+                      style={styles.closeCircle}
+                      onPress={() => setOpenDate(false)}
+                    >
+                      <Text style={{ fontSize: 20, fontWeight: "700" }}>X</Text>
+                    </Pressable>
+
+                    <View style={{ height: 400, marginTop: 25 }}>
+                      <Calendar
+                        onDayPress={(day) => {
+                          setDate(day.dateString);
+                          setOpenDate(false);
+                        }}
+                        markedDates={{
+                          [date || ""]: { selected: true, selectedColor: "#588157" },
+                        }}
+                      />
+                    </View>
+                  </View>
                 </View>
-              </Pressable>
+              </Modal>
+
+              {/* TIME */}
+              <View style={styles.fieldContainer}>
+                <Text style={styles.text}>Time</Text>
+                <Pressable onPress={() => setOpenTime(true)}>
+                  <View pointerEvents="none">
+                    <TextInput
+                      placeholder="Enter a time"
+                      placeholderTextColor="#B0B0B0"
+                      value={time ? formatTime(time) : ""}
+                      style={styles.prettyInput}
+                      editable={false}
+                    />
+                  </View>
+                </Pressable>
+              </View>
+
+              <DateTimePickerModal
+                isVisible={openTime}
+                mode="time"
+                date={time || new Date()}
+                onConfirm={(selected) => {
+                  setTime(selected);
+                  setOpenTime(false);
+                }}
+                onCancel={() => setOpenTime(false)}
+              />
+
+              {/* ADDRESS */}
+              <View ref={addressRef} style={styles.fieldContainer}>
+                <Text style={styles.text}>Address</Text>
+                <TextInput
+                  placeholder="Enter full street address (123 Main St, City, State)"
+                  placeholderTextColor="#B0B0B0"
+                  style={[styles.prettyInput, { height: 100 }]}
+                  multiline
+                  textAlignVertical="top"
+                  onFocus={() => scrollToRef(addressRef)}
+                  blurOnSubmit={true}
+                  returnKeyType="done"
+                  onSubmitEditing={() => Keyboard.dismiss()}
+                />
+              </View>
+
+              {/* MAX VOLUNTEERS */}
+              <View ref={maxVolunteersRef} style={styles.fieldContainer}>
+                <Text style={styles.text}>Maximum Volunteers</Text>
+                <TextInput
+                  placeholder="Enter maximum number of volunteers"
+                  placeholderTextColor="#B0B0B0"
+                  style={styles.prettyInput}
+                  keyboardType="numeric"
+                  onFocus={() => scrollToRef(maxVolunteersRef)}
+                  returnKeyType="done"
+                  onSubmitEditing={() => Keyboard.dismiss()}
+                />
+              </View>
+
+              {/* ACTION BUTTONS */}
+              <View style={styles.buttonContainer}>
+                <Pressable style={styles.confirmButton}>
+                  <Text style={styles.confirmText}>Confirm Edit</Text>
+                </Pressable>
+
+                <Pressable style={styles.undoButton}>
+                  <Text style={styles.undoText}>Undo Changes</Text>
+                </Pressable>
+
+                <Pressable style={styles.deleteButton}>
+                  <Text style={styles.deleteText}>Delete Event</Text>
+                </Pressable>
+              </View>
             </View>
 
-            <DateTimePickerModal
-              isVisible={openTime}
-              mode="time"
-              date={time || new Date()}
-              onConfirm={(selected) => {
-                setTime(selected);
-                setOpenTime(false);
+            <Link
+              href="/myRSVPs"
+              style={{
+                marginTop: 30,
+                marginLeft: 20,
+                color: "#588157",
+                fontWeight: "600",
               }}
-              onCancel={() => setOpenTime(false)}
-            />
-
-            {/* ADDRESS */}
-            <View ref={addressRef} style={styles.fieldContainer}>
-              <Text style={styles.text}>Address</Text>
-              <TextInput
-                placeholder="Enter full street address (123 Main St, City, State)"
-                placeholderTextColor="#B0B0B0"
-                style={[styles.prettyInput, { height: 100 }]}
-                multiline
-                textAlignVertical="top"
-                onFocus={() => scrollToRef(addressRef)}
-                blurOnSubmit={true}
-                returnKeyType="done"
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-            </View>
-
-            {/* MAX VOLUNTEERS */}
-            <View ref={maxVolunteersRef} style={styles.fieldContainer}>
-              <Text style={styles.text}>Maximum Volunteers</Text>
-              <TextInput
-                placeholder="Enter maximum number of volunteers"
-                placeholderTextColor="#B0B0B0"
-                style={styles.prettyInput}
-                keyboardType="numeric"
-                onFocus={() => scrollToRef(maxVolunteersRef)}
-                returnKeyType="done"
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-            </View>
-
-            {/* ACTION BUTTONS */}
-            <View style={styles.buttonContainer}>
-              <Pressable style={styles.confirmButton}>
-                <Text style={styles.confirmText}>Confirm Edit</Text>
-              </Pressable>
-
-              <Pressable style={styles.undoButton}>
-                <Text style={styles.undoText}>Undo Changes</Text>
-              </Pressable>
-
-              <Pressable style={styles.deleteButton}>
-                <Text style={styles.deleteText}>Delete Event</Text>
-              </Pressable>
-            </View>
-          </View>
-
-          <Link
-            href="/myRSVPs"
-            style={{
-              marginTop: 30,
-              marginLeft: 20,
-              color: "#588157",
-              fontWeight: "600",
-            }}
-          >
-            ← Back to myRSVPS
-          </Link>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+            >
+              ← Back to myRSVPS
+            </Link>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
+    </GVArea>
   );
 }
 

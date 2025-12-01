@@ -10,130 +10,186 @@ import {
 import type { AlertButton } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {
+    Avatar,
+    HelperText,
     Text,
     TextInput,
 } from "react-native-paper";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import GVArea from "@components/GVArea";
 import { PRIMARY_COLOR, SECONDARY_COLOR, BUTTON_COLOR } from "@constants/colors";
-import BackButton from '../../../../../components/BackButton'
+import BackButton from '@components/BackButton'
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ImagePickerAsset } from "expo-image-picker";
+import supabase from "@/src/utils/requests";
 
 export default function EditOrganizationScreen() {
-    const [title, setTitle] = useState("Organization Name From Backend");
-    const [motto, setMotto] = useState("Motto from backend");
-    const [description, setDescription] = useState("Description from backend");
-    const [email, setEmail] = useState("org.email@example.com");
-    const [phone, setPhone] = useState("555-123-4567");
-    const [organizationUrl, setOrganizationUrl] = useState("https://example.org");
-    const [address, setAddress] = useState("123 Main St");
-    const [city, setCity] = useState("City From Backend");
-    const [state, setState] = useState("NY");
-    const [profilePicUrl, setProfilePicUrl] = useState<string | null>(null);
+    const router = useRouter();
+    const {
+        id,
+        title,
+        motto,
+        phone,
+        organization_url: organizationURL,
+        state,
+        city,
+        address,
+        description,
+        profile_picture_url: publicURL
+    } = useLocalSearchParams();
+    const [newTitle, setNewTitle] = useState(title as string);
+    const [newMotto, setNewMotto] = useState(motto as string);
+    const [newPhone, setNewPhone] = useState(phone as string);
+    const [newOrganizationURL, setNewOrganizationURL] = useState(organizationURL as string);
+    const [newState, setNewState] = useState(state as string);
+    const [newCity, setNewCity] = useState(city as string);
+    const [newAddress, setNewAddress] = useState(address as string);
+    const [newDescription, setNewDescription] = useState(description as string);
+    const [newProfilePicture, setNewProfilePicture] = useState<ImagePickerAsset | string | null>(
+        publicURL ? publicURL as string : null);
 
-    const handleSave = () => {
-        console.log("Save Organization Changes Pressed");
-        console.log({
-            title,
-            motto,
-            description,
-            email,
-            phone,
-            organization_url: organizationUrl,
-            address,
-            city,
-            state,
-            profile_picture_url: profilePicUrl,
-        });
-        // TODO: send data to backend
+    // for required values, ensure correct/filled
+    const [titleError, setTitleError] = useState(false);
+    const [phoneError, setPhoneError] = useState(false);
+    const [organizationURLError, setOrganizationURLError] = useState(false);
+    const [stateError, setStateError] = useState(false);
+    const [cityError, setCityError] = useState(false);
+    const [supabaseError, setSupabaseError] = useState(false);
+
+    const validateForm = (): boolean => {
+        // error is false if valid.. true if invalid.
+
+        const titleValid = Boolean(newTitle);
+        setTitleError(!titleValid);
+
+        const phoneRegEx = /^(\()?\d{3}(\))?(-|\s)?\d{3}(-|\s)\d{4}$/
+        const phoneValid = phoneRegEx.test(newPhone);
+        setPhoneError(!phoneValid);
+
+        let urlRegEx = /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
+        const organizationURLValid = urlRegEx.test(newOrganizationURL);
+        setOrganizationURLError(!organizationURLValid);
+
+        const stateRegEx = /^[A-Z]{2}$/;
+        const stateValid = stateRegEx.test(newState);
+        setStateError(!stateValid);
+
+        const cityRegEx = /^[A-Za-z]+(?:[ -][A-Za-z]+)*$/;
+        const cityValid = cityRegEx.test(newCity);
+        setCityError(!cityValid);
+
+        return (titleValid && phoneValid && organizationURLValid && stateValid && cityValid);
     };
 
-    const handleEditProfilePic = async () => {
-        try {
-            // Ask for permissions
-            const { status: libStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            const { status: camStatus } = await ImagePicker.requestCameraPermissionsAsync();
+    const uploadImage = async (): Promise<string | null> => {
+        if (newProfilePicture !== null && typeof newProfilePicture !== 'string') {
+            const res = await fetch(newProfilePicture.uri as string);
+            const arrayBuffer = await res.arrayBuffer();
+            const uint8Array = new Uint8Array(arrayBuffer);
 
-            if (libStatus !== "granted" || camStatus !== "granted") {
-                Alert.alert(
-                    "Permission Required",
-                    "We need access to your camera and photo library to change your organization logo."
+            const [fileName, extension] = (newProfilePicture.fileName as string).split('.') || '';
+            const filePath = `${id}/${fileName}_${Date.now()}.${extension}`;
+            const contentType = `image/${extension}`;
+
+            console.log('[EditOrganizationProfile] attempting to upload image to\
+ organization_profile_images:', filePath)
+            const { error } = await supabase.storage
+                .from('organization_profile_images')
+                .upload(
+                    filePath,
+                    uint8Array,
+                    {
+                        contentType: contentType,
+                        upsert: true,
+                    }
                 );
-                return;
+
+            if (error) {
+                console.log('[EditOrganizationProfile] error: uploading user profile image:', error)
+                setSupabaseError(true);
+                return null;
             }
 
-            const actions: AlertButton[] = [];
 
-            // If there is already a profile pic, allow removing it
-            if (profilePicUrl) {
-                actions.push({
-                    text: "Remove logo",
-                    style: "destructive",
-                    onPress: () => setProfilePicUrl(null),
-                });
-            }
+            const { data } = await supabase
+                .storage
+                .from('organization_profile_images')
+                .getPublicUrl(filePath);
+            console.log('[EditOrganizationProfile] image upload success:', data.publicUrl);
+            return data.publicUrl;
+        }
 
-            // Take Photo option
-            actions.push({
-                text: "Take Photo",
-                onPress: async () => {
-                    try {
-                        const result = await ImagePicker.launchCameraAsync({
-                            allowsEditing: true,
-                            aspect: [1, 1], // square crop
-                            quality: 0.8,
-                        });
+        return null;
+    };
 
-                        if (!result.canceled) {
-                            const uri = result.assets[0]?.uri;
-                            if (uri) {
-                                setProfilePicUrl(uri);
-                            }
-                        }
-                    } catch (err) {
-                        console.error("Error using camera:", err);
-                        Alert.alert("Error", "Something went wrong while taking a photo.");
-                    }
-                },
-            });
+    const updateOrganization = async (publicImageURL: string | null): Promise<Boolean> => {
 
-            // Choose from camera roll
-            actions.push({
-                text: "Choose from Gallery",
-                onPress: async () => {
-                    try {
-                        const result = await ImagePicker.launchImageLibraryAsync({
-                            mediaTypes: ['images'],
-                            allowsEditing: true,
-                            aspect: [1, 1],
-                            quality: 0.8,
-                        });
+        console.log('[OrganizationConfirmation] attempting to insert into organizations table');
+        const { error } = await supabase.from('organizations').update({
+            user_id: id,
+            title: newTitle,
+            motto: newMotto,
+            phone: newPhone,
+            organization_url: newOrganizationURL,
+            state: newState,
+            city: newCity,
+            address: newAddress,
+            description: newDescription,
+            profile_picture_url: publicImageURL
+        }).eq('user_id', id);
 
-                        if (!result.canceled) {
-                            const uri = result.assets[0]?.uri;
-                            if (uri) {
-                                setProfilePicUrl(uri);
-                            }
-                        }
-                    } catch (err) {
-                        console.error("Error picking image from library:", err);
-                        Alert.alert("Error", "Something went wrong while picking an image.");
-                    }
-                },
-            });
+        if (error) {
+            console.log('[OrganizationConfirmation] error: unsuccessful organizations table update',
+                error);
+            setSupabaseError(true);
+            return false;
+        }
 
-            // Cancel option
-            actions.push({
-                text: "Cancel",
-                style: "cancel",
-            });
+        console.log('[OrganizationConfirmation] update into organizations table successful')
+        return true;
+    }
 
-            Alert.alert("Change Organization Logo", "Choose an option", actions);
-        } catch (err) {
-            console.error("Error in handleEditProfilePic:", err);
-            Alert.alert("Error", "Something went wrong while changing your organization logo.");
+    const handleSave = async () => {
+        if (!validateForm()) {
+            return false;
+        }
+
+        let filePath = null;
+        if (typeof newProfilePicture === 'string') {
+            filePath = newProfilePicture;
+        } else if ( newProfilePicture !== null) {
+            filePath = await uploadImage();
+        }
+
+        if (!supabaseError && await updateOrganization(filePath)) {
+            setSupabaseError(false);
+            router.back();
         }
     };
 
+    const pickImage = async () => {
+        console.log('[EditOrganizationProfile] user initiated local image upload');
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permissionResult.granted) {
+            Alert.alert('Permission required', 'Permission to access the media library is required.');
+            return;
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 4],
+            quality: 1
+        });
+
+        if (result.canceled) {
+            console.log('[EditOrganizationProfile] user canceled image upload');
+        } else {
+            setNewProfilePicture(result.assets[0]);
+            console.log("[EditOrganizationProfile] image uploaded locally: ", result);
+        }
+    };
+    
     const Header = (
         <View
             style={{
@@ -148,7 +204,7 @@ export default function EditOrganizationScreen() {
                 variant="headlineMedium"
                 style={{ color: "white", fontWeight: "600" }}
             >
-                Organization Settings
+                Edit Organization
             </Text>
         </View>
     );
@@ -162,67 +218,44 @@ export default function EditOrganizationScreen() {
                 contentContainerStyle={{
                     flexGrow: 1,
                     paddingHorizontal: 24,
-                    paddingTop: 12,
-                    paddingBottom: 32,
+                    paddingTop: '5%',
+                    paddingBottom: '10%'
                 }}
                 keyboardShouldPersistTaps="handled"
             >
-                {/* Logo / profile picture */}
-                <TouchableOpacity
-                    onPress={handleEditProfilePic}
-                    activeOpacity={0.7}
-                    style={{ alignItems: "center", marginBottom: 16 }}
-                >
-                    <View style={{ position: "relative" }}>
-                        <View
-                            style={{
-                                width: 90,
-                                height: 90,
-                                borderRadius: 45,
-                                backgroundColor: "#ffffff",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                marginBottom: 8,
-                                overflow: "hidden",
-                            }}
-                        >
-                            {profilePicUrl ? (
-                                <Image
-                                    source={{ uri: profilePicUrl }}
-                                    style={{ width: "100%", height: "100%" }}
-                                    resizeMode="cover"
-                                />
-                            ) : (
-                                <MaterialCommunityIcons
-                                    name="office-building"
-                                    size={75}
-                                    color={"#aaaaaa"}
-                                />
-                            )}
-                        </View>
+                <View style={{ height: 128, width: 128, alignSelf: 'center', marginBottom: '5%' }}>
+                    <Avatar.Image
+                        size={128}
+                        source={(typeof newProfilePicture === "string") ?
+                            { uri: newProfilePicture }
+                            :
+                            (
+                                (newProfilePicture !== null) ?
+                                    { uri: newProfilePicture.uri } :
+                                    require('@/assets/icons/default-organization.png')
+                            )
+                        }
+                        style={{ marginRight: 20 }} />
 
-                        <View
+                    <TouchableOpacity
+                        onPress={((newProfilePicture !== null) ?
+                            () => setNewProfilePicture(null) : pickImage)}
+                    >
+                        <Ionicons
+                            name={(newProfilePicture !== null ? 'close-outline' : 'pencil-outline')}
+                            size={30}
+                            color='white'
                             style={{
-                                position: "absolute",
-                                bottom: 8,
-                                right: 8,
-                                backgroundColor: PRIMARY_COLOR,
-                                width: 24,
-                                borderRadius: 14,
-                                alignItems: "center",
-                                justifyContent: "center",
-                                paddingBottom: 2,
-                                paddingTop: 2,
+                                position: 'absolute',
+                                bottom: 0,
+                                right: 0,
+                                padding: 8,
+                                borderRadius: '100%',
+                                backgroundColor: 'hsla(0, 4%, 83%, 0.50)'
                             }}
-                        >
-                            <MaterialCommunityIcons
-                                name={"pencil"}
-                                size={20}
-                                color={"white"}
-                            />
-                        </View>
-                    </View>
-                </TouchableOpacity>
+                        />
+                    </TouchableOpacity>
+                </View>
 
                 {/* ================== INFO SECTION ================== */}
                 <Text
@@ -234,7 +267,6 @@ export default function EditOrganizationScreen() {
                 >
                     Organization Info
                 </Text>
-
                 <View
                     style={{
                         backgroundColor: "#fafafa",
@@ -246,33 +278,39 @@ export default function EditOrganizationScreen() {
                     }}
                 >
                     <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                        Organization Name
+                        Title <Text style={{ color: (titleError ? 'red' : 'black') }}>*</Text>
                     </Text>
                     <TextInput
                         mode="outlined"
                         dense
                         activeOutlineColor={SECONDARY_COLOR}
-                        placeholder="Enter organization name"
-                        value={title}
-                        onChangeText={setTitle}
-                        style={{ marginBottom: 12 }}
+                        placeholder="Enter your organization title"
+                        value={newTitle}
+                        onChangeText={(value) => setNewTitle(value)}
+                        error={titleError}
                     />
+                    <HelperText type="error" visible={titleError}>
+                        This is a required field.
+                    </HelperText>
 
                     <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                        Website
+                        Website <Text style={{ color: (organizationURLError ? 'red' : 'black') }}>*</Text>
                     </Text>
                     <TextInput
                         mode="outlined"
                         dense
                         activeOutlineColor={SECONDARY_COLOR}
-                        placeholder="https://your-organization.org"
-                        value={organizationUrl}
-                        onChangeText={setOrganizationUrl}
+                        placeholder="Website/social media page"
+                        value={newOrganizationURL}
+                        onChangeText={(value) => setNewOrganizationURL(value)}
                         autoCapitalize="none"
                         autoCorrect={false}
                         spellCheck={false}
-                        style={{ marginBottom: 12 }}
+                        error={organizationURLError}
                     />
+                    <HelperText type="error" visible={organizationURLError}>
+                        This is a required field.
+                    </HelperText>
 
                     <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
                         Motto
@@ -281,11 +319,13 @@ export default function EditOrganizationScreen() {
                         mode="outlined"
                         dense
                         activeOutlineColor={SECONDARY_COLOR}
-                        placeholder="Enter organization motto"
-                        value={motto}
-                        onChangeText={setMotto}
-                        style={{ marginBottom: 12 }}
+                        placeholder={"\"Striving to spread love & peace.\""}
+                        value={newMotto}
+                        onChangeText={(value) => setNewMotto(value)}
                     />
+                    <HelperText type="error" visible={false}>
+                        does nothing, for padding
+                    </HelperText>
 
                     <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
                         Description
@@ -294,8 +334,8 @@ export default function EditOrganizationScreen() {
                         mode="outlined"
                         activeOutlineColor={SECONDARY_COLOR}
                         placeholder="Describe your organization"
-                        value={description}
-                        onChangeText={setDescription}
+                        value={newDescription}
+                        onChangeText={(value) => setNewDescription(value)}
                         multiline
                         numberOfLines={10}
                         style={{
@@ -326,35 +366,21 @@ export default function EditOrganizationScreen() {
                     }}
                 >
                     <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                        Email
+                        Phone Number <Text style={{ color: (phoneError ? 'red' : 'black') }}>*</Text>
                     </Text>
                     <TextInput
                         mode="outlined"
                         dense
                         activeOutlineColor={SECONDARY_COLOR}
-                        placeholder="Enter contact email"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        spellCheck={false}
-                        style={{ marginBottom: 12 }}
-                    />
-
-                    <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                        Phone Number
-                    </Text>
-                    <TextInput
-                        mode="outlined"
-                        dense
-                        activeOutlineColor={SECONDARY_COLOR}
-                        placeholder="Enter phone number"
-                        value={phone}
-                        onChangeText={setPhone}
+                        placeholder="###-###-####"
+                        value={newPhone}
+                        onChangeText={(value) => setNewPhone(value)}
                         keyboardType="phone-pad"
-                        style={{ marginBottom: 12 }}
+                        error={phoneError}
                     />
+                    <HelperText type="error" visible={phoneError}>
+                        Phone must be formatted ###-###-####.
+                    </HelperText>
 
                     <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
                         Address
@@ -364,41 +390,47 @@ export default function EditOrganizationScreen() {
                         dense
                         activeOutlineColor={SECONDARY_COLOR}
                         placeholder="Street address"
-                        value={address}
-                        onChangeText={setAddress}
-                        style={{ marginBottom: 12 }}
+                        value={newAddress}
+                        onChangeText={(value) => setNewAddress(value)}
                     />
+                    <HelperText type="error" visible={false}>
+                        does nothing, for padding
+                    </HelperText>
 
                     <View style={{ flexDirection: "row", gap: 12 }}>
                         <View style={{ flex: 1 }}>
                             <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                                City
+                                City <Text style={{ color: (cityError ? 'red' : 'black') }}>*</Text>
                             </Text>
                             <TextInput
                                 mode="outlined"
                                 dense
                                 activeOutlineColor={SECONDARY_COLOR}
                                 placeholder="City"
-                                value={city}
-                                onChangeText={setCity}
+                                value={newCity}
+                                onChangeText={(value) => setNewCity(value)}
                                 style={{ marginBottom: 12 }}
+                                error={cityError}
                             />
                         </View>
 
+
                         <View style={{ width: 90 }}>
                             <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: "500" }}>
-                                State
+                                State <Text style={{ color: (stateError ? 'red' : 'black') }}>*</Text>
                             </Text>
                             <TextInput
                                 mode="outlined"
                                 dense
                                 activeOutlineColor={SECONDARY_COLOR}
                                 placeholder="State"
-                                value={state}
-                                onChangeText={setState}
+                                value={newState}
+                                onChangeText={(value) => setNewState(value)}
                                 style={{ marginBottom: 12 }}
+                                error={stateError}
                             />
                         </View>
+
                     </View>
                 </View>
 
@@ -423,6 +455,9 @@ export default function EditOrganizationScreen() {
                         Save Changes
                     </Text>
                 </TouchableOpacity>
+                <HelperText type="error" visible={supabaseError}>
+                        Something went wrong, please try again.
+                </HelperText>
             </ScrollView>
         </KeyboardAvoidingView>
     );
