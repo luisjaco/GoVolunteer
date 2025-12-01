@@ -29,7 +29,6 @@ export default function MyRSVPsScreen() {
     const body = (
         <ScrollView style={styles.scrollContainer}>
             <EventCard
-                created_at={''}
                 organization_id={''}
                 category={'f'}
                 description={'f'}

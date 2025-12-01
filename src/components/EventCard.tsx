@@ -1,33 +1,57 @@
 // this card will be used to generate
 // a new volunteering event card on the home feed (volunteer view)
 
-import React from 'react';
-import {View, Text, Pressable, TouchableOpacity} from "react-native";
+import React, { useState, useEffect } from 'react';
+import {View, Text, Pressable, TouchableOpacity, Image } from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {BUTTON_COLOR, PRIMARY_COLOR, SECONDARY_COLOR} from "../constants/colors";
 import {Link, useRouter} from "expo-router";
 import { Avatar } from 'react-native-paper';
 
 type EventCardProps = {
-  created_at: string,
+  event_id: number
+  name: string
   organization_id: string,
-  category: string,
+  categoryName: string,
   description: string,
   state: string,
   city: string,
-  max_volunteers: number,
-  current_volunteers: number,
-  image_url: string,
-  date: string,
-  time: string,
+  maxVolunteers: number,
+  currentVolunteers: number,
+  imageURI: string,
+  timestampz: string
   organization_profile_picture_url?: string,
   organization_title: string
 };
 
 export default function EventCard(props: EventCardProps) {
-  const router = useRouter();
 
-  const Header = (
+  const [formattedDate, setFomattedDate] = useState('');
+  const [formattedTime, setFormattedTime] = useState('');
+
+  const formatDate = (d: Date) => {
+    const formattedDate = d.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+    setFomattedDate(formattedDate);
+  }
+
+  const formatTime = (date: Date | null) => {
+    if (!date) return "";
+    const formattedTime = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    setFormattedTime(formattedTime);
+  }
+
+  useEffect(() => {
+    const dateTime = new Date(props.timestampz);
+    formatDate(dateTime);
+    formatTime(dateTime);
+  }, []);
+
+  const header = (
     <View
       style={{
         width: '100%',
@@ -50,9 +74,10 @@ export default function EventCard(props: EventCardProps) {
             style={{
               lineHeight: 20,
               fontWeight: "600",
+              fontSize: 16
             }}
           >
-            Name of Event
+            {props.name}
           </Text>
         </View>
         {/* Tag */}
@@ -62,56 +87,34 @@ export default function EventCard(props: EventCardProps) {
             paddingVertical: 2,
             paddingHorizontal: 35,
             borderRadius: 20,
+            width: 120,
+            justifyContent: 'center',
+            alignContent: 'center',
+            alignItems: 'center'
           }}
         >
           <Text
             style={{
-              color: "white",
+              width: 100,
+              color: 'white',
               fontWeight: "600",
+              justifyContent: 'center',
+              textAlign: 'center'
             }}
           >
-            Tag
+            {props.categoryName || 'ERROR'}
           </Text>
         </View>
-      </View>
-      {/* Organization Name */}
-      <View>
-        <Text style={{ color: "#656565", fontWeight: "600" }}>
-          Organization Name
-        </Text>
       </View>
     </View>
   );
 
-  const Description = (
-    <>
-      {/* Description */}
-      <View>
-        <Text
-          style={{
-            color: "#656565",
-            marginTop: 8,
-            fontWeight: "400",
-            fontSize: 14,
-            marginBottom: 10,
-          }}
-        >
-          Description
-        </Text>
-      </View>
-      {/* Date and Time */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+  const body = (
+    <View style={{marginVertical: 5}}>
         {/* Date */}
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-between",
             alignItems: "center",
           }}
         >
@@ -126,7 +129,7 @@ export default function EventCard(props: EventCardProps) {
 
           <View>
             <Text style={{ color: "#656565", fontSize: 13, lineHeight: 25 }}>
-              Date
+              {formattedDate}
             </Text>
           </View>
         </View>
@@ -134,7 +137,6 @@ export default function EventCard(props: EventCardProps) {
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-between",
             alignItems: "center",
             marginRight: 110,
           }}
@@ -144,15 +146,14 @@ export default function EventCard(props: EventCardProps) {
             size={20}
             color={SECONDARY_COLOR}
             style={{
-              marginRight: 2,
+              marginRight: 5,
             }}
           />
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-            12:00-2PM
+            {formattedTime}
           </Text>
         </View>
-      </View>
-
+        
       {/* Location */}
       <View
         style={{
@@ -170,11 +171,10 @@ export default function EventCard(props: EventCardProps) {
         />
         <View>
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-            Location
+            {props.city} | {props.state}
           </Text>
         </View>
       </View>
-
       {/* Volunteers */}
       <View
         style={{
@@ -190,15 +190,11 @@ export default function EventCard(props: EventCardProps) {
             marginRight: 5,
           }}
         />
-        <View>
           <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
-            0/20 Volunteers
+            {props.currentVolunteers}/{props.maxVolunteers} Volunteers
           </Text>
-        </View>
       </View>
 
-      
-      
       <View
         style={{
           flexDirection: "row",
@@ -218,28 +214,29 @@ export default function EventCard(props: EventCardProps) {
           </Text>
         </View>
       </View>
-    </>
+    </View>
   );
+
 
   return (
-    <Link href='/(tabs)/(feed)/infoScreens/EventInfo' push asChild>
-      <TouchableOpacity activeOpacity={.6}>
-        <View
-          style={{
-            marginHorizontal: 20,
-            marginTop: 20,
-            padding: 20,
-            paddingBottom: 10,
-            borderRadius: 10,
-            borderColor: "#B8B8B8",
-            borderWidth: 1,
-          }}
-        >
-          {Header}
-          {Description}
-        </View>
+    <Link href='/(tabs)/(myRSVPs)/infoScreens/EventInfo' push asChild>
+      <TouchableOpacity
+        activeOpacity={.6}
+        style={{
+          marginHorizontal: 20,
+          marginTop: 10,
+          padding: 20,
+          paddingBottom: 10,
+          borderRadius: 10,
+          borderColor: "#B8B8B8",
+          borderWidth: 1,
+        }}
+      >
+        {header}
+        {body}
       </TouchableOpacity>
+
     </Link>
 
-  );
+  )
 }

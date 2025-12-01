@@ -28,19 +28,6 @@ export type User = {
     is_organization: boolean
 };
 
-export type Event = {
-    id: string,
-    organization_id: string,
-    category_id: string,
-    description: string,
-    state: string,
-    city: string,
-    max_volunteers: string,
-    current_volunteers: string,
-    image_url: string,
-    date_time: string
-}
-
 export type Category = {
     id: number,
     name: string
@@ -55,4 +42,18 @@ export type Volunteer = {
     age?: number,
     gender?: 'male' | 'female' | 'other' | null,
     profile_picture_url?: string
+};
+
+export type Event = {
+    id: number,
+    name: string,
+    organization_id: string,
+    category_id: number,
+    description: string,
+    state: string,
+    city: string,
+    max_volunteers: number,
+    current_volunteers: number,
+    image_url: string,
+    date_time: Date
 };

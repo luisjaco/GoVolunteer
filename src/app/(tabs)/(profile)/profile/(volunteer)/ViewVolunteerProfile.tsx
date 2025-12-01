@@ -1,8 +1,8 @@
-import React, {useEffect, useCallback} from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useFocusEffect} from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import GVArea from '@/src/components/GVArea';
 import { PRIMARY_COLOR } from '@/src/constants/colors';
 import supabase, { Volunteer } from '@/src/utils/requests';
@@ -43,7 +43,7 @@ export default function ProfileScreen() {
     const handleEditAccount = () => {
         router.push({
             pathname: '/profile/EditVolunteerProfile',
-            params: {...volunteer}
+            params: { ...volunteer }
         });
         //  navigate to edit profile screen
     };
@@ -53,18 +53,33 @@ export default function ProfileScreen() {
         //  add logout logic
     };
 
-    const gatherVolunteerInfo = useCallback(async () => {
+    const gatherVolunteerInfo = async () => {
         const uid = (await storage.get('userUID')) || 'ERROR';
         await fetchVolunteerInfo(uid);
         await fetchEmail(uid);
-    }, []);
+    };
 
-    useFocusEffect(
-        useCallback(() => {
-            // Runs every time this screen comes into focus
-            gatherVolunteerInfo();
-        }, [gatherVolunteerInfo])
-    );
+    useEffect( () => {
+        gatherVolunteerInfo();
+    }, []);
+    
+    useEffect( () => {
+        // update volunteer on frontend when it is updated.
+        const channel = supabase.channel('volunteer-channel');
+        channel.on('postgres_changes', 
+            {
+                event: "UPDATE", 
+                schema: 'public', 
+                table: 'volunteers'
+            }, 
+            (payload) => {
+                const updateVolunteer = payload.new as Volunteer;
+                setVolunteer(updateVolunteer);
+            }
+        ).subscribe((status) => {
+            console.log('[ViewOrganizationProfile]', status, 'to live profile changes')
+        });
+    }, [])
 
     const header = (
         <View style={{
@@ -78,8 +93,8 @@ export default function ProfileScreen() {
             <Avatar.Image
                 size={128}
                 source={(volunteer?.profile_picture_url ?
-                        { uri: volunteer?.profile_picture_url } :
-                        require('@/assets/icons/default-volunteer.png')
+                    { uri: volunteer?.profile_picture_url } :
+                    require('@/assets/icons/default-volunteer.png')
                 )}
             />
 
@@ -89,7 +104,7 @@ export default function ProfileScreen() {
     );
 
     const body = (
-        <View style={{alignItems: 'center', marginTop: '2%', width: '80%'}}>
+        <View style={{ alignItems: 'center', marginTop: '2%', width: '80%' }}>
             {(volunteer && email) && (
                 <VolunteerCard
                     firstName={volunteer.first_name}
@@ -101,7 +116,7 @@ export default function ProfileScreen() {
                     profilePictureURL={volunteer.profile_picture_url}
                 />
             )}
-            <HelperText type='info' style={{alignItems: 'center'}}>
+            <HelperText type='info' style={{ alignItems: 'center' }}>
                 This is how organizations & fellow volunteers see you.
             </HelperText>
         </View>
@@ -135,7 +150,7 @@ export default function ProfileScreen() {
 
     return (
         <GVArea>
-            <View style={{flex: 1, alignItems:'center'}}>
+            <View style={{ flex: 1, alignItems: 'center' }}>
                 {header}
                 {body}
                 {buttons}

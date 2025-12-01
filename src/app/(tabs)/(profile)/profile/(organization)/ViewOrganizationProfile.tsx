@@ -80,9 +80,9 @@ export default function ViewOrganizationProfile() {
                 setOrganization(updateOrganization);
             }
         ).subscribe((status) => {
-            console.log('[ViewOrganizationProfile]', status, 'to live changes')
+            console.log('[ViewOrganizationProfile]', status, 'to live profile changes')
         });
-    }, [])
+    }, []);
 
     const header = (
         <View style={{
