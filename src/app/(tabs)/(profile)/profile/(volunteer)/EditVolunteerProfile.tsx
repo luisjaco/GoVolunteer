@@ -20,6 +20,7 @@ import {PRIMARY_COLOR, SECONDARY_COLOR, BUTTON_COLOR} from "@constants/colors";
 import supabase, {Volunteer} from "@utils/requests";
 import { useRouter} from "expo-router";
 import {storage} from "@utils/storage";
+import BackButton from '../../../../../components/BackButton'
 
 type Gender = 'male' | 'female' | 'other' | null;
 type GenderOptionValue = Exclude<Gender, null>;
@@ -546,7 +547,9 @@ export default function EditProfileScreen() {
 
     return (
         <GVArea>
+            <BackButton/>
             <View style={{flex: 1, position: 'relative'}}>
+                
                 {Header}
                 {Form}
             </View>
