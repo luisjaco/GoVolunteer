@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {
     View,
     KeyboardAvoidingView,
@@ -10,15 +10,19 @@ import {
 import type {AlertButton} from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import {
+    Avatar, HelperText,
     Text,
     TextInput,
 } from "react-native-paper";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import GVArea from "@components/GVArea";
 import {PRIMARY_COLOR, SECONDARY_COLOR, BUTTON_COLOR} from "@constants/colors";
+import supabase, {Volunteer} from "@utils/requests";
+import { useRouter} from "expo-router";
+import {storage} from "@utils/storage";
 
-type Gender = 'male' | 'female' | 'other' | '';
-type GenderOptionValue = Exclude<Gender, ''>;
+type Gender = 'male' | 'female' | 'other' | null;
+type GenderOptionValue = Exclude<Gender, null>;
 type GenderOption = {
     value: GenderOptionValue;
     label: string;
@@ -29,14 +33,53 @@ const GENDER_OPTIONS: GenderOption[] = [
     { value: 'other', label: 'Other' },
 ];
 
+
 export default function EditProfileScreen() {
-    const [firstName, setFirstName] = useState('First Name From Backend');
-    const [lastName, setLastName] = useState('Last Name From Backend');
-    const [email, setEmail] = useState('email.from.backend@example.com');
-    const [phone, setPhone] = useState('555-123-4567');
-    const [age, setAge] = useState('21');
-    const [gender, setGender] = useState<Gender>('');
+    const router = useRouter();
+    const [volunteer, setVolunteer] = useState<Volunteer | null>(null);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [age, setAge] = useState('');
+    const [gender, setGender] = useState<Gender>(null);
     const [profilePicUrl, setProfilePicUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+
+
+    const fetchVolunteerInfo = async (uid: string) => {
+        const { data, error } = await supabase.from('volunteers').select('*').eq('user_id', uid)
+
+        console.log('[EditVolunteerProfile] grabbing info from volunteers table');
+
+        if (error || !data || data.length === 0) {
+            console.log('[EditVolunteerProfile] error: grabbing from volunteers table', error);
+            return;
+        }
+
+        const v = data[0] as Volunteer;
+        setVolunteer(v);
+
+        setFirstName(v.first_name ?? '');
+        setLastName(v.last_name ?? '');
+        setPhone(v.phone ?? '');
+        setAge(v.age != null ? String(v.age) : '');
+        setGender(v.gender ?? null);
+        setProfilePicUrl(v.profile_picture_url ?? null);
+    };
+
+    const fetchEmail = async () => {
+        const { data, error } = await supabase.from('users').select('*');
+
+        console.log('[EditVolunteerProfile] grabbing information from users table');
+
+        if (error || data.length ===0) {
+            console.log('[EditVolunteerProfile] error: grabbing from users table', error);
+            return;
+        } else {
+            setEmail(data[0].email ?? '');
+        }
+    };
 
     const handleSave = () => {
         console.log('Save Changes Pressed');
@@ -138,6 +181,17 @@ export default function EditProfileScreen() {
             Alert.alert('Error', 'Something went wrong while changing your profile picture.');
         }
     };
+
+    const gatherVolunteerInfo = async () => {
+        setLoading(true);
+        const uid = await storage.get('userUID') || 'ERROR';
+        await fetchVolunteerInfo(uid);
+        await fetchEmail();
+        setLoading(false);
+    }
+    useEffect(() => {
+        gatherVolunteerInfo();
+    }, []);
 
     const Header = (
         <View
@@ -303,7 +357,7 @@ export default function EditProfileScreen() {
                                 key={option.value}
                                 onPress={() =>
                                     setGender(prev =>
-                                        prev === option.value ? '' : option.value // toggle on/off
+                                        prev === option.value ? null : option.value // toggle on/off
                                     )
                                 }
                                 style={{
@@ -329,29 +383,65 @@ export default function EditProfileScreen() {
                     })}
                 </View>
 
-                <TouchableOpacity
-                    activeOpacity={0.6}
-                    onPress={handleSave}
-                    style={{
-                        backgroundColor: BUTTON_COLOR,
-                        paddingVertical: 12,
-                        borderRadius:10,
-                        alignItems:'center',
-                    }}
-                >
-                    <Text
+                <View style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 48}}>
+                    <TouchableOpacity
+                        activeOpacity={0.6}
+                        onPress={() => router.back()}
                         style={{
-                            fontWeight:'600',
-                            fontSize: 16,
-                            color:'white',
+                            backgroundColor: '#ffffff',
+                            borderColor: BUTTON_COLOR,
+                            borderWidth: 1,
+                            paddingVertical: 12,
+                            paddingHorizontal: 24,
+                            borderRadius:10,
                         }}
                     >
-                        Save Changes
-                    </Text>
-                </TouchableOpacity>
+                        <Text
+                            style={{
+                                fontWeight:'600',
+                                fontSize: 16,
+                                color:'black',
+                            }}
+                        >
+                            Cancel
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        activeOpacity={0.6}
+                        onPress={handleSave}
+                        style={{
+                            backgroundColor: BUTTON_COLOR,
+                            paddingVertical: 12,
+                            paddingHorizontal: 24,
+                            borderRadius:10,
+                            marginLeft: 20,
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontWeight:'600',
+                                fontSize: 16,
+                                color:'white',
+                            }}
+                        >
+                            Save Changes
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
         </KeyboardAvoidingView>
     );
+
+    if (loading) {
+        return (
+            <GVArea>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text>Loading...</Text>
+                </View>
+            </GVArea>
+        );
+    }
 
     return (
         <GVArea>

@@ -8,7 +8,6 @@ import supabase, { Volunteer } from '@/src/utils/requests';
 import { storage } from '@/src/utils/storage';
 import VolunteerCard from '@components/VolunteerCard';
 import { Avatar, HelperText } from 'react-native-paper';
-import OrganizationCard from "@components/OrganizationCard";
 
 export default function ProfileScreen() {
     const router = useRouter(); // method used to push a new screen onto a stack.
