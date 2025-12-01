@@ -89,7 +89,7 @@ export default function ProfileScreen() {
     );
 
     const body = (
-        <View style={{alignItems: 'center', marginTop: '5%'}}>
+        <View style={{alignItems: 'center', marginTop: '2%', width: '80%'}}>
             {(volunteer && email) && (
                 <VolunteerCard
                     firstName={volunteer.first_name}

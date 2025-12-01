@@ -22,6 +22,7 @@ export default function VolunteerCard(props: VolunteerCardProps) {
     const header = (
         <View
             style={{
+                width: '100%',
                 paddingBottom: 10,
                 borderBottomWidth: .5,
                 borderBottomColor: '#B8B8B8',
@@ -79,7 +80,7 @@ export default function VolunteerCard(props: VolunteerCardProps) {
     );
 
     const body = (
-        <View style={{ marginBottom: 5 }}>
+        <View style={{ width: '100%', marginBottom: 5 }}>
             
             <View
                 style={{
@@ -137,7 +138,7 @@ export default function VolunteerCard(props: VolunteerCardProps) {
                 borderRadius: 10,
                 borderColor: "#B8B8B8",
                 borderWidth: 1,
-                width: '90%',
+                width: '100%',
                 height: 'auto'
             }}
         >
