@@ -30,9 +30,33 @@ export default function EventInfo(props: EventInfoProps) {
     const [formattedTime, setFormattedTime] = useState('');
     const [isRSVPed, setIsRSVPed] = useState<boolean>(false)
 
+    const cancelRSVP = async () => {
+        if (isOrg || props.disabled && props.id == undefined)
+            return
+        const uid = await storage.get('userUID') 
+        const {error} = await supabase.from('rsvps')
+            .delete()
+            .eq('volunteer_id', uid)
+            .eq('event_id', props.id)
+        if (error != null)
+            return
+        setIsRSVPed(false)
+    }
+
+    const registerRSVP = async () => {
+        if (isOrg || props.disabled && props.id == undefined)
+            return
+        const uid = await storage.get('userUID') 
+        const {error} = await supabase.from('rsvps')
+            .insert({event_id: props.id, volunteer_id: uid})
+        if (error != null)
+            return
+        setIsRSVPed(true)
+    }
+
     const isOrg = props.userType === 'organization';
     const primaryLabel = isOrg ? 'Edit' : (isRSVPed ? 'Cancel RSVP' : 'RSVP' );
-    const primaryOnPress = isOrg ? props.onEdit : props.onRSVP;
+    const primaryOnPress = isOrg ? props.onEdit : (isRSVPed ? cancelRSVP : registerRSVP);
 
     const formatDate = (d: Date) => {
         const formattedDate = d.toLocaleDateString("en-US", {
