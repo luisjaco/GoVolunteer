@@ -1,8 +1,8 @@
-import EventInfo from '@/src/components/EventInfo';
-import GVArea from '@/src/components/GVArea';
-import { BUTTON_COLOR, PRIMARY_COLOR } from '@/src/constants/colors';
-import supabase from '@/src/utils/requests';
-import { storage } from '@/src/utils/storage';
+import EventInfo from '@components/EventInfo';
+import GVArea from '@components/GVArea';
+import { BUTTON_COLOR, PRIMARY_COLOR } from '@constants/colors';
+import supabase from '@utils/requests';
+import { storage } from '@utils/storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';

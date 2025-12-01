@@ -14,7 +14,7 @@ import { Link } from "expo-router";
 import { useState, useRef } from "react";
 import { Calendar } from "react-native-calendars";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import GVArea from "@/src/components/GVArea";
+import GVArea from "@components/GVArea";
 
 export default function EditEvent() {
   // Scroll + input refs
