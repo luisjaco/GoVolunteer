@@ -288,6 +288,10 @@ export default function EditProfileScreen() {
         setLoading(false);
     };
 
+    useEffect(() => {
+        gatherVolunteerInfo();
+    }, []);
+
     const Header = (
         <View
             style={{
