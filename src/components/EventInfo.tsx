@@ -1,35 +1,62 @@
-import {Ionicons} from '@expo/vector-icons'
-import {Text, TouchableOpacity, View, Image} from 'react-native'
-import {useState, useEffect} from 'react'
-import {SECONDARY_COLOR, BUTTON_COLOR, PRIMARY_COLOR} from '../constants/colors'
+import {Ionicons} from '@expo/vector-icons';
+import {Text, TouchableOpacity, View, Image} from 'react-native';
+import {useState, useEffect} from 'react';
+import {SECONDARY_COLOR, BUTTON_COLOR} from '../constants/colors';
+import supabase from '../utils/requests';
+import {storage} from '../utils/storage';
 
 type UserType = 'organization' | 'volunteer';
 
 type EventInfoProps = {
-    name: string,
-    description: string,
-    categoryName: string
-    maxVolunteers: number,
-    currentVolunteers: number,
-    timestampz: string,
-    city: string,
-    state: string,
+    id: number,
+    name?: string,
+    description?: string,
+    categoryName?: string
+    maxVolunteers?: number,
+    currentVolunteers?: number,
+    timestampz?: string,
+    city?: string,
+    state?: string,
     imageURI?: string,
     publicImageURL?: string,
-    disabled: boolean,
-    userType: UserType,
+    disabled?: boolean,
+    userType?: UserType,
     onEdit?: () => void,
     onRSVP?: () => void,
 }
 
 export default function EventInfo(props: EventInfoProps) {
-
     const [formattedDate, setFomattedDate] = useState('');
     const [formattedTime, setFormattedTime] = useState('');
+    const [isRSVPed, setIsRSVPed] = useState<boolean>(false)
+
+    const cancelRSVP = async () => {
+        if (isOrg || props.disabled && props.id == undefined)
+            return
+        const uid = await storage.get('userUID') 
+        const {error} = await supabase.from('rsvps')
+            .delete()
+            .eq('volunteer_id', uid)
+            .eq('event_id', props.id)
+        if (error != null)
+            return
+        setIsRSVPed(false)
+    }
+
+    const registerRSVP = async () => {
+        if (isOrg || props.disabled && props.id == undefined)
+            return
+        const uid = await storage.get('userUID') 
+        const {error} = await supabase.from('rsvps')
+            .insert({event_id: props.id, volunteer_id: uid})
+        if (error != null)
+            return
+        setIsRSVPed(true)
+    }
 
     const isOrg = props.userType === 'organization';
-    const primaryLabel = isOrg ? 'Edit' : 'RSVP';
-    const primaryOnPress = isOrg ? props.onEdit : props.onRSVP;
+    const primaryLabel = isOrg ? 'Edit' : (isRSVPed ? 'Cancel RSVP' : 'RSVP' );
+    const primaryOnPress = isOrg ? props.onEdit : (isRSVPed ? cancelRSVP : registerRSVP);
 
     const formatDate = (d: Date) => {
         const formattedDate = d.toLocaleDateString("en-US", {
@@ -52,6 +79,28 @@ export default function EventInfo(props: EventInfoProps) {
         formatDate(dateTime);
         formatTime(dateTime);
     }, []);
+
+    const getIsRSVPed = async () => {
+        if (isOrg || props.disabled && props.id == undefined) {
+            console.log('[EventInfo] Declining to fetch RSVP status')
+            return
+        }
+        const uid = await storage.get('userUID') 
+        const {data, error} = await supabase.from('rsvps')
+            .select('*')
+            .eq('volunteer_id', uid)
+            .eq('event_id', props.id)
+        if (error != null) {
+            console.error(`[EventInfo] Failed to get RSVP status for user ${uid} and event ${props.id}:`, event)
+            return
+        }
+
+        const status = data.length > 0
+        setIsRSVPed(status)
+        console.log(`[EventInfo] Got RSVP status -- ${status}`)
+    }
+
+    useEffect(() => void getIsRSVPed(), [])
 
     const header = (
         <View
@@ -212,7 +261,7 @@ export default function EventInfo(props: EventInfoProps) {
                     style={{
                         marginTop: 5,
                         borderRadius: 5,
-                        width: 320,
+                        width: '100%',
                         height: 180,
                         alignSelf: 'center'
                     }}/>

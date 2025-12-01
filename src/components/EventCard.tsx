@@ -219,7 +219,7 @@ export default function EventCard(props: EventCardProps) {
 
 
   return (
-    <Link href='/(tabs)/(myRSVPs)/infoScreens/EventInfo' push asChild>
+    <Link href={`/event/${props.event_id}`} push asChild>
       <TouchableOpacity
         activeOpacity={.6}
         style={{
