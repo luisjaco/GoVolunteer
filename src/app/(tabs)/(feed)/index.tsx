@@ -66,8 +66,8 @@ export default function Feed() {
             current_volunteers: e.current_volunteers as number,
             image_url: e.image_url as string,
             date_time: e.date_time as Date,
-            // organization_title: e.users.organizations.title as string,
-            // organization_profile_url: e.users.organizations.profile_picture_url as string,
+            organization_title: e.users.organizations.title as string,
+            organization_profile_url: e.users.organizations.profile_picture_url as string,
           }));
 
           setEvents(events);
