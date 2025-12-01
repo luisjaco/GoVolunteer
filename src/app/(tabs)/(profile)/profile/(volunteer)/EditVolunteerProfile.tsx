@@ -33,6 +33,37 @@ const GENDER_OPTIONS: GenderOption[] = [
     { value: 'other', label: 'Other' },
 ];
 
+const BUCKET_NAME = 'user_profile_images';
+async function uploadImage(uri: string, uid: string): Promise<string | null> {
+    try {
+        const response = await  fetch(uri);
+        const arrayBuffer = await response.arrayBuffer();
+        const fileBytes = new Uint8Array(arrayBuffer);
+
+        const extMatch = /\.(\w+)$/.exec(uri);
+        const ext = extMatch?.[1]?.toLowerCase() ?? 'jpg';
+
+        const filePath = `${uid}/profile-${Date.now()}.${ext}`;
+
+        const {error: uploadError} = await supabase.storage.from(BUCKET_NAME).upload(filePath, fileBytes, {
+            upsert: true,
+            contentType: `image/${ext === 'jpg' ? 'jpeg' : ext}`,
+        });
+
+        if (uploadError) {
+            console.log('[EditVolunteerProfile] error uploading image:', uploadError);
+            Alert.alert('Error', 'Something went wrong while uploading your profile picture.');
+            return null;
+        }
+
+        const {data: publicData} = await supabase.storage.from(BUCKET_NAME).getPublicUrl(filePath);
+        return publicData.publicUrl;
+    } catch (err) {
+        console.log('[EditVolunteerProfile] error uploading image:', err);
+        Alert.alert('Error', 'Something went wrong while uploading your profile picture.');
+        return null;
+    }
+}
 
 export default function EditProfileScreen() {
     const router = useRouter();
@@ -68,31 +99,91 @@ export default function EditProfileScreen() {
         setProfilePicUrl(v.profile_picture_url ?? null);
     };
 
-    const fetchEmail = async () => {
-        const { data, error } = await supabase.from('users').select('*');
+    const fetchEmail = async (uid: string) => {
+        const { data, error } = await supabase.from('users').select('email').eq('id', uid).single();
 
         console.log('[EditVolunteerProfile] grabbing information from users table');
 
-        if (error || data.length ===0) {
+        if (error || !data) {
             console.log('[EditVolunteerProfile] error: grabbing from users table', error);
             return;
         } else {
-            setEmail(data[0].email ?? '');
+            setEmail(data.email ?? '');
         }
     };
 
-    const handleSave = () => {
-        console.log('Save Changes Pressed');
-        console.log({
-            firstName,
-            lastName,
-            email,
-            phone,
-            age,
-            gender,
-            profilePicUrl,
-        });
-        // TODO: send data to backend
+    const handleSave = async () => {
+        try {
+            setLoading(true);
+            const uid = await storage.get('userUID');
+
+            if (!uid) {
+                Alert.alert('Error', 'Something went wrong while saving your changes. Please try logging in again.');
+                setLoading(false);
+                return;
+            }
+
+            const ageNum = age.trim().length > 0 ? parseInt(age.trim(), 10) : null;
+            if (ageNum !== null && isNaN(ageNum)) {
+                Alert.alert('Invalid Age', 'Please enter a valid number for age.');
+                setLoading(false);
+                return;
+            }
+
+            let finalProfilePicUrl = profilePicUrl;
+
+            if (profilePicUrl && profilePicUrl.startsWith('file://')) {
+                const uploadedUrl = await uploadImage(profilePicUrl, uid);
+
+                if (!uploadedUrl) {
+                    setLoading(false);
+                    return;
+                }
+                finalProfilePicUrl = uploadedUrl;
+                setProfilePicUrl(uploadedUrl);
+            }
+
+            const {error: volunteerError} = await supabase.from('volunteers').update({
+                first_name: firstName || null,
+                last_name: lastName || null,
+                phone: phone || null,
+                age: ageNum,
+                gender: gender ?? null,
+                profile_picture_url: finalProfilePicUrl || null,
+            }).eq('user_id', uid);
+
+            if (volunteerError) {
+                console.log('[EditVolunteerProfile] error: updating volunteers table', volunteerError);
+                Alert.alert('Error', 'Something went wrong while saving your changes.');
+                setLoading(false);
+                return;
+            }
+
+            const {error: userError} = await supabase.from('users').update({
+                email: email || null,
+            }).eq('id', uid);
+
+            if (userError) {
+                console.log('[EditVolunteerProfile] error: updating users table', userError);
+                Alert.alert('Error', 'Something went wrong while saving your changes.');
+                setLoading(false);
+                return;
+            }
+
+            await fetchVolunteerInfo(uid);
+            await fetchEmail(uid);
+            setLoading(false);
+
+            Alert.alert('Success', 'Your changes have been saved.',[
+                {text: 'OK', onPress: () => router.back()},
+            ]);
+
+        } catch (err) {
+            console.error('[EditVolunteerProfile] Error in handleSave:', err);
+            Alert.alert('Error', 'Something went wrong while saving your changes.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleEditProfilePic = async () => {
@@ -184,14 +275,17 @@ export default function EditProfileScreen() {
 
     const gatherVolunteerInfo = async () => {
         setLoading(true);
-        const uid = await storage.get('userUID') || 'ERROR';
+        const uid = await storage.get('userUID');
+        if (!uid) {
+            Alert.alert('Error', 'Something went wrong while loading your profile. Please try logging in again.');
+            setLoading(false);
+            return;
+        }
+
         await fetchVolunteerInfo(uid);
-        await fetchEmail();
+        await fetchEmail(uid);
         setLoading(false);
-    }
-    useEffect(() => {
-        gatherVolunteerInfo();
-    }, []);
+    };
 
     const Header = (
         <View
@@ -437,6 +531,13 @@ export default function EditProfileScreen() {
         return (
             <GVArea>
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Image
+                        source={require('@/assets/icons/earthLogo.png')}
+                        style={{
+                            width: 50,
+                            height: 50,
+                        }}
+                    />
                     <Text>Loading...</Text>
                 </View>
             </GVArea>
