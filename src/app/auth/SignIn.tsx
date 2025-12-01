@@ -60,6 +60,8 @@ export default function SignInScreen() {
         }
 
         console.log('[SignIn] succussfully signed in user:', data);
+        console.log(`[SignIn] setting uid:${data.user.id}`)
+        await storage.set('userUID', data.user.id);
         // setSnackbarVisible(true);
         setSupabaseError(false);
         await determinePushAfterSignIn();
@@ -70,7 +72,9 @@ export default function SignInScreen() {
     const determinePushAfterSignIn = async () => {
         // since rls set up, if there is one result from this query, the user already has their 
         // account setup.
-        const { data, error } = await supabase.from('users').select('*');
+        const { data, error } = await supabase.from('users')
+            .select('*')
+            .eq('id', await storage.get('userUID'));
         console.log('[SignIn] attempting to grab from users table');
 
         if (error) {
@@ -80,9 +84,7 @@ export default function SignInScreen() {
         }
         else if (data.length > 0) {
             const userData = data[0] as User;
-            console.log(`[SignIn] setting uid:${userData.id} & userType with \
-is_organization:${userData.is_organization}`);
-            await storage.set('userUID', userData.id);
+            console.log(`[SignIn] setting userType with is_organization:${userData.is_organization}`);
             await storage.set('userType', (userData.is_organization ? 'organization' : 'volunteer'));
             router.dismissAll();
             router.replace('/(tabs)/(feed)');
