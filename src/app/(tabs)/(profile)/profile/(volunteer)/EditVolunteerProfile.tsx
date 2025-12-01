@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {
     View,
     KeyboardAvoidingView,
@@ -10,16 +10,20 @@ import {
 import type {AlertButton} from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import {
+    Avatar, HelperText,
     Text,
     TextInput,
 } from "react-native-paper";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import GVArea from "@components/GVArea";
 import {PRIMARY_COLOR, SECONDARY_COLOR, BUTTON_COLOR} from "@constants/colors";
+import supabase, {Volunteer} from "@utils/requests";
+import { useRouter} from "expo-router";
+import {storage} from "@utils/storage";
 import BackButton from '../../../../../components/BackButton'
 
-type Gender = 'male' | 'female' | 'other' | '';
-type GenderOptionValue = Exclude<Gender, ''>;
+type Gender = 'male' | 'female' | 'other' | null;
+type GenderOptionValue = Exclude<Gender, null>;
 type GenderOption = {
     value: GenderOptionValue;
     label: string;
@@ -30,27 +34,157 @@ const GENDER_OPTIONS: GenderOption[] = [
     { value: 'other', label: 'Other' },
 ];
 
-export default function EditProfileScreen() {
-    const [firstName, setFirstName] = useState('First Name');
-    const [lastName, setLastName] = useState('Last Name');
-    const [email, setEmail] = useState('email.from.backend@example.com');
-    const [phone, setPhone] = useState('555-123-4567');
-    const [age, setAge] = useState('21');
-    const [gender, setGender] = useState<Gender>('');
-    const [profilePicUrl, setProfilePicUrl] = useState<string | null>(null);
+const BUCKET_NAME = 'user_profile_images';
+async function uploadImage(uri: string, uid: string): Promise<string | null> {
+    try {
+        const response = await  fetch(uri);
+        const arrayBuffer = await response.arrayBuffer();
+        const fileBytes = new Uint8Array(arrayBuffer);
 
-    const handleSave = () => {
-        console.log('Save Changes Pressed');
-        console.log({
-            firstName,
-            lastName,
-            email,
-            phone,
-            age,
-            gender,
-            profilePicUrl,
+        const extMatch = /\.(\w+)$/.exec(uri);
+        const ext = extMatch?.[1]?.toLowerCase() ?? 'jpg';
+
+        const filePath = `${uid}/profile-${Date.now()}.${ext}`;
+
+        const {error: uploadError} = await supabase.storage.from(BUCKET_NAME).upload(filePath, fileBytes, {
+            upsert: true,
+            contentType: `image/${ext === 'jpg' ? 'jpeg' : ext}`,
         });
-        // TODO: send data to backend
+
+        if (uploadError) {
+            console.log('[EditVolunteerProfile] error uploading image:', uploadError);
+            Alert.alert('Error', 'Something went wrong while uploading your profile picture.');
+            return null;
+        }
+
+        const {data: publicData} = await supabase.storage.from(BUCKET_NAME).getPublicUrl(filePath);
+        return publicData.publicUrl;
+    } catch (err) {
+        console.log('[EditVolunteerProfile] error uploading image:', err);
+        Alert.alert('Error', 'Something went wrong while uploading your profile picture.');
+        return null;
+    }
+}
+
+export default function EditProfileScreen() {
+    const router = useRouter();
+    const [volunteer, setVolunteer] = useState<Volunteer | null>(null);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [age, setAge] = useState('');
+    const [gender, setGender] = useState<Gender>(null);
+    const [profilePicUrl, setProfilePicUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+
+
+    const fetchVolunteerInfo = async (uid: string) => {
+        const { data, error } = await supabase.from('volunteers').select('*').eq('user_id', uid)
+
+        console.log('[EditVolunteerProfile] grabbing info from volunteers table');
+
+        if (error || !data || data.length === 0) {
+            console.log('[EditVolunteerProfile] error: grabbing from volunteers table', error);
+            return;
+        }
+
+        const v = data[0] as Volunteer;
+        setVolunteer(v);
+
+        setFirstName(v.first_name ?? '');
+        setLastName(v.last_name ?? '');
+        setPhone(v.phone ?? '');
+        setAge(v.age != null ? String(v.age) : '');
+        setGender(v.gender ?? null);
+        setProfilePicUrl(v.profile_picture_url ?? null);
+    };
+
+    const fetchEmail = async (uid: string) => {
+        const { data, error } = await supabase.from('users').select('email').eq('id', uid).single();
+
+        console.log('[EditVolunteerProfile] grabbing information from users table');
+
+        if (error || !data) {
+            console.log('[EditVolunteerProfile] error: grabbing from users table', error);
+            return;
+        } else {
+            setEmail(data.email ?? '');
+        }
+    };
+
+    const handleSave = async () => {
+        try {
+            setLoading(true);
+            const uid = await storage.get('userUID');
+
+            if (!uid) {
+                Alert.alert('Error', 'Something went wrong while saving your changes. Please try logging in again.');
+                setLoading(false);
+                return;
+            }
+
+            const ageNum = age.trim().length > 0 ? parseInt(age.trim(), 10) : null;
+            if (ageNum !== null && isNaN(ageNum)) {
+                Alert.alert('Invalid Age', 'Please enter a valid number for age.');
+                setLoading(false);
+                return;
+            }
+
+            let finalProfilePicUrl = profilePicUrl;
+
+            if (profilePicUrl && profilePicUrl.startsWith('file://')) {
+                const uploadedUrl = await uploadImage(profilePicUrl, uid);
+
+                if (!uploadedUrl) {
+                    setLoading(false);
+                    return;
+                }
+                finalProfilePicUrl = uploadedUrl;
+                setProfilePicUrl(uploadedUrl);
+            }
+
+            const {error: volunteerError} = await supabase.from('volunteers').update({
+                first_name: firstName || null,
+                last_name: lastName || null,
+                phone: phone || null,
+                age: ageNum,
+                gender: gender ?? null,
+                profile_picture_url: finalProfilePicUrl || null,
+            }).eq('user_id', uid);
+
+            if (volunteerError) {
+                console.log('[EditVolunteerProfile] error: updating volunteers table', volunteerError);
+                Alert.alert('Error', 'Something went wrong while saving your changes.');
+                setLoading(false);
+                return;
+            }
+
+            const {error: userError} = await supabase.from('users').update({
+                email: email || null,
+            }).eq('id', uid);
+
+            if (userError) {
+                console.log('[EditVolunteerProfile] error: updating users table', userError);
+                Alert.alert('Error', 'Something went wrong while saving your changes.');
+                setLoading(false);
+                return;
+            }
+
+            await fetchVolunteerInfo(uid);
+            await fetchEmail(uid);
+            setLoading(false);
+
+            Alert.alert('Success', 'Your changes have been saved.',[
+                {text: 'OK', onPress: () => router.back()},
+            ]);
+
+        } catch (err) {
+            console.error('[EditVolunteerProfile] Error in handleSave:', err);
+            Alert.alert('Error', 'Something went wrong while saving your changes.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleEditProfilePic = async () => {
@@ -138,6 +272,20 @@ export default function EditProfileScreen() {
             console.error('Error in handleEditProfilePic:', err);
             Alert.alert('Error', 'Something went wrong while changing your profile picture.');
         }
+    };
+
+    const gatherVolunteerInfo = async () => {
+        setLoading(true);
+        const uid = await storage.get('userUID');
+        if (!uid) {
+            Alert.alert('Error', 'Something went wrong while loading your profile. Please try logging in again.');
+            setLoading(false);
+            return;
+        }
+
+        await fetchVolunteerInfo(uid);
+        await fetchEmail(uid);
+        setLoading(false);
     };
 
     const Header = (
@@ -304,7 +452,7 @@ export default function EditProfileScreen() {
                                 key={option.value}
                                 onPress={() =>
                                     setGender(prev =>
-                                        prev === option.value ? '' : option.value // toggle on/off
+                                        prev === option.value ? null : option.value // toggle on/off
                                     )
                                 }
                                 style={{
@@ -330,29 +478,72 @@ export default function EditProfileScreen() {
                     })}
                 </View>
 
-                <TouchableOpacity
-                    activeOpacity={0.6}
-                    onPress={handleSave}
-                    style={{
-                        backgroundColor: BUTTON_COLOR,
-                        paddingVertical: 12,
-                        borderRadius:10,
-                        alignItems:'center',
-                    }}
-                >
-                    <Text
+                <View style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 48}}>
+                    <TouchableOpacity
+                        activeOpacity={0.6}
+                        onPress={() => router.back()}
                         style={{
-                            fontWeight:'600',
-                            fontSize: 16,
-                            color:'white',
+                            backgroundColor: '#ffffff',
+                            borderColor: BUTTON_COLOR,
+                            borderWidth: 1,
+                            paddingVertical: 12,
+                            paddingHorizontal: 24,
+                            borderRadius:10,
                         }}
                     >
-                        Save Changes
-                    </Text>
-                </TouchableOpacity>
+                        <Text
+                            style={{
+                                fontWeight:'600',
+                                fontSize: 16,
+                                color:'black',
+                            }}
+                        >
+                            Cancel
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        activeOpacity={0.6}
+                        onPress={handleSave}
+                        style={{
+                            backgroundColor: BUTTON_COLOR,
+                            paddingVertical: 12,
+                            paddingHorizontal: 24,
+                            borderRadius:10,
+                            marginLeft: 20,
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontWeight:'600',
+                                fontSize: 16,
+                                color:'white',
+                            }}
+                        >
+                            Save Changes
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
         </KeyboardAvoidingView>
     );
+
+    if (loading) {
+        return (
+            <GVArea>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Image
+                        source={require('@/assets/icons/earthLogo.png')}
+                        style={{
+                            width: 50,
+                            height: 50,
+                        }}
+                    />
+                    <Text>Loading...</Text>
+                </View>
+            </GVArea>
+        );
+    }
 
     return (
         <GVArea>

@@ -1,14 +1,14 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useFocusEffect} from "@react-navigation/native";
 import GVArea from '@/src/components/GVArea';
 import { PRIMARY_COLOR } from '@/src/constants/colors';
 import supabase, { Volunteer } from '@/src/utils/requests';
 import { storage } from '@/src/utils/storage';
 import VolunteerCard from '@components/VolunteerCard';
 import { Avatar, HelperText } from 'react-native-paper';
-import OrganizationCard from "@components/OrganizationCard";
 
 export default function ProfileScreen() {
     const router = useRouter(); // method used to push a new screen onto a stack.
@@ -27,16 +27,16 @@ export default function ProfileScreen() {
         }
     }
 
-    const fetchEmail = async () => {
-        const { data, error } = await supabase.from('users').select('*');
+    const fetchEmail = async (uid: string) => {
+        const { data, error } = await supabase.from('users').select('email').eq('id', uid).single();
 
         console.log('[ViewVolunteerProfile] grabbing information from users table');
-        if (error || data.length === 0) {
+        if (error || !data) {
             console.log('[ViewVolunteerProfile] error: grabbing from users table', error);
             return;
         }
         else {
-            setEmail(data[0].email);
+            setEmail(data.email ?? '');
         }
     }
 
@@ -53,14 +53,18 @@ export default function ProfileScreen() {
         //  add logout logic
     };
 
-    const gatherVolunteerInfo = async () => {
-        const uid = await storage.get('userUID') || 'ERROR';
+    const gatherVolunteerInfo = useCallback(async () => {
+        const uid = (await storage.get('userUID')) || 'ERROR';
         await fetchVolunteerInfo(uid);
-        await fetchEmail();
-    }
-    useEffect(() => {
-        gatherVolunteerInfo();
+        await fetchEmail(uid);
     }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            // Runs every time this screen comes into focus
+            gatherVolunteerInfo();
+        }, [gatherVolunteerInfo])
+    );
 
     const header = (
         <View style={{
