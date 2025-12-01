@@ -1,29 +1,28 @@
-import {Ionicons} from '@expo/vector-icons'
-import {Text, TouchableOpacity, View, Image} from 'react-native'
-import {useState, useEffect} from 'react'
-import {SECONDARY_COLOR, BUTTON_COLOR, PRIMARY_COLOR} from '../constants/colors'
+import {Ionicons} from '@expo/vector-icons';
+import {Text, TouchableOpacity, View, Image} from 'react-native';
+import {useState, useEffect} from 'react';
+import {SECONDARY_COLOR, BUTTON_COLOR} from '../constants/colors';
 
 type UserType = 'organization' | 'volunteer';
 
 type EventInfoProps = {
-    name: string,
-    description: string,
-    categoryName: string
-    maxVolunteers: number,
-    currentVolunteers: number,
-    timestampz: string,
-    city: string,
-    state: string,
+    name?: string,
+    description?: string,
+    categoryName?: string
+    maxVolunteers?: number,
+    currentVolunteers?: number,
+    timestampz?: string,
+    city?: string,
+    state?: string,
     imageURI?: string,
     publicImageURL?: string,
-    disabled: boolean,
-    userType: UserType,
+    disabled?: boolean,
+    userType?: UserType,
     onEdit?: () => void,
     onRSVP?: () => void,
 }
 
 export default function EventInfo(props: EventInfoProps) {
-
     const [formattedDate, setFomattedDate] = useState('');
     const [formattedTime, setFormattedTime] = useState('');
 
@@ -212,7 +211,7 @@ export default function EventInfo(props: EventInfoProps) {
                     style={{
                         marginTop: 5,
                         borderRadius: 5,
-                        width: 320,
+                        width: '100%',
                         height: 180,
                         alignSelf: 'center'
                     }}/>
