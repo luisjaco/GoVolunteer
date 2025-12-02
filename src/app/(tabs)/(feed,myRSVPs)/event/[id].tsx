@@ -9,15 +9,16 @@ import {useEffect, useState} from "react";
 import {ScrollView, Text} from "react-native";
 
 export default function EventInfoPage() {
-    const [event, setEvent] = useState()
+    const [event, setEvent] = useState<any>()
     const [userType, setUserType] = useState<string>()
     const {id} = useGlobalSearchParams()
-    const organization = event?.users?.organizations
+    const [organization, setOrganization] = useState<any>();
 
     const getUserType = async () => {
         const userType = await storage.get('userType');
         setUserType(userType ?? '')
     }
+    
     useEffect(() => void getUserType, [userType])
 
     const fetchEventInfo = async () => {
@@ -25,14 +26,46 @@ export default function EventInfoPage() {
             .select('*, categories (*), users!events_organization_id_fkey (email, organizations (*))')
             .eq('id', id)
         if (error != null || data.length < 1) {
-            console.error(`/event/${id} -- Failed to fetch event info:`, error)
+            console.error(`[/event/${id}] -- Failed to fetch event info:`, error)
             return
         }
-        setEvent(data[0])
-        console.log(`/event/${id} -- Got data`, data[0])
+        setEvent(data[0]);
+        setOrganization(data[0].users.organizations);
+        console.log(`[/event/${id}] successfully fetched event info`)
     }
 
     useEffect(() => void fetchEventInfo(), [])
+    
+    useEffect(() => {
+        // update events on frontend when it is updated.
+        const deleteChannel = supabase.channel('rsvps-deletes-eventInfo');
+        deleteChannel.on('postgres_changes', 
+            {
+                event: "DELETE", 
+                schema: 'public', 
+                table: 'rsvps'
+            }, 
+            () => {
+                fetchEventInfo();
+            }
+        ).subscribe((status) => {
+            console.log('[VolunteerEvents]', status, 'to live rsvp deletes')
+        });
+
+        const insertChannel = supabase.channel('rsvps-inserts-eventInfo');
+        insertChannel.on('postgres_changes', 
+            {
+                event: "INSERT", 
+                schema: 'public', 
+                table: 'rsvps'
+            }, 
+            () => {
+                fetchEventInfo();
+            }
+        ).subscribe((status) => {
+            console.log('[VolunteerEvents]', status, 'to live rsvp inserts')
+        });
+    }, []);
 
     return (
         <GVArea>
@@ -44,8 +77,8 @@ export default function EventInfoPage() {
             >
                 {event
                     && <EventInfo 
-                            id={id}
-                            name={event.name}
+                            id={Number(id)}
+                            name={event.name as string}
                             description={event.description}
                             maxVolunteers={event.max_volunteers}
                             currentVolunteers={event.current_volunteers}

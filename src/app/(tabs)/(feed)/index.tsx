@@ -53,12 +53,12 @@ export default function Feed() {
             return;
         }
         else {
-          const events:EventExtended[] = data.map((e) => ({
+          const events: EventExtended[] = data.map((e) => ({
             id: e.id as number,
             name: e.name as string,
             organization_id: e.organization_id as string,
             category_id: e.category_id as number,
-            category_name: e.categories.name as string,
+            category_name: (e.categories as any).name as string,
             description: e.description as string,
             state: e.state as string,
             city: e.city as string,
@@ -66,11 +66,13 @@ export default function Feed() {
             current_volunteers: e.current_volunteers as number,
             image_url: e.image_url as string,
             date_time: e.date_time as Date,
-            organization_title: e.users.organizations.title as string,
-            organization_profile_url: e.users.organizations.profile_picture_url as string,
+            organization_title: (e.users as any).organizations.title as string || '',
+            organization_profile_url: (e.users as any).organizations.profile_picture_url as string || '',
           }));
 
           setEvents(events);
+    
+        
         }
   }
 
@@ -80,12 +82,12 @@ export default function Feed() {
 
   useEffect( () => {
         // update events on frontend when it is updated.
-        const channel = supabase.channel('organization-channel');
+        const channel = supabase.channel('organization-channel-feed');
         channel.on('postgres_changes', 
             {
                 event: "UPDATE", 
                 schema: 'public', 
-                table: 'organizations'
+                table: 'events'
             }, 
             () => {
                 fetchEvents();

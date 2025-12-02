@@ -7,7 +7,7 @@ import {storage} from '@/src/utils/storage';
 import supabase from '@/src/utils/requests';
 
 export default function MyRSVPsScreen() {
-    const [events, setEvents] = useState<Object | undefined>()
+    const [events, setEvents] = useState<Object[] | null>(null)
     const fetchRSVPEvents = async () => {
         const uid = await storage.get('userUID')
         if (!uid) {
@@ -16,23 +16,65 @@ export default function MyRSVPsScreen() {
         }
 
         const {data, error} = await supabase.from('rsvps')
-            .select('events(*, categories(*), users!events_organization_id_fkey(*, organizations(*))), users(*)')
+            .select(`
+                events(
+                    *,
+                    categories(*), 
+                    users!events_organization_id_fkey(
+                        *, 
+                        organizations(*)
+                        )
+                    ), 
+                users(*)
+                `)
             .eq('volunteer_id', uid)
+            .order('created_at', {ascending: false, referencedTable:'events'})
         if (error != null) {
             console.error('[VolunteerEvents] Failed to fetch RSVPs:', error)
             return
         }
-        setEvents(data)
-        console.log('[VolunteerEvents] Got data', JSON.stringify(data))
+        setEvents(data);
+        console.log('[VolunteerEvents] fetched event data.')
     }
 
     useEffect(() => void fetchRSVPEvents(), [])
+
+    useEffect( () => {
+        // update events on frontend when it is updated.
+        const deleteChannel = supabase.channel('rsvps-deletes-volunteerEvents');
+        deleteChannel.on('postgres_changes', 
+            {
+                event: "DELETE", 
+                schema: 'public', 
+                table: 'rsvps'
+            }, 
+            () => {
+                fetchRSVPEvents();
+            }
+        ).subscribe((status) => {
+            console.log('[VolunteerEvents]', status, 'to live rsvp deletes')
+        });
+
+        const insertChannel = supabase.channel('rsvps-inserts-volunteerEvents');
+        insertChannel.on('postgres_changes', 
+            {
+                event: "INSERT", 
+                schema: 'public', 
+                table: 'rsvps'
+            }, 
+            () => {
+                fetchRSVPEvents();
+            }
+        ).subscribe((status) => {
+            console.log('[VolunteerEvents]', status, 'to live rsvp inserts')
+        });
+    }, []);
 
     const header = (
         <View style={styles.headerContainer}>
             <View style={styles.headerContent}>
                 <Text style={styles.headerTitle}>
-                    My Events
+                    My RSVPs
                 </Text>
                 <Text style={styles.headerSubtitle}>
                     View events you've RSVPed to
@@ -44,21 +86,21 @@ export default function MyRSVPsScreen() {
 
     const body = (
         <ScrollView style={styles.scrollContainer}>
-            {events?.length > 0
-                ? events.map(event => (
+            {(events && events.length > 0)? 
+                (events as any[]).map((e) => (
                     <EventCard
-                        name={event.events.name}
-                        event_id={event.events.id}
-                        organization_id={event.events.users.organizations.organization_id}
-                        categoryName={event.events.categories.name}
-                        state={event.events.state}
-                        city={event.events.city}
-                        maxVolunteers={event.events.max_volunteers}
-                        currentVolunteers={event.events.current_volunteers}
-                        timestampz={event.events.date_time}
-                        organization_title={event.events.users.organizations.title}
-                        organization_profile_picture_url={event.events.users.organizations.profile_picture_url}
-                        key={event.events.id}
+                        name={e.events.name}
+                        event_id={e.events.id}
+                        organization_id={e.events.users.organizations.organization_id}
+                        categoryName={e.events.categories.name}
+                        state={e.events.state}
+                        city={e.events.city}
+                        maxVolunteers={e.events.max_volunteers}
+                        currentVolunteers={e.events.current_volunteers}
+                        timestampz={e.events.date_time}
+                        organization_title={e.events.users.organizations.title}
+                        organization_profile_picture_url={e.events.users.organizations.profile_picture_url}
+                        key={e.events.id}
                     />
                 ))
                 : <Text style={{
@@ -111,6 +153,5 @@ const styles = StyleSheet.create({
     // Scroll container
     scrollContainer: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
     },
 });

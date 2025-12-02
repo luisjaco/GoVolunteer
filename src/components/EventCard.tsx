@@ -13,12 +13,12 @@ type EventCardProps = {
   name: string
   organization_id: string,
   categoryName: string,
-  description: string,
+  description?: string,
   state: string,
   city: string,
   maxVolunteers: number,
   currentVolunteers: number,
-  imageURI: string,
+  imageURI?: string,
   timestampz: string
   organization_profile_picture_url?: string,
   organization_title: string

@@ -19,6 +19,7 @@ export default function RootLayout() {
         <Stack.Screen name='auth/setup/(volunteerSetup)/VolunteerSetup' />
         <Stack.Screen name='auth/setup/(volunteerSetup)/VolunteerConfirmation' />
         <Stack.Screen name='(tabs)'/>
+        <Stack.Screen name='Splash'/>
       </Stack>
     </React.Fragment>
   )

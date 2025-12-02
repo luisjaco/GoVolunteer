@@ -47,13 +47,16 @@ export default function ViewOrganizationProfile() {
     const handleEditAccount = () => {
         router.push({
             pathname: '/profile/EditOrganizationProfile',
-            params: {...organization, id: id}
+            params: { ...organization, id: id }
         });
     };
 
-    const handleLogOut = () => {
-        console.log('Log Out pressed');
-        //  add logout logic
+    const handleLogOut = async () => {
+        await storage.removeItem('userUID');
+        await storage.removeItem('userType');
+        await supabase.auth.signOut();
+
+        router.replace('/Splash');
     };
 
     const gatherOrganizationInfo = async () => {
@@ -66,15 +69,15 @@ export default function ViewOrganizationProfile() {
         gatherOrganizationInfo();
     }, []);
 
-    useEffect( () => {
+    useEffect(() => {
         // update organization on frontend when it is updated.
         const channel = supabase.channel('organization-channel');
-        channel.on('postgres_changes', 
+        channel.on('postgres_changes',
             {
-                event: "UPDATE", 
-                schema: 'public', 
+                event: "UPDATE",
+                schema: 'public',
                 table: 'organizations'
-            }, 
+            },
             (payload) => {
                 const updateOrganization = payload.new as Organization;
                 setOrganization(updateOrganization);
@@ -86,19 +89,19 @@ export default function ViewOrganizationProfile() {
 
     const header = (
         <View style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%', 
-                height: '35%', 
-                backgroundColor: PRIMARY_COLOR,
-            }}>
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '35%',
+            backgroundColor: PRIMARY_COLOR,
+        }}>
             <Avatar.Image
                 size={128}
-                source={(organization?.profile_picture_url ? 
+                source={(organization?.profile_picture_url ?
                     { uri: organization?.profile_picture_url } :
                     require('@/assets/icons/default-organization.png')
-                )}/>
+                )} />
 
             <Text style={styles.organizationName}>{organization?.title}</Text>
             <Text style={styles.website}>{email}</Text>
@@ -106,7 +109,7 @@ export default function ViewOrganizationProfile() {
     );
 
     const body = (
-        <View style={{alignItems: 'center', marginTop: '2%'}}>
+        <View style={{ alignItems: 'center', marginTop: '2%' }}>
             {(organization && email) && (
                 <OrganizationCard
                     title={organization.title}
@@ -120,23 +123,23 @@ export default function ViewOrganizationProfile() {
                     profilePictureURL={organization.profile_picture_url}
                 />
             )}
-            <HelperText type='info' style={{alignItems: 'center'}}>
+            <HelperText type='info' style={{ alignItems: 'center' }}>
                 This is how volunteers & fellow organizations see you.
             </HelperText>
         </View>
     );
 
     const buttons = (
-        <View 
+        <View
             style={{
                 marginTop: '2%',
                 display: 'flex',
                 width: '80%',
-                alignItems: 'center', 
+                alignItems: 'center',
                 justifyContent: 'center',
                 alignContent: 'center'
             }}
-            >
+        >
             <Pressable style={styles.button} onPress={handleEditAccount}>
                 <Ionicons name="settings-outline" size={24} color="#333" style={styles.buttonIcon} />
                 <Text style={styles.buttonText}>Edit Account</Text>
@@ -154,7 +157,7 @@ export default function ViewOrganizationProfile() {
 
     return (
         <GVArea>
-            <View style={{flex: 1, alignItems:'center'}}>
+            <View style={{ flex: 1, alignItems: 'center' }}>
                 {header}
                 {body}
                 {buttons}

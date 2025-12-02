@@ -48,9 +48,12 @@ export default function ProfileScreen() {
         //  navigate to edit profile screen
     };
 
-    const handleLogOut = () => {
-        console.log('Log Out pressed');
-        //  add logout logic
+    const handleLogOut = async () => {
+        await storage.removeItem('userUID');
+        await storage.removeItem('userType');
+        await supabase.auth.signOut();
+
+        router.replace('/Splash');
     };
 
     const gatherVolunteerInfo = async () => {
@@ -77,7 +80,7 @@ export default function ProfileScreen() {
                 setVolunteer(updateVolunteer);
             }
         ).subscribe((status) => {
-            console.log('[ViewOrganizationProfile]', status, 'to live profile changes')
+            console.log('[ViewVolunteerProfile]', status, 'to live profile changes')
         });
     }, [])
 

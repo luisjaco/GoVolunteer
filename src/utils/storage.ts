@@ -18,5 +18,12 @@ export const storage = {
 
     async removeItem(key: string) {
         return AsyncStorage.removeItem(key);
+    },
+
+    async printStorage() {
+        const keys = await AsyncStorage.getAllKeys();
+        keys.map((k) => {
+            console.log(k, '-', this.get(k));
+        })
     }
 }
