@@ -42,7 +42,7 @@ export default function OrganizationSetup() {
         const phoneValid = phoneRegEx.test(phone);
         setPhoneError(!phoneValid);
 
-        let urlRegEx = /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
+        let urlRegEx = /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\w*)*$/;
         const organizationURLValid = urlRegEx.test(organizationURL);
         setOrganizationURLError(!organizationURLValid);
 

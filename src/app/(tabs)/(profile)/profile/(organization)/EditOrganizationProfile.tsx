@@ -66,7 +66,7 @@ export default function EditOrganizationScreen() {
         const phoneValid = phoneRegEx.test(newPhone);
         setPhoneError(!phoneValid);
 
-        let urlRegEx = /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
+        let urlRegEx = /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\w*)*$/;
         const organizationURLValid = urlRegEx.test(newOrganizationURL);
         setOrganizationURLError(!organizationURLValid);
 
