@@ -18,7 +18,7 @@ export default function ViewOrganizationProfile() {
     const [id, setID] = useState('');
 
     const fetchOrganizationInfo = async (uid: string) => {
-        const { data, error } = await supabase.from('organizations').select('*').eq('user_id', uid)
+        const { data, error } = await supabase.from('organizations').select('*').eq('user_id', uid).single();
 
         console.log('[ViewOrganizationProfile] grabbing information from organizations table');
         if (error || data.length === 0) {
@@ -26,21 +26,21 @@ export default function ViewOrganizationProfile() {
             return;
         }
         else {
-            setOrganization(data[0]);
+            setOrganization(data);
         }
     }
 
-    const fetchEmail = async () => {
-        const { data, error } = await supabase.from('users').select('*');
+    const fetchEmail = async (uid: string) => {
+        const { data, error } = await supabase.from('users').select('*').eq('id', uid).single();
 
         console.log('[ViewOrganizationProfile] grabbing information from users table');
-        if (error || data.length === 0) {
+        if (error || !data || data.length === 0) {
             console.log('[ViewOrganizationProfile] error: grabbing from users table', error);
             return;
         }
         else {
-            setEmail(data[0].email);
-            setID(data[0].id)
+            setEmail(data.email);
+            setID(data.id);
         }
     }
 
@@ -55,23 +55,25 @@ export default function ViewOrganizationProfile() {
         await storage.removeItem('userUID');
         await storage.removeItem('userType');
         await supabase.auth.signOut();
-
+        console.log('logging out...');
         router.replace('/Splash');
     };
 
-    const gatherOrganizationInfo = async () => {
+    const init = async () => {
         const uid = await storage.get('userUID') || 'ERROR';
         await fetchOrganizationInfo(uid);
-        await fetchEmail();
+        await fetchEmail(uid);
     }
 
-    useEffect(() => {
-        gatherOrganizationInfo();
-    }, []);
 
     useEffect(() => {
+        init();
+    }, []);
+
+    // live update
+    useEffect(() => {
         // update organization on frontend when it is updated.
-        const channel = supabase.channel('organization-channel');
+        const channel = supabase.channel('organizationView-update');
         channel.on('postgres_changes',
             {
                 event: "UPDATE",

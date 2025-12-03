@@ -1,62 +1,114 @@
-import {Ionicons} from '@expo/vector-icons';
-import {Text, TouchableOpacity, View, Image} from 'react-native';
-import {useState, useEffect} from 'react';
-import {SECONDARY_COLOR, BUTTON_COLOR} from '../constants/colors';
+import { Ionicons } from '@expo/vector-icons';
+import { Text, TouchableOpacity, View, Image, Alert } from 'react-native';
+import { useState, useEffect } from 'react';
+import { SECONDARY_COLOR, BUTTON_COLOR } from '../constants/colors';
 import supabase from '../utils/requests';
-import {storage} from '../utils/storage';
+import { storage } from '../utils/storage';
+import { useRouter } from 'expo-router';
 
-type UserType = 'organization' | 'volunteer';
+type UserType = 'organization' | 'volunteer' | 'owner';
 
 type EventInfoProps = {
     id: number,
     name?: string,
     description?: string,
-    categoryName?: string
+    categoryName?: string,
     maxVolunteers?: number,
     currentVolunteers?: number,
-    timestampz?: string,
+    timestampz: string,
     city?: string,
     state?: string,
     imageURI?: string,
     publicImageURL?: string,
     disabled?: boolean,
-    userType?: UserType,
-    onEdit?: () => void,
-    onRSVP?: () => void,
+    organization_id?: string,
 }
 
 export default function EventInfo(props: EventInfoProps) {
     const [formattedDate, setFomattedDate] = useState('');
     const [formattedTime, setFormattedTime] = useState('');
-    const [isRSVPed, setIsRSVPed] = useState<boolean>(false)
+    const [isRSVPed, setIsRSVPed] = useState<boolean>(false);
+    const [userType, setUserType] = useState<UserType>();
+    const router = useRouter();
+
+    const warnBeforeCancelRSVP = (): Promise<boolean> => {
+        return new Promise((resolve) => {
+            Alert.alert(
+                'Cancel RSVP?',
+                'Are you sure you want to cancel the RSVP to this event?',
+                [
+                    {
+                        text: 'Go back',
+                        style: 'cancel',
+                        onPress: () => resolve(false),
+                    },
+                    {
+                        text: 'Cancel RSVP',
+                        style: 'destructive',
+                        onPress: () => resolve(true),
+                    },
+                ]
+            );
+        });
+    };
 
     const cancelRSVP = async () => {
-        if (isOrg || props.disabled && props.id == undefined)
+        if (userType !== 'volunteer' || props.disabled && props.id == undefined)
             return
-        const uid = await storage.get('userUID') 
-        const {error} = await supabase.from('rsvps')
+
+        const proceed = await warnBeforeCancelRSVP();
+
+        if (!proceed) {
+            return
+        }
+
+        console.log(`[EventInfo] attempting to cancel RSVP for event`)
+        const uid = await storage.get('userUID')
+        const { error } = await supabase.from('rsvps')
             .delete()
             .eq('volunteer_id', uid)
             .eq('event_id', props.id)
-        if (error != null)
-            return
+        if (error != null) {
+            console.log('[EventInfo] Error canceling RSVP for user,', error);
+            return;
+        }
         setIsRSVPed(false)
+        console.log('[EventInfo] Cancel successful')
+
+        router.back();
     }
 
     const registerRSVP = async () => {
-        if (isOrg || props.disabled && props.id == undefined)
+        if (userType !== 'volunteer' || props.disabled && props.id == undefined)
             return
-        const uid = await storage.get('userUID') 
-        const {error} = await supabase.from('rsvps')
-            .insert({event_id: props.id, volunteer_id: uid})
-        if (error != null)
-            return
+        const uid = await storage.get('userUID')
+        console.log(`[EventInfo] attempting to RSVP for event`)
+        const { error } = await supabase.from('rsvps')
+            .insert({ event_id: props.id, volunteer_id: uid })
+        if (error != null) {
+            console.log('[EventInfo] Error RSVPing user,', error);
+            return;
+        }
         setIsRSVPed(true)
+        console.log('[EventInfo] RSVP successful')
     }
 
-    const isOrg = props.userType === 'organization';
-    const primaryLabel = isOrg ? 'Edit' : (isRSVPed ? 'Cancel RSVP' : 'RSVP' );
-    const primaryOnPress = isOrg ? props.onEdit : (isRSVPed ? cancelRSVP : registerRSVP);
+    const handleEditEvent = () => {
+        router.push({
+            pathname: '/editEvent/EditEvent',
+            params: {
+                id: props.id,
+                name: props.name,
+                description: props.description,
+                categoryName: props.categoryName,
+                timestampz: props.timestampz,
+                publicImageURL: props.publicImageURL || props.imageURI,
+                city: props.city,
+                state: props.state,
+                maxVolunteers: props.maxVolunteers,
+            }
+        });
+    }
 
     const formatDate = (d: Date) => {
         const formattedDate = d.toLocaleDateString("en-US", {
@@ -70,23 +122,17 @@ export default function EventInfo(props: EventInfoProps) {
 
     const formatTime = (date: Date | null) => {
         if (!date) return "";
-        const formattedTime = date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})
+        const formattedTime = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
         setFormattedTime(formattedTime);
     }
 
-    useEffect(() => {
-        const dateTime = new Date(props.timestampz);
-        formatDate(dateTime);
-        formatTime(dateTime);
-    }, []);
-
-    const getIsRSVPed = async () => {
-        if (isOrg || props.disabled && props.id == undefined) {
+    const getIsRSVPed = async (userType: UserType) => {
+        if (userType !== 'volunteer' || props.disabled && props.id == undefined) {
             console.log('[EventInfo] Declining to fetch RSVP status')
             return
         }
-        const uid = await storage.get('userUID') 
-        const {data, error} = await supabase.from('rsvps')
+        const uid = await storage.get('userUID')
+        const { data, error } = await supabase.from('rsvps')
             .select('*')
             .eq('volunteer_id', uid)
             .eq('event_id', props.id)
@@ -100,7 +146,26 @@ export default function EventInfo(props: EventInfoProps) {
         console.log(`[EventInfo] Got RSVP status -- ${status}`)
     }
 
-    useEffect(() => void getIsRSVPed(), [])
+    const init = async () => {
+        let userType = await storage.get('userType') as UserType;
+
+        if (userType === 'organization') {
+            // find if org is owner or other.
+            const uid = await storage.get('userUID');
+            userType = uid === props.organization_id ? 'owner' : 'organization';
+        } else {
+            getIsRSVPed(userType);
+        }
+        setUserType(userType);
+
+        const dateTime = new Date(props.timestampz);
+        formatDate(dateTime);
+        formatTime(dateTime);
+    }
+
+    useEffect(() => {
+        init();
+    }, []);
 
     const header = (
         <View
@@ -161,7 +226,7 @@ export default function EventInfo(props: EventInfoProps) {
     );
 
     const body = (
-        <View style={{marginVertical: 5}}>
+        <View style={{ marginVertical: 5 }}>
             {/* Date */}
             <View
                 style={{
@@ -179,7 +244,7 @@ export default function EventInfo(props: EventInfoProps) {
                 />
 
                 <View>
-                    <Text style={{color: "#656565", fontSize: 13, lineHeight: 25}}>
+                    <Text style={{ color: "#656565", fontSize: 13, lineHeight: 25 }}>
                         {formattedDate}
                     </Text>
                 </View>
@@ -200,7 +265,7 @@ export default function EventInfo(props: EventInfoProps) {
                         marginRight: 5,
                     }}
                 />
-                <Text style={{color: "#656565", fontSize: 13, lineHeight: 30}}>
+                <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
                     {formattedTime}
                 </Text>
             </View>
@@ -221,7 +286,7 @@ export default function EventInfo(props: EventInfoProps) {
                     }}
                 />
                 <View>
-                    <Text style={{color: "#656565", fontSize: 13, lineHeight: 30}}>
+                    <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
                         {props.city} | {props.state}
                     </Text>
                 </View>
@@ -241,7 +306,7 @@ export default function EventInfo(props: EventInfoProps) {
                         marginRight: 5,
                     }}
                 />
-                <Text style={{color: "#656565", fontSize: 13, lineHeight: 30}}>
+                <Text style={{ color: "#656565", fontSize: 13, lineHeight: 30 }}>
                     {props.currentVolunteers}/{props.maxVolunteers} Volunteers
                 </Text>
             </View>
@@ -257,14 +322,14 @@ export default function EventInfo(props: EventInfoProps) {
         }}>
             {props.imageURI && (
                 <Image
-                    source={{uri: props.imageURI}}
+                    source={{ uri: props.imageURI }}
                     style={{
                         marginTop: 5,
                         borderRadius: 5,
                         width: '100%',
                         height: 180,
                         alignSelf: 'center'
-                    }}/>
+                    }} />
             )}
             {/* About this event */}
             <Text
@@ -289,6 +354,59 @@ export default function EventInfo(props: EventInfoProps) {
             </Text>
         </View>
     )
+
+    const button = (
+        <View
+            style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: 5,
+            }}
+        >
+            {userType === 'volunteer' &&
+                (
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: BUTTON_COLOR,
+                            paddingVertical: 12,
+                            paddingHorizontal: 24,
+                            borderRadius: 10,
+                            flex: 1,
+                            marginBottom: 12,
+                            alignItems: "center",
+                        }}
+                        onPress={isRSVPed ? cancelRSVP : registerRSVP}
+                        disabled={props.disabled}
+                    >
+                        <Text style={{ fontWeight: "600", fontSize: 14, color: "white" }}>
+                            {isRSVPed ? "Cancel RSVP" : "RSVP"}
+                        </Text>
+                    </TouchableOpacity>
+                )}
+            {userType === 'owner' &&
+                (
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: BUTTON_COLOR,
+                            paddingVertical: 12,
+                            paddingHorizontal: 24,
+                            borderRadius: 10,
+                            flex: 1,
+                            marginBottom: 12,
+                            alignItems: "center",
+                        }}
+                        onPress={handleEditEvent}
+                        disabled={props.disabled}
+                    >
+                        <Text style={{ fontWeight: "600", fontSize: 14, color: "white" }}>
+                            Edit Event
+                        </Text>
+                    </TouchableOpacity>
+                )}
+        </View>
+    )
+
     return (
         <View
             style={{
@@ -304,34 +422,7 @@ export default function EventInfo(props: EventInfoProps) {
             {header}
             {body}
             {footer}
-            {/* Buttons */}
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginTop: 5,
-                }}
-            >
-                {/* RSVP Button */}
-                <TouchableOpacity
-                    style={{
-                        backgroundColor: BUTTON_COLOR,
-                        paddingVertical: 12,
-                        paddingHorizontal: 24,
-                        borderRadius: 10,
-                        flex: 1,
-                        marginBottom: 12,
-                        alignItems: "center",
-                    }}
-                    onPress= {primaryOnPress}
-                    disabled={props.disabled}
-                >
-                    <Text style={{fontWeight: "600", fontSize: 14, color: "white"}}>
-                        {primaryLabel}
-                    </Text>
-                </TouchableOpacity>
-            </View>
+            {button}
         </View>
     )
 }

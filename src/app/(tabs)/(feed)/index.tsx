@@ -49,7 +49,7 @@ export default function Feed() {
 
         
         if (error || data.length === 0) {
-            console.log('[Feed] error: grabbing from organizations table', error);
+            console.log('[Feed] error grabbing from organizations table', error);
             return;
         }
         else {
@@ -80,10 +80,11 @@ export default function Feed() {
     fetchEvents();
   }, []);
 
+  // live updates.
   useEffect( () => {
         // update events on frontend when it is updated.
-        const channel = supabase.channel('organization-channel-feed');
-        channel.on('postgres_changes', 
+        const updateChannel = supabase.channel('feed-update');
+        updateChannel.on('postgres_changes', 
             {
                 event: "UPDATE", 
                 schema: 'public', 
@@ -93,7 +94,35 @@ export default function Feed() {
                 fetchEvents();
             }
         ).subscribe((status) => {
-            console.log('[ViewOrganizationProfile]', status, 'to live event changes')
+            console.log('[Feed]', status, 'to live event updates')
+        });
+
+        const insertChannel = supabase.channel('feed-insert');
+        insertChannel.on('postgres_changes', 
+            {
+                event: "INSERT", 
+                schema: 'public', 
+                table: 'events'
+            }, 
+            () => {
+                fetchEvents();
+            }
+        ).subscribe((status) => {
+            console.log('[Feed]', status, 'to live event inserts')
+        });
+
+        const deleteChannel = supabase.channel('feed-delete');
+        deleteChannel.on('postgres_changes', 
+            {
+                event: "DELETE", 
+                schema: 'public', 
+                table: 'events'
+            }, 
+            () => {
+                fetchEvents();
+            }
+        ).subscribe((status) => {
+            console.log('[Feed]', status, 'to live event deletes')
         });
     }, []);
 

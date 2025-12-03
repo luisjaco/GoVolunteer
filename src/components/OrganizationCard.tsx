@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons'
-import { Link } from 'expo-router'
-import { Image, Pressable, Text, View } from 'react-native'
+import { Link, useRouter } from 'expo-router'
+import { Image, Pressable, Text, TouchableOpacity, View } from 'react-native'
 import { PRIMARY_COLOR, SECONDARY_COLOR } from '../constants/colors'
 import { Avatar } from 'react-native-paper'
 import supabase from '../utils/requests'
 import { useEffect, useState } from 'react'
 
 type OrganizationCardProps = {
+  id?: string
   title: string,
   motto?: string,
   phone: string,
@@ -22,7 +23,12 @@ type OrganizationCardProps = {
 }
 
 export default function OrganizationCard(props: OrganizationCardProps) {
-
+  const router = useRouter();
+  // console.log(props.id);
+  // console.log(Boolean(props.id))
+  const handleOrganizationInfoPress = () => {
+    router.push(`/organization/${props.id}`);
+  }
   const header = (
     <View
       style={{
@@ -200,7 +206,7 @@ export default function OrganizationCard(props: OrganizationCardProps) {
   );
 
   return (
-    <View
+    <TouchableOpacity
       style={{
         marginHorizontal: 20,
         marginTop: 10,
@@ -212,11 +218,13 @@ export default function OrganizationCard(props: OrganizationCardProps) {
         width: '90%',
         height: 'auto'
       }}
+      disabled={!Boolean(props.id)}
+      onPress={handleOrganizationInfoPress}
     >
 
       {header}
       {body}
 
-    </View>
+    </TouchableOpacity>
   )
 }

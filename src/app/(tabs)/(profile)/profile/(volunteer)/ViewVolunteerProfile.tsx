@@ -52,7 +52,7 @@ export default function ProfileScreen() {
         await storage.removeItem('userUID');
         await storage.removeItem('userType');
         await supabase.auth.signOut();
-
+        console.log('logging out...');
         router.replace('/Splash');
     };
 
@@ -68,7 +68,7 @@ export default function ProfileScreen() {
     
     useEffect( () => {
         // update volunteer on frontend when it is updated.
-        const channel = supabase.channel('volunteer-channel');
+        const channel = supabase.channel('volunteerView-update');
         channel.on('postgres_changes', 
             {
                 event: "UPDATE", 

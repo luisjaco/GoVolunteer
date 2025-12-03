@@ -26,7 +26,7 @@ export default function EventInfoPage() {
             .select('*, categories (*), users!events_organization_id_fkey (email, organizations (*))')
             .eq('id', id)
         if (error != null || data.length < 1) {
-            console.error(`[/event/${id}] -- Failed to fetch event info:`, error)
+            console.log(`[/event/${id}] -- Failed to fetch event info:`, error)
             return
         }
         setEvent(data[0]);
@@ -38,7 +38,7 @@ export default function EventInfoPage() {
     
     useEffect(() => {
         // update events on frontend when it is updated.
-        const deleteChannel = supabase.channel('rsvps-deletes-eventInfo');
+        const deleteChannel = supabase.channel('events/[id]-delete');
         deleteChannel.on('postgres_changes', 
             {
                 event: "DELETE", 
@@ -49,10 +49,10 @@ export default function EventInfoPage() {
                 fetchEventInfo();
             }
         ).subscribe((status) => {
-            console.log('[VolunteerEvents]', status, 'to live rsvp deletes')
+            console.log(`[events/${id}]' ${status} 'to live rsvp deletes`)
         });
 
-        const insertChannel = supabase.channel('rsvps-inserts-eventInfo');
+        const insertChannel = supabase.channel('events/[id]-insert');
         insertChannel.on('postgres_changes', 
             {
                 event: "INSERT", 
@@ -63,7 +63,7 @@ export default function EventInfoPage() {
                 fetchEventInfo();
             }
         ).subscribe((status) => {
-            console.log('[VolunteerEvents]', status, 'to live rsvp inserts')
+            console.log(`[events/${id}] ${status} to live rsvp inserts`)
         });
     }, []);
 
@@ -87,16 +87,20 @@ export default function EventInfoPage() {
                             state={event.state}
                             imageURI={event.image_url}
                             categoryName={event.categories?.name}
+                            organization_id={event.organization_id}
                         />
                 }
                 {organization
                     && <OrganizationCard
+                            id={organization.user_id}
                             title={organization.title}
                             phone={organization.phone}
                             email={event.users.email}
                             organizationURL={organization.organization_url}
+                            profilePictureURI={organization.profile_picture_url}
                             city={organization.city}
                             state={organization.state}
+                            motto={organization.motto}
                         />
                 }
             </ScrollView>
