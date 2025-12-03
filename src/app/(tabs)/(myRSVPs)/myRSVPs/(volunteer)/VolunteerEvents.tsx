@@ -41,7 +41,7 @@ export default function MyRSVPsScreen() {
 
     useEffect( () => {
         // update events on frontend when it is updated.
-        const deleteChannel = supabase.channel('rsvps-deletes-volunteerEvents');
+        const deleteChannel = supabase.channel('volunteerEvents-delete');
         deleteChannel.on('postgres_changes', 
             {
                 event: "DELETE", 
@@ -55,7 +55,7 @@ export default function MyRSVPsScreen() {
             console.log('[VolunteerEvents]', status, 'to live rsvp deletes')
         });
 
-        const insertChannel = supabase.channel('rsvps-inserts-volunteerEvents');
+        const insertChannel = supabase.channel('volunteerEvents-insert');
         insertChannel.on('postgres_changes', 
             {
                 event: "INSERT", 

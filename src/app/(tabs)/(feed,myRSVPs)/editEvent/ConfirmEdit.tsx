@@ -11,6 +11,7 @@ import { HelperText } from 'react-native-paper';
 export default function ConfirmEvent() {
     const router = useRouter();
     const {
+            id,
             name,
             description,
             categoryID,
@@ -35,7 +36,7 @@ export default function ConfirmEvent() {
             const filePath = `${uid}/${fileName}_${Date.now()}.${extension}`;
             const contentType = `image/${extension}`;
 
-            console.log('[ConfirmPost] attempting to upload image to\
+            console.log('[ConfirmEdit] attempting to upload image to\
  event_images:', filePath)
             const { error } = await supabase.storage
                 .from('event_images')
@@ -49,7 +50,7 @@ export default function ConfirmEvent() {
                 );
 
             if (error) {
-                console.log('[ConfirmPost] error: uploading user profile image:', error)
+                console.log('[ConfirmEdit] error: uploading user profile image:', error)
                 setSupabaseError(true);
                 return null;
             }
@@ -59,52 +60,50 @@ export default function ConfirmEvent() {
                 .storage
                 .from('event_images')
                 .getPublicUrl(filePath);
-            console.log('[ConfirmPost] image upload success:', data.publicUrl);
+            console.log('[ConfirmEdit] image upload success:', data.publicUrl);
             return data.publicUrl;
         }
 
         return null;
     };
 
-    const insertToEvents = async (uid: string, publicURL: string | null) => {
-        console.log('[ConfirmPost] attempting to insert into events table');
+    const updateEvent = async (publicURL: string | null) => {
+        console.log('[ConfirmEdit] attempting to insert into events table');
 
         const dateTimeStamp = new Date(timestampz as string);
-        const { error } = await supabase.from('events').insert({
-            organization_id: uid,
+        const { error } = await supabase.from('events').update({
             name: name,
             description: description,
             category_id: categoryID,
-            state: state,
-            city: city,
-            max_volunteers: maxVolunteers,
             image_url: publicURL,
             date_time: dateTimeStamp
-        }).single();
+        }).eq('id', id);
 
         if (error) {
-            console.log('[ConfirmPost] error: unsuccessful events table insert',
+            console.log('[ConfirmEdit] error: unsuccessful events table insert',
                 error);
             setSupabaseError(true);
             return;
         }
 
-        console.log('[ConfirmPost] insert into events table successful')
+        console.log('[ConfirmEdit] update to events table successful')
         return;
     }
 
-    const handlePostEvent = async () => {
+    const handleEditEvent = async () => {
         const uid = await storage.get('userUID');
         
         if (!uid) return;
 
-        let publicURL = null;
-        if (imageURI) {
+        let publicURL = imageURI as string || null;
+        // if imageFileName is not null it means we are uploading a new image (old image already has
+        // a link.)
+        if (imageFileName) {
             publicURL = await uploadImage(uid);
         }
             
         if (!supabaseError) {
-            insertToEvents(uid, publicURL);
+            updateEvent(publicURL);
         };
 
         setSupabaseError(false);
@@ -160,7 +159,7 @@ export default function ConfirmEvent() {
             
             <TouchableOpacity
                     activeOpacity={0.6}
-                    onPress={handlePostEvent}
+                    onPress={handleEditEvent}
                     style={{
                         backgroundColor: BUTTON_COLOR,
                         width: '60%',
@@ -178,7 +177,7 @@ export default function ConfirmEvent() {
                             color: "white",
                         }}
                     >
-                        Post Event
+                        Submit Edit
                     </Text>
                 </TouchableOpacity>
         </ScrollView>
