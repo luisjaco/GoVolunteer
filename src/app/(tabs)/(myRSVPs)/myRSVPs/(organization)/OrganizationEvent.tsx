@@ -24,8 +24,9 @@ export default function MyRSVPsScreen() {
 
     const fetchEvents = async (NewUID?: string) => {
 
-        const id = uid ? uid : NewUID;
-        console.log('[Feed] grabbing information from organizations table');
+        const id = Boolean(uid) ? uid : NewUID;
+
+        console.log('[OrganizationEvent] grabbing information from organizations table');
 
         const { data, error } = await supabase
             .from('events')
@@ -59,7 +60,7 @@ export default function MyRSVPsScreen() {
 
 
         if (error || data.length === 0) {
-            console.log('[Feed] error: grabbing from organizations table', error);
+            console.log('[OrganizationEvent] error: grabbing from organizations table', error);
             return;
         }
         else {
@@ -90,12 +91,7 @@ export default function MyRSVPsScreen() {
         const uid = await storage.get('userUID') || "ERROR";
         setUID(uid);
         fetchEvents(uid);
-    }
-    useEffect(() => {
-        init();
-    }, []);
 
-    useEffect(() => {
         // update events on frontend when it is updated.
         const insertChannel = supabase.channel('organizationEvents-insert');
         insertChannel.on('postgres_changes',
@@ -105,7 +101,7 @@ export default function MyRSVPsScreen() {
                 table: 'events'
             },
             () => {
-                fetchEvents();
+                fetchEvents(uid);
             }
         ).subscribe((status) => {
             console.log('[OrganizationEvent]', status, 'to live event changes')
@@ -119,7 +115,7 @@ export default function MyRSVPsScreen() {
                 table: 'events'
             },
             () => {
-                fetchEvents();
+                fetchEvents(uid);
             }
         ).subscribe((status) => {
             console.log('[OrganizationEvent]', status, 'to live event changes')
@@ -133,13 +129,16 @@ export default function MyRSVPsScreen() {
                 table: 'events'
             }, 
             () => {
-                fetchEvents();
+                fetchEvents(uid);
             }
         ).subscribe((status) => {
             console.log('[OrganizationEvent]', status, 'to live event deletes')
         });
-    }, []);
+    }
 
+    useEffect(() => {
+        init();
+    }, []);
 
     const header = (
         <View style={styles.headerContainer}>
