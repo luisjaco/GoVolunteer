@@ -16,11 +16,14 @@ import BackButton from '../../components/BackButton';
 export default function SignUpScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('')
     const [snackbarVisible, setSnackbarVisible] = useState(false);
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
+    const [confirmPasswordError, setConfirmPasswordError] = useState(false)
     const [supabaseError, setSupabaseError] = useState(false);
     const [passwordObscured, setPasswordObscured] = useState(true);
+    const [confirmPasswordObscured, setConfirmPasswordObscured] = useState(true)
     const [userSignedUp, setUserSignedUp] = useState(false);
 
     // will update emailError, passwordError, and return false if either have an error
@@ -36,7 +39,10 @@ export default function SignUpScreen() {
         const passwordValid = regexPassword.test(password);
         setPasswordError(!passwordValid);
 
-        return (emailValid && passwordValid);
+        const confirmPasswordValid = password == confirmPassword
+        setConfirmPasswordError(!confirmPasswordValid)
+
+        return (emailValid && passwordValid && confirmPasswordValid);
     }
 
     const handleSignUp = async (e: any) => {
@@ -167,6 +173,30 @@ export default function SignUpScreen() {
                 </Text>
                 <HelperText type="error" visible={passwordError}>
                     Make sure the password is valid!
+                </HelperText>
+
+                <Text style={{ marginBottom: 6, fontSize: 16, fontWeight: '500' }}>
+                    Confirm Password
+                </Text>
+                <TextInput
+                    mode="outlined"
+                    dense
+                    activeOutlineColor={SECONDARY_COLOR}
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry={confirmPasswordObscured}
+                    error={confirmPasswordError}
+                    right={
+                        <TextInput.Icon 
+                            icon={confirmPasswordObscured ? "eye-off" : "eye"}
+                            onPress={() => setConfirmPasswordObscured((passObs) => !passObs)}
+                        />
+                    }
+                    disabled={userSignedUp}
+                />
+                <HelperText type="error" visible={confirmPasswordError}>
+                    Make sure your passwords match!
                 </HelperText>
             </View>
 
